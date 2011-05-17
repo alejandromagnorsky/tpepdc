@@ -51,7 +51,7 @@ public class POP3Proxy extends Server {
 	protected Message getMessage(int i) throws IOException {
 		String response = send("RETR " + i);
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
-		String headerName = null;
+		String headerName, headerValue;
 
 		// Process headers
 		while ((response = readResponseLine()).length() != 0) {
@@ -60,8 +60,7 @@ public class POP3Proxy extends Server {
 
 			int separator = response.indexOf(":");
 			headerName = response.substring(0, separator);
-			String headerValue;
-			if (headerName.length() > separator)
+			if (response.length() > separator)
 				headerValue = response.substring(separator + 2);
 			else
 				headerValue = "";
