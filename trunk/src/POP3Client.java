@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class POP3Proxy extends Server {
+public class POP3Client extends Client {
 
-	private static final int PORT = 110;
+	private static final int PORT = 995;
 
 	public void connect(String host) throws IOException {
 		connect(host, PORT);
@@ -15,22 +15,16 @@ public class POP3Proxy extends Server {
 	}
 
 	protected String readResponseLine() throws IOException {
-		String response = reader.readLine();
-		if (debug) {
+		String response = reader.readLine();		
+		if (debug) 
 			System.out.println("DEBUG [in] : " + response);
-		}
-		if (response.startsWith("-ERR"))
-			throw new RuntimeException("Server has returned an error: "
-					+ response.replaceFirst("-ERR ", ""));
 		return response;
 	}
 
 	protected String send(String command) throws IOException {
-		if (debug) {
-			System.out.println("DEBUG [out]: " + command);
-		}
-		writer.write(command + "\n");
-		writer.flush();
+		if (debug) 
+			System.out.println("DEBUG [out]: " + command);		
+		writer.println(command);
 		return readResponseLine();
 	}
 
@@ -49,16 +43,18 @@ public class POP3Proxy extends Server {
 	}
 
 	protected Message getMessage(int i) throws IOException {
-		String response = send("RETR " + i);
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
-		String headerName, headerValue;
+		String headerName, headerValue, response;
 
 		// Process headers
 		while ((response = readResponseLine()).length() != 0) {
 			if (response.startsWith("\t"))
 				continue;
-
+			
 			int separator = response.indexOf(":");
+			if(separator == -1)
+				continue;
+			
 			headerName = response.substring(0, separator);
 			if (response.length() > separator)
 				headerValue = response.substring(separator + 2);
@@ -84,25 +80,9 @@ public class POP3Proxy extends Server {
 	public List<Message> getMessages() throws IOException {
 		int quant = getQuantOfNewMessages();
 		List<Message> messages = new ArrayList<Message>();
-		for (int i = 1; i <= quant; i++) {
+		for (int i = 1; i <= quant; i++)
 			messages.add(getMessage(i));
-		}
+		
 		return messages;
-	}
-
-	public static void main(String[] args) throws IOException {
-		POP3Proxy client = new POP3Proxy();
-		client.setDebug(true);
-		client.connect("pop3.myserver.com");
-		client.login("name@myserver.com", "password");
-		System.out.println("Number of new emails: "
-				+ client.getQuantOfNewMessages());
-		List<Message> messages = client.getMessages();
-		for (int index = 0; index < messages.size(); index++) {
-			System.out.println("Message num. " + index);
-			System.out.println(messages.get(index).getBody());
-		}
-		client.logout();
-		client.disconnect();
 	}
 }
