@@ -3,11 +3,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
+
 public class SocketUser {
 
 	protected Socket socket;
 
 	protected boolean debug = false;
+	protected Logger logger = Logger.getLogger("logger");
 
 	protected BufferedReader reader;
 	protected PrintWriter writer;
@@ -31,6 +34,6 @@ public class SocketUser {
 		reader = null;
 		writer = null;
 		if (debug)
-			System.out.println("Disconnected from the host");
+			logger.info("Disconnected from the host");
 	}
 }

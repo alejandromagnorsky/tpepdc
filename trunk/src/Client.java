@@ -7,8 +7,6 @@ import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 
 public abstract class Client extends SocketUser{
 
@@ -24,7 +22,7 @@ public abstract class Client extends SocketUser{
         writer = new PrintWriter(new OutputStreamWriter(socket
 				.getOutputStream()), true);
 		if (debug)
-			System.out.println("Connected to the host");
+			logger.info("Connected to the host "+ socket.getInetAddress());
 	}
 
 	

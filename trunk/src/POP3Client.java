@@ -17,24 +17,15 @@ public class POP3Client extends Client {
 	protected String readResponseLine() throws IOException {
 		String response = reader.readLine();		
 		if (debug) 
-			System.out.println("DEBUG [in] : " + response);
+			logger.info("[in] : " + response);
 		return response;
 	}
 
 	protected String send(String command) throws IOException {
 		if (debug) 
-			System.out.println("DEBUG [out]: " + command);		
+			logger.info("[out]: " + command);		
 		writer.println(command);
 		return readResponseLine();
-	}
-
-	public void login(String username, String password) throws IOException {
-		send("USER " + username);
-		send("PASS " + password);
-	}
-
-	public void logout() throws IOException {
-		send("QUIT");
 	}
 
 	public int getQuantOfNewMessages() throws IOException {
