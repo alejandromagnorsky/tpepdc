@@ -1,9 +1,13 @@
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 public class Message {
 
 	private final Map<String, List<String>> headers;
+	
+	private SortedSet<Content> orderedContent; 
+	private Map<Content.Type, List<Content>> contentMap;
 
 	private final String body;
 

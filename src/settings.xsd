@@ -49,9 +49,14 @@
 			<xsd:element name="transform-settings" type="Transformation"
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
-			<xsd:element name="schedule" type="ScheduleRestriction" maxOccurs="1" minOccurs="0"></xsd:element>
-			
+
+            <xsd:element name="schedule" type="ScheduleRestriction" maxOccurs="1" minOccurs="0">
+			</xsd:element>
+            <xsd:element name="server" type="xsd:string" maxOccurs="1"
+				minOccurs="1">
+			</xsd:element>
 		</xsd:sequence>
+
 		<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="max-logins" type="xsd:int"></xsd:attribute>
 	</xsd:complexType>
@@ -91,4 +96,5 @@
     		<xsd:element name="to" type="xsd:dateTime" maxOccurs="1" minOccurs="0"></xsd:element>
     	</xsd:sequence>
     </xsd:complexType>
+
 </xsd:schema>
