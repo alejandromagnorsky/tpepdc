@@ -7,6 +7,8 @@ import java.net.InetSocketAddress;
 
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 public abstract class Client extends SocketUser{
 
