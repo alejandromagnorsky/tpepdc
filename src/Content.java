@@ -21,6 +21,22 @@ public abstract class Content implements Comparable<Content>{
 		return type;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getHeader() {
+		return header;
+	}
+
+	public void setHeader(String header) {
+		this.header = header;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -45,7 +61,6 @@ public abstract class Content implements Comparable<Content>{
 	
 	public int compareTo(Content other){
 		return this.id-other.id;
-	}
-	
+	}	
 	
 }

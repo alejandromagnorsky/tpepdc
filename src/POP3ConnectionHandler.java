@@ -12,6 +12,8 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 	public POP3ConnectionHandler(Socket socket) {
 		this.POP3client = new POP3Client();
 		this.socket = socket;
+		POP3client.setDebug(true);
+		setDebug(true);
 		try {
 			this.reader = new BufferedReader(new InputStreamReader(socket
 					.getInputStream()));
@@ -24,24 +26,23 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 	}
 
 	public void run() {
-		try {
-			POP3client.connect("pop.mail.yahoo.com.ar");
-			POP3client.setDebug(true);
-			setDebug(true);
+		try {			
+			POP3client.connect("pop.mail.yahoo.com.ar");			
 			String request, response;
+			
 			do {
 				request = reader.readLine();
 				response = POP3client.send(request);
 				writer.println(response);
 				if (request.contains("RETR") && response.contains("+OK")) {
-					Message message = POP3client.getMessage(Integer
-							.valueOf(request
-									.substring(request.indexOf(' ') + 1)));
+					int msgNumber = Integer.valueOf(request.substring(request.indexOf(' ') + 1));
+					Message message = POP3client.getMessage(msgNumber);
 					writer.println(message.getBody());
 				}
 
 			} while (isConnected()
 					&& !(request.contains("QUIT") && response.contains("+OK")));
+			
 			POP3client.disconnect();
 			disconnect();
 		} catch (IOException e) {

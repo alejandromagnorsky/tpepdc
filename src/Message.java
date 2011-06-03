@@ -8,7 +8,6 @@ public class Message {
 	
 	private SortedSet<Content> orderedContent; 
 	private Map<Content.Type, List<Content>> contentMap;
-
 	private final String body;
 
 	protected Message(Map<String, List<String>> headers, String body) {
