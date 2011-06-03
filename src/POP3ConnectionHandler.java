@@ -23,7 +23,6 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 		}
 	}
 
-	@Override
 	public void run() {
 		try {
 			POP3client.connect("pop.mail.yahoo.com.ar");
