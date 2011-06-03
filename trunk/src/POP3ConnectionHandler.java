@@ -42,6 +42,7 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 
 			} while (isConnected()
 					&& !(request.contains("QUIT") && response.contains("+OK")));
+			POP3client.disconnect();
 			disconnect();
 		} catch (IOException e) {
 			e.printStackTrace();

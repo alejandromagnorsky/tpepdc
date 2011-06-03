@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class POP3Client extends Client {
 
-	private static final int PORT = 995;
+	private static final int PORT = 995; //TODO
 
 	public void connect(String host) throws IOException {
 		connect(host, PORT);
