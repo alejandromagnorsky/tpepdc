@@ -4,6 +4,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class POP3ConnectionHandler extends SocketUser implements Runnable {
 
@@ -37,6 +39,7 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 				if (request.contains("RETR") && response.contains("+OK")) {
 					int msgNumber = Integer.valueOf(request.substring(request.indexOf(' ') + 1));
 					Message message = POP3client.getMessage(msgNumber);
+					processMessage(message);
 					writer.println(message.getBody());
 				}
 
@@ -48,5 +51,12 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void processMessage(Message message){
+		List<Filter> filters = new ArrayList<Filter>();
+		filters.add(new ExternalProgram("./printBody"));
+		for(Filter f: filters)
+			f.apply(message);
 	}
 }
