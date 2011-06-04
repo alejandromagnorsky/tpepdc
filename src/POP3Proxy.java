@@ -25,6 +25,7 @@ public class POP3Proxy {
 			
 			while (true) {
 				Socket socket = server.accept();
+				logger.info("Connected to host "+socket.getInetAddress()+":"+socket.getPort());
 				Thread thread = new Thread(new POP3ConnectionHandler(socket));
 				thread.start();
 			}
