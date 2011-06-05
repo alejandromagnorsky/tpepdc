@@ -7,9 +7,17 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import settings.IPBlacklist;
+import settings.User;
+
 public class POP3ConnectionHandler extends SocketUser implements Runnable {
 
 	private POP3Client POP3client;
+	private static String DEFAULT_SERVER = "pop.mail.yahoo.com.ar";
+	
+	//TODO cargar el usuario y la blacklist
+	private User user;
+	private IPBlacklist ipBlackList;
 
 	public POP3ConnectionHandler(Socket socket) {
 		this.POP3client = new POP3Client();
@@ -29,7 +37,14 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 
 	public void run() {
 		try {			
-			POP3client.connect("pop.mail.yahoo.com.ar");			
+			String userServer = user.getServer();
+			String server;
+			if(userServer == null || userServer.equals("") ) {
+				server = DEFAULT_SERVER;
+			} else {
+				server = userServer;
+			}
+			POP3client.connect(server);			
 			String request, response;
 			
 			do {
@@ -56,6 +71,8 @@ public class POP3ConnectionHandler extends SocketUser implements Runnable {
 	private void processMessage(Message message){
 		List<Filter> filters = new ArrayList<Filter>();
 		filters.add(new ExternalProgram("./printBody"));
+		filters.add(new MessageTransformerFilter());
+//TODO	filters.add(new AccessControl(user, ipBlackList));
 		for(Filter f: filters)
 			f.apply(message);
 	}
