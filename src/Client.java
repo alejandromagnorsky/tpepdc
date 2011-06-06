@@ -8,22 +8,20 @@ import java.net.InetSocketAddress;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-public abstract class Client extends SocketUser{
+public abstract class Client extends SocketUser {
 
 	private static final SSLSocketFactory SocketFactory = (SSLSocketFactory) SSLSocketFactory
 			.getDefault();
-	
+
 	public void connect(String host, int port) throws IOException {
-        socket = (SSLSocket)SocketFactory.createSocket();
-        socket.connect(new InetSocketAddress(host, port));
-        reader = new BufferedReader(new InputStreamReader(socket
+		socket = (SSLSocket) SocketFactory.createSocket();
+		socket.connect(new InetSocketAddress(host, port));
+		reader = new BufferedReader(new InputStreamReader(socket
 				.getInputStream()));
-        // Enable auto-flush after println
-        writer = new PrintWriter(new OutputStreamWriter(socket
+		// Enable auto-flush after println
+		writer = new PrintWriter(new OutputStreamWriter(socket
 				.getOutputStream()), true);
-		if (debug)
-			logger.info("Connected to the host "+ socket.getInetAddress());
+		logger.info("Connected to the host " + socket.getInetAddress());
 	}
 
-	
 }
