@@ -16,14 +16,12 @@ public class POP3Client extends Client {
 
 	protected String readResponseLine() throws IOException {
 		String response = reader.readLine();		
-		if (debug) 
-			logger.info("[in] : " + response);
+		logger.info("[in] : " + response);
 		return response;
 	}
 
 	protected String send(String command) throws IOException {
-		if (debug) 
-			logger.info("[out]: " + command);		
+		logger.info("[out]: " + command);
 		writer.println(command);
 		return readResponseLine();
 	}
