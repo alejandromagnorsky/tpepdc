@@ -31,23 +31,23 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			} else {
 				server = userServer;
 			}
-			
-			//TODO hacer algo con la respuesta
+
+			// TODO hacer algo con la respuesta
 			AccessControl.exceedsMaxLogins(user);
 			AccessControl.hourIsOutOfRange(user);
 			AccessControl.ipIsDenied(ipBlackList, ip);
-			
+
 			POP3client.connect(server);
 			String request, response;
 
 			do {
 				request = reader.readLine();
-				if (!request.contains("PASS"))
+				if (!request.toUpperCase().contains("PASS"))
 					request = request.toUpperCase();
 				response = POP3client.send(request);
 				writer.println(response);
 				if (request.contains("RETR") && response.contains("+OK")) {
-					int msgNumber = Integer.valueOf(request.substring(request.indexOf(' ') + 1));
+					int msgNumber = Integer.valueOf(request.substring(request.lastIndexOf(' ') + 1));
 					Message message = POP3client.getMessage(msgNumber);
 					processMessage(message);
 					writer.println(message.getBody());

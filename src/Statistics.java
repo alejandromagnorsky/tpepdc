@@ -76,7 +76,7 @@ public class Statistics {
 		}
 	}
 
-	public static void addAccess(User user) {
+	public synchronized static void addAccess(User user) {
 		accessQuant++;
 		add(accessQuantPerUser, user);
 
@@ -100,17 +100,17 @@ public class Statistics {
 		histogram.add(access);
 	}
 
-	public static void addBytesTransfered(User user, Long bytes) {
+	public synchronized static void addBytesTransfered(User user, Long bytes) {
 		bytesTransfered += bytes;
 		addQuant(bytesTransferedPerUser, user, bytes);
 	}
 
-	public static void addRed(User user) {
+	public synchronized static void addRed(User user) {
 		redQuant++;
 		add(redQuantPerUser, user);
 	}
 
-	public static void addDeleted(User user) {
+	public synchronized static void addDeleted(User user) {
 		deletedQuant++;
 		add(deletedQuantPerUser, user);
 	}
@@ -145,24 +145,24 @@ public class Statistics {
 		return accessHistogram;
 	}
 
-	public static Map<User, Long> getAccessQuantPerUser() {
-		return accessQuantPerUser;
+	public static long getAccessQuant(User user) {
+		return (accessQuantPerUser.get(user) == null)? 0 : accessQuantPerUser.get(user);
 	}
 
-	public static Map<User, Long> getBytesTransferedPerUser() {
-		return bytesTransferedPerUser;
+	public static long getBytesTransfered(User user) {
+		return (bytesTransferedPerUser.get(user) == null)? 0 : bytesTransferedPerUser.get(user);
 	}
 
-	public static Map<User, Long> getRedQuantPerUser() {
-		return redQuantPerUser;
+	public static long getRedQuant(User user) {
+		return (redQuantPerUser.get(user) == null)? 0 : redQuantPerUser.get(user);
 	}
 
-	public static Map<User, Long> getDeletedQuantPerUser() {
-		return deletedQuantPerUser;
+	public static long getDeletedQuant(User user) {
+		return (deletedQuantPerUser.get(user) == null)? 0 : deletedQuantPerUser.get(user);
 	}
 
-	public static Map<User, SortedSet<Access>> getAccessHistogramPerUser() {
-		return accessHistogramPerUser;
+	public static SortedSet<Access> getAccessHistogram(User user) {
+		return accessHistogramPerUser.get(user);
 	}
 
 }
