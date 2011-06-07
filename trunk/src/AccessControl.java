@@ -15,7 +15,7 @@ public final class AccessControl {
 		int from = restriction.getFrom().getHour();
 		int to = restriction.getTo().getHour();
 		
-		if(to < from || to > 24 || from > 24) {
+		if(to < from || to > 24 || from < 0) {
 			throw new IllegalArgumentException();
 		}
 		DateFormat df = new SimpleDateFormat("HH");
