@@ -25,11 +25,18 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		try {
 			String userServer = user.getServer();
 			String server;
+			String ip = socket.getInetAddress().toString();
 			if (userServer == null || userServer.equals("")) {
 				server = DEFAULT_SERVER;
 			} else {
 				server = userServer;
 			}
+			
+			//TODO hacer algo con la respuesta
+			AccessControl.exceedsMaxLogins(user);
+			AccessControl.hourIsOutOfRange(user);
+			AccessControl.ipIsDenied(ipBlackList, ip);
+			
 			POP3client.connect(server);
 			String request, response;
 
@@ -59,7 +66,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		List<Filter> filters = new ArrayList<Filter>();
 		filters.add(new ExternalProgram("./printBody"));
 		filters.add(new MessageTransformerFilter());
-		// TODO filters.add(new AccessControl(user, ipBlackList));
 		for (Filter f : filters)
 			f.apply(message);
 	}

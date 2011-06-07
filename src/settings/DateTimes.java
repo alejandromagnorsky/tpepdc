@@ -10,23 +10,24 @@ package settings;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * <p>Java class for ScheduleRestriction complex type.
+ * <p>Java class for DateTimes complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ScheduleRestriction">
+ * &lt;complexType name="DateTimes">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="from" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="to" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="Date" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         &lt;element name="Times" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,63 +37,56 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ScheduleRestriction", propOrder = {
-    "from",
-    "to"
+@XmlType(name = "DateTimes", propOrder = {
+    "date",
+    "times"
 })
-public class ScheduleRestriction {
+public class DateTimes {
 
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar from;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar to;
+    @XmlElement(name = "Date", required = true)
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar date;
+    @XmlElement(name = "Times")
+    protected int times;
 
     /**
-     * Gets the value of the from property.
+     * Gets the value of the date property.
      * 
      * @return
      *     possible object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getFrom() {
-        return from;
+    public XMLGregorianCalendar getDate() {
+        return date;
     }
 
     /**
-     * Sets the value of the from property.
+     * Sets the value of the date property.
      * 
      * @param value
      *     allowed object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setFrom(XMLGregorianCalendar value) {
-        this.from = value;
+    public void setDate(XMLGregorianCalendar value) {
+        this.date = value;
     }
 
     /**
-     * Gets the value of the to property.
+     * Gets the value of the times property.
      * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
      */
-    public XMLGregorianCalendar getTo() {
-        return to;
+    public int getTimes() {
+        return times;
     }
 
     /**
-     * Sets the value of the to property.
+     * Sets the value of the times property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
      */
-    public void setTo(XMLGregorianCalendar value) {
-        this.to = value;
+    public void setTimes(int value) {
+        this.times = value;
     }
 
 }
