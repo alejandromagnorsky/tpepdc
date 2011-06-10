@@ -2,6 +2,18 @@ package model;
 
 public class User {
 
+	private	String name;
+	//private UserSettings settings;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -26,17 +38,4 @@ public class User {
 			return false;
 		return true;
 	}
-
-	String name;
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	// UserSettings settings;
-
 }

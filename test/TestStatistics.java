@@ -1,8 +1,9 @@
 import junit.framework.TestCase;
+import model.User;
 
 import org.junit.Test;
 
-import settings.User;
+
 
 
 public class TestStatistics extends TestCase {

@@ -1,16 +1,16 @@
-public abstract class Content implements Comparable<Content>{
+public abstract class Content implements Comparable<Content> {
 
 	private int id;
 
 	public enum Type {
-		PLAINTEXT, IMAGE, HTML, APPLICATION, VIDEO
+		TEXT, IMAGE, VIDEO, AUDIO, APPLICATION, OTHER
 	}
 
 	private Type type;
-	private String header;
+	private String contentTypeHeader;
 
-	public Content(Type type) {
-
+	public Content(String contentTypeHeader) {
+		this.contentTypeHeader = contentTypeHeader;
 	}
 
 	public void setType(Type type) {
@@ -29,12 +29,12 @@ public abstract class Content implements Comparable<Content>{
 		this.id = id;
 	}
 
-	public String getHeader() {
-		return header;
+	public String getContentTypeHeader() {
+		return contentTypeHeader;
 	}
 
-	public void setHeader(String header) {
-		this.header = header;
+	public void setContentTypeHeader(String contentTypeHeader) {
+		this.contentTypeHeader = contentTypeHeader;
 	}
 
 	@Override
@@ -58,9 +58,9 @@ public abstract class Content implements Comparable<Content>{
 			return false;
 		return true;
 	}
-	
-	public int compareTo(Content other){
-		return this.id-other.id;
-	}	
-	
+
+	public int compareTo(Content other) {
+		return this.id - other.id;
+	}
+
 }
