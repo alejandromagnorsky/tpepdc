@@ -3,9 +3,9 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.joda.time.DateTime;
+import model.User;
 
-import settings.User;
+import org.joda.time.DateTime;
 
 public class Statistics {
 

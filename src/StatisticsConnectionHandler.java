@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.net.Socket;
 
-import settings.User;
+import model.User;
 
 public class StatisticsConnectionHandler extends ConnectionHandler {
 

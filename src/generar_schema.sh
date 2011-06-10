@@ -1,1 +1,1 @@
-xjc -p settings settings.xsd
+xjc -p dao settings.xsd
