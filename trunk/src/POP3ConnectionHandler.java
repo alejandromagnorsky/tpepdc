@@ -3,8 +3,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import settings.IPBlacklist;
-import settings.User;
+import model.User;
+import dao.IPBlacklist;
 
 public class POP3ConnectionHandler extends ConnectionHandler {
 
@@ -23,7 +23,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 	public void run() {
 		try {
-			String userServer = user.getServer();
+			String userServer = "SERVER"; // TODO user.getServer();
 			String server;
 			String ip = socket.getInetAddress().toString();
 			if (userServer == null || userServer.equals("")) {
@@ -32,10 +32,10 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 				server = userServer;
 			}
 
-			// TODO hacer algo con la respuesta
-			AccessControl.exceedsMaxLogins(user);
-			AccessControl.hourIsOutOfRange(user);
-			AccessControl.ipIsDenied(ipBlackList, ip);
+//			// TODO hacer algo con la respuesta
+//			AccessControl.exceedsMaxLogins(user);
+//			AccessControl.hourIsOutOfRange(user);
+//			AccessControl.ipIsDenied(ipBlackList, ip);
 
 			POP3client.connect(server);
 			String request, response;
