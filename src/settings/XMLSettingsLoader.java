@@ -1,19 +1,28 @@
 package settings;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventLocator;
+import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import model.User;
 
 import org.joda.time.DateTime;
+import org.xml.sax.SAXException;
 
 import dao.XMLEraseSettings;
 import dao.XMLSettings;
@@ -29,11 +38,13 @@ public class XMLSettingsLoader {
 		try {
 			loader.load();
 		} catch (Exception e) {
-			e.printStackTrace();
 			return;
 		}
 
 		List<User> users = loader.getUserList();
+		
+		System.out.println("IP Blacklist:");
+		System.out.println(loader.getBlacklistIP());
 
 		// DEBUG
 		for (User u : users) {
@@ -57,7 +68,11 @@ public class XMLSettingsLoader {
 	public void load() throws FileNotFoundException, JAXBException {
 		InputStream input = null;
 		input = new FileInputStream("settings.xml");
-		settings = unmarshal(XMLSettings.class, input);
+		settings = unmarshal(XMLSettings.class, input, new File(
+				"src/settings.xsd"));
+
+		if (settings == null)
+			throw new IllegalAccessError("Error reading XML file.");
 	}
 
 	// TODO esto puede pinchar, falta guardar algo y levantarlo para ver que
@@ -123,14 +138,48 @@ public class XMLSettingsLoader {
 		return settings.getBlacklist().getIp();
 	}
 
-	public <T> T unmarshal(Class<T> docClass, InputStream inputStream)
-			throws JAXBException {
-		String packageName = docClass.getPackage().getName();
-		JAXBContext jc = JAXBContext.newInstance(packageName);
-		javax.xml.bind.Unmarshaller u = jc.createUnmarshaller();
-		@SuppressWarnings("unchecked")
-		JAXBElement<T> doc = (JAXBElement<T>) u.unmarshal(inputStream);
-		return doc.getValue();
-	}
+	// Unmarshal and validate XML file
+	public <T> T unmarshal(Class<T> docClass, InputStream inputStream,
+			File schemaFile) {
 
+		ValidationEventCollector vec = new ValidationEventCollector();
+		String packageName = docClass.getPackage().getName();
+		try {
+			JAXBContext jc = JAXBContext.newInstance(packageName);
+			Unmarshaller u = jc.createUnmarshaller();
+
+			Schema schema = null;
+			SchemaFactory sf = SchemaFactory
+					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+			try {
+				schema = sf.newSchema(schemaFile);
+			} catch (SAXException saxe) {
+				System.err.println("Error loading schema file");
+			}
+
+			u.setSchema(schema);
+			u.setEventHandler(vec);
+
+			@SuppressWarnings("unchecked")
+			JAXBElement<T> doc = (JAXBElement<T>) u.unmarshal(inputStream);
+			return doc.getValue();
+		} catch (JAXBException e) {
+		} finally {
+			if (vec != null && vec.hasEvents()) {
+				
+				System.out.println("Error validating XML file.");
+				System.out.println("--------------------------");
+				
+				for (ValidationEvent ve : vec.getEvents()) {
+					String msg = ve.getMessage();
+					ValidationEventLocator vel = ve.getLocator();
+					int line = vel.getLineNumber();
+					int column = vel.getColumnNumber();
+					System.err.println("Line: " + line + ", Column: " + column + ": "
+							+ msg);
+				}
+			}
+		}
+		return null;
+	}
 }
