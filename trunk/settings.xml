@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ProxySettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settings.xsd">
-  <user max-logins="0" name="BUENDI">
-  	
+<XMLProxySettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="settings.xsd">
+  <user max-logins="0" name="Mariano">
     <erase-settings>
       <date>
         <from>2001-01-01</from>
@@ -16,16 +15,14 @@
       </size-bytes>
       <structure>structure</structure>
     </erase-settings>
-    <transform-settings leet="true" rotate="true"/>
+    <transform-settings leet="true" />
     <schedule>
-      <from>2001-12-31T12:00:00</from>
-      <to>2001-12-31T12:00:00</to>
+    	<from>100</from>
+      <to>1200</to>
     </schedule>
-	
+    <server>server</server>
   </user>
-  
   <blacklist>
     <ip>ip</ip>
   </blacklist>
-  
-</ProxySettings>
+</XMLProxySettings>
