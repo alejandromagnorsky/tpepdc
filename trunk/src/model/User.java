@@ -6,6 +6,7 @@ public class User {
 
 	private String name;
 	private UserSettings settings;
+	private LoginsPerDay loginsPerDay;
 
 	public String toString() {
 		return name;
@@ -19,6 +20,22 @@ public class User {
 		this.name = name;
 	}
 
+	public void setSettings(UserSettings settings) {
+		this.settings = settings;
+	}
+
+	public UserSettings getSettings() {
+		return settings;
+	}
+
+	public LoginsPerDay getLoginsPerDay() {
+		return loginsPerDay;
+	}
+
+	public void setLoginsPerDay(LoginsPerDay loginsPerDay) {
+		this.loginsPerDay = loginsPerDay;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -42,13 +59,5 @@ public class User {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
-	}
-
-	public void setSettings(UserSettings settings) {
-		this.settings = settings;
-	}
-
-	public UserSettings getSettings() {
-		return settings;
 	}
 }
