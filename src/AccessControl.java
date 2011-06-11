@@ -1,10 +1,3 @@
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import model.User;
-import dao.IPBlacklist;
-import dao.ScheduleRestriction;
 
 
 public final class AccessControl {
@@ -44,9 +37,9 @@ public final class AccessControl {
 //		
 //		return false;
 //	}
-//	
-	public static boolean ipIsDenied(IPBlacklist ipBlackList, String ip) {
-		return ipBlackList.getIp().contains(ip);
-	}
+////	
+//	public static boolean ipIsDenied(IPBlacklist ipBlackList, String ip) {
+//		return ipBlackList.getIp().contains(ip);
+//	}
 
 }

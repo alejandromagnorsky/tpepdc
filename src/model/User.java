@@ -1,9 +1,15 @@
 package model;
 
+import settings.UserSettings;
+
 public class User {
 
-	private	String name;
-	//private UserSettings settings;
+	private String name;
+	private UserSettings settings;
+
+	public String toString() {
+		return name;
+	}
 
 	public String getName() {
 		return name;
@@ -12,7 +18,6 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -37,5 +42,13 @@ public class User {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	public void setSettings(UserSettings settings) {
+		this.settings = settings;
+	}
+
+	public UserSettings getSettings() {
+		return settings;
 	}
 }

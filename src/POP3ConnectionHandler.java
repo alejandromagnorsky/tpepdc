@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.User;
-import dao.IPBlacklist;
 
 public class POP3ConnectionHandler extends ConnectionHandler {
 
@@ -13,7 +12,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 	// TODO cargar el usuario y la blacklist
 	private User user;
-	private IPBlacklist ipBlackList;
+//	private IPBlacklist ipBlackList;
 
 	public POP3ConnectionHandler(Socket socket) {
 		super(socket);

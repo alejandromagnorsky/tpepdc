@@ -2,14 +2,14 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
-	<xsd:complexType name="Transformation">
+	<xsd:complexType name="XMLTransformation">
 		<xsd:attribute name="rotate" type="xsd:boolean"></xsd:attribute>
 		<xsd:attribute name="leet" type="xsd:boolean"></xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="EraseSettings">
+	<xsd:complexType name="XMLEraseSettings">
 		<xsd:sequence>
-			<xsd:element name="date" type="DateRestriction" maxOccurs="1"
+			<xsd:element name="date" type="XMLDateRestriction" maxOccurs="1"
 				minOccurs="0">
 			</xsd:element>
 			<xsd:element name="sender" type="xsd:string" maxOccurs="unbounded"
@@ -21,7 +21,7 @@
 			<xsd:element name="content-type" type="xsd:string"
 				maxOccurs="unbounded" minOccurs="0">
 			</xsd:element>
-			<xsd:element name="size-bytes" type="SizeRestriction"
+			<xsd:element name="size-bytes" type="XMLSizeRestriction"
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
 			<xsd:element name="structure" type="xsd:string"></xsd:element>
@@ -29,49 +29,48 @@
 	</xsd:complexType>
 
 
-	<xsd:complexType name="Settings">
+	<xsd:complexType name="XMLSettings">
 		<xsd:sequence>
-			<xsd:element name="user" type="User" maxOccurs="unbounded"
+			<xsd:element name="user" type="XMLUser" maxOccurs="unbounded"
 				minOccurs="0">
 			</xsd:element>
-			<xsd:element name="blacklist" type="IPBlacklist"></xsd:element>
+			<xsd:element name="blacklist" type="XMLIPBlacklist"></xsd:element>
 
 		</xsd:sequence>
 	</xsd:complexType>
 
-	<xsd:element name="ProxySettings" type="Settings"></xsd:element>
+	<xsd:element name="XMLProxySettings" type="XMLSettings"></xsd:element>
 
-	<xsd:complexType name="User">
+	<xsd:complexType name="XMLUser">
 		<xsd:sequence>
-			<xsd:element name="erase-settings" type="EraseSettings"
+			<xsd:element name="erase-settings" type="XMLEraseSettings"
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
-			<xsd:element name="transform-settings" type="Transformation"
+			<xsd:element name="transform-settings" type="XMLTransformation"
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
 
-			<xsd:element name="schedule" type="ScheduleRestriction"
+			<xsd:element name="schedule" type="XMLScheduleRestriction"
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
 			<xsd:element name="server" type="xsd:string" maxOccurs="1"
 				minOccurs="1">
 			</xsd:element>
-			<xsd:element name="LoginsPerDay" type="DateTimes" maxOccurs="1" minOccurs="1"></xsd:element>
-			
+
 		</xsd:sequence>
 
 		<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
 		<xsd:attribute name="max-logins" type="xsd:int"></xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="SizeRestriction">
+	<xsd:complexType name="XMLSizeRestriction">
     	<xsd:sequence>
     		<xsd:element name="from" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
     		<xsd:element name="to" type="xsd:int" maxOccurs="1" minOccurs="0"></xsd:element>
     	</xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="DateRestriction">
+    <xsd:complexType name="XMLDateRestriction">
     	<xsd:sequence>
     		<xsd:element name="from" type="xsd:date" maxOccurs="1" minOccurs="0"></xsd:element>
     		<xsd:element name="to" type="xsd:date" maxOccurs="1" minOccurs="0"></xsd:element>
@@ -79,7 +78,7 @@
     </xsd:complexType>
 
 
-    <xsd:complexType name="IPBlacklist">
+    <xsd:complexType name="XMLIPBlacklist">
     	<xsd:sequence>
     		<xsd:element name="ip" maxOccurs="unbounded" minOccurs="0">
     			<xsd:simpleType >
@@ -93,18 +92,26 @@
     	</xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="ScheduleRestriction">
+    <xsd:complexType name="XMLScheduleRestriction">
     	<xsd:sequence>
-    		<xsd:element name="from" type="xsd:dateTime" maxOccurs="1" minOccurs="0"></xsd:element>
-    		<xsd:element name="to" type="xsd:dateTime" maxOccurs="1" minOccurs="0"></xsd:element>
+    		<xsd:element name="from" maxOccurs="1" minOccurs="0">
+    			<xsd:simpleType>
+    				<xsd:restriction base="xsd:int">
+    					<xsd:minInclusive value="0"></xsd:minInclusive>
+    					<xsd:maxInclusive value="1440"></xsd:maxInclusive>
+    				</xsd:restriction>
+    			</xsd:simpleType>
+    		</xsd:element>
+    		<xsd:element name="to" maxOccurs="1" minOccurs="0">
+    			<xsd:simpleType>
+    				<xsd:restriction base="xsd:int">
+    					<xsd:minInclusive value="0"></xsd:minInclusive>
+    					<xsd:maxInclusive value="1440"></xsd:maxInclusive>
+    				</xsd:restriction>
+    			</xsd:simpleType>
+    		</xsd:element>
     	</xsd:sequence>
     </xsd:complexType>
 
 
-    <xsd:complexType name="DateTimes">
-    	<xsd:sequence>
-    		<xsd:element name="Date" type="xsd:date"></xsd:element>
-    		<xsd:element name="Times" type="xsd:int"></xsd:element>
-    	</xsd:sequence>
-    </xsd:complexType>
 </xsd:schema>
