@@ -23,6 +23,6 @@
     <server>server</server>
   </user>
   <blacklist>
-    <ip>ip</ip>
+    <ip>255.255.255.2</ip>
   </blacklist>
 </XMLProxySettings>
