@@ -1,20 +1,20 @@
-import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 
 public class ImageContent extends Content{
 
-	private ImageIO image;	
+	private BufferedImage image;	
 	
 	public ImageContent(String contentTypeHeader) {
 		super(contentTypeHeader);
 		this.setType(Type.IMAGE);
 	}
 
-	public ImageIO getImage() {
+	public BufferedImage getImage() {
 		return image;
 	}
 
-	public void setImage(ImageIO image) {
+	public void setImage(BufferedImage image) {
 		this.image = image;
 	}
 	

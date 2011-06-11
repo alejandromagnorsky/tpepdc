@@ -3,12 +3,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class Message {
 
 	private final Map<String, List<String>> headers;
 	
-	private SortedSet<Content> orderedContent; 
+	private SortedSet<Content> orderedContent = new TreeSet<Content>(); 
 	private Map<Content.Type, List<Content>> contentMap = new HashMap<Content.Type, List<Content>>();
 	private String body;
 
@@ -41,5 +42,9 @@ public class Message {
 		}
 		contents.add(content);
 		orderedContent.add(content);
+	}
+	
+	public SortedSet<Content> getContents(){
+		return this.orderedContent;
 	}
 }

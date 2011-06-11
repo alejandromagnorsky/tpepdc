@@ -47,8 +47,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 				response = POP3client.send(request);
 				writer.println(response);
 				if (request.contains("RETR") && response.contains("+OK")) {
-					int msgNumber = Integer.valueOf(request.substring(request.lastIndexOf(' ') + 1));
-					Message message = POP3client.getMessage(msgNumber);
+					Message message = POP3client.getMessage();
 					processMessage(message);
 					writer.println(message.getBody());
 				}
