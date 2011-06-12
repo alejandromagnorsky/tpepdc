@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import filter.AccessRequestFilter;
+import filter.EraseRequestFilter;
 import filter.ExternalProgramFilter;
 import filter.Filter;
 import filter.ImageTransformerFilter;
 import filter.MessageTransformerFilter;
+import filter.Request;
 import filter.RequestFilter;
 import filter.SendRequestFilter;
 
@@ -37,6 +39,9 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 		// Prepare filter chain
 		addRequestFilter(new SendRequestFilter());
+		addRequestFilter(new EraseRequestFilter());
+
+		// Este filtro va al final, asi se ejecuta primero
 		addRequestFilter(new AccessRequestFilter(this.socket));
 
 		try {
@@ -45,8 +50,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			do {
 				request = reader.readLine();
 				if (request != null && !request.isEmpty()) {
-					response = filterChain
-							.doFilter(request, writer, POP3client);
+					response = filterChain.doFilter(new Request(null, request),
+							writer, POP3client);
 
 					writer.println(response);
 					if (request.contains("RETR") && response.contains("+OK")) {
