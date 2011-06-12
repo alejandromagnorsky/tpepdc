@@ -20,7 +20,7 @@ public class UserSettings {
 			out += "ScheduleTo: " + getSchedule().getTo() / 60 + "hs, ";
 		out += "Max logins: " + maxLogins + ", ";
 		out += "Transform: leet=" + leet + ", rotate=" + rotate + ", ";
-		out += "Servier: " + server;
+		out += "Server: " + server;
 
 		return out;
 	}

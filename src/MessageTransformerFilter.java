@@ -2,6 +2,7 @@
 public class MessageTransformerFilter implements Filter {
 
 	public void apply(Message message) {
+		
 		//TODO falta filtrar por tipo de body, depende de como dejemos el message
 		l33t(message.getBody());
 	}
