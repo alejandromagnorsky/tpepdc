@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import model.User;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 public class Statistics {
 
@@ -17,7 +18,6 @@ public class Statistics {
 	private static SortedSet<Access> accessHistogram = new TreeSet<Access>();
 
 	// User statistics
-	// TODO hashCode e equals en User
 	private static Map<User, Long> accessQuantPerUser = new HashMap<User, Long>();
 	private static Map<User, Long> bytesTransferedPerUser = new HashMap<User, Long>();
 	private static Map<User, Long> redQuantPerUser = new HashMap<User, Long>();
@@ -25,16 +25,16 @@ public class Statistics {
 	private static Map<User, SortedSet<Access>> accessHistogramPerUser = new HashMap<User, SortedSet<Access>>();
 
 	public static class Access implements Comparable<Access> {
-		private DateTime date;
+		private LocalDate date;
 		private long quant;
 
 		public Access(DateTime date) {
-			this.date = new DateTime(date.getYear(), date.getMonthOfYear(),
-					date.getDayOfMonth(), 0, 0, 0, 0);
+			this.date = new LocalDate(date.getYear(), date.getMonthOfYear(),
+					date.getDayOfMonth());
 			this.quant = 0;
 		}
 
-		public DateTime getDate(){
+		public LocalDate getDate(){
 			return date;
 		}
 		

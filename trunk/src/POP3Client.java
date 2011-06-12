@@ -157,7 +157,7 @@ public class POP3Client extends Client {
 				if(content.getType().equals(Content.Type.TEXT))
 					System.out.println(((TextContent)content).getText());
 				else
-					ImageIO.write(((ImageContent)content).getImage(), "jpg", new File("email.jpg"));
+					ImageIO.write(((ImageContent)content).getImage(), "png", new File("email.png"));
 			}		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
