@@ -16,11 +16,9 @@ public class TestXMLDAO extends TestCase {
 		XMLLoginLogDAO dao = new XMLLoginLogDAO("test_loginLog.xml",
 				"src/loginLog.xsd");
 
-		User user = new User();
-		user.setName("Krillin");
+		User user = new User("Krillin");
 
-		User otherUser = new User();
-		otherUser.setName("Piccoro");
+		User otherUser = new User("Piccoro");
 
 		dao.saveLogin(user, new LocalDate(2010, 10, 23), 0);
 		dao.saveLogin(user, new LocalDate(2010, 10, 23), 3);
@@ -97,13 +95,11 @@ public class TestXMLDAO extends TestCase {
 		XMLSettingsDAO dao = new XMLSettingsDAO("test_settings.xml",
 				"src/settings.xsd");
 
-		User user = new User();
+		User user = new User("Vegeta");
 		user.setSettings(new UserSettings());
 		user.getSettings().setEraseSettings(new EraseSettings());
 		user.getSettings().setMaxLogins(10);
 		user.getSettings().setLeet(true);
-
-		user.setName("Vegeta");
 
 		dao.saveUser(user);
 		dao.commit();

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/admin" xmlns:tns="http://www.example.org/admin" elementFormDefault="qualified">
+
+    <element name="XMLAdminRoot" type="tns:XMLAdminRoot"></element>
+    
+    <complexType name="XMLAdminRoot">
+    	<sequence>
+    		<element name="admin" type="tns:XMLAdmin" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="XMLAdmin">
+    	<sequence>
+    		<element name="name" type="string" maxOccurs="1" minOccurs="1"></element>
+    		<element name="password" type="string" maxOccurs="1" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+</schema>

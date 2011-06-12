@@ -81,8 +81,7 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 	public List<User> getUserList() {
 		List<User> out = new ArrayList<User>();
 		for (int i = 0; i < rootElement.getUser().size(); i++) {
-			User user = new User();
-			user.setName(rootElement.getUser().get(i).getName());
+			User user = new User(rootElement.getUser().get(i).getName());
 			UserSettings userSettings = constructUserSettings(i);
 			user.setSettings(userSettings);
 			out.add(user);

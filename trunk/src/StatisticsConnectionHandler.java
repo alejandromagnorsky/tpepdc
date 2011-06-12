@@ -8,10 +8,8 @@ public class StatisticsConnectionHandler extends ConnectionHandler {
 	public StatisticsConnectionHandler(Socket socket) {
 		super(socket);
 
-		User user1 = new User();
-		user1.setName("USER1");
-		User user2 = new User();
-		user2.setName("USER2");
+		User user1 = new User("USER1");
+		User user2 = new User("USER2");
 
 		Statistics.addAccess(user1);
 		Statistics.addAccess(user1);
@@ -41,8 +39,7 @@ public class StatisticsConnectionHandler extends ConnectionHandler {
 
 				if (request.startsWith("USER ")) {
 					// TODO Obtener al user del XML
-					user = new User();
-					user.setName(request
+					user = new User(request
 							.substring(request.lastIndexOf(' ') + 1));
 					response = "OK. Now the statistics are for the user "
 							+ user.getName();

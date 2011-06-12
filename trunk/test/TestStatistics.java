@@ -10,10 +10,8 @@ public class TestStatistics extends TestCase {
 	
 	@Test
 	public void testAccess(){
-		User user1 = new User();
-		User user2 = new User();
-		user1.setName("user1");
-		user2.setName("user2");
+		User user1 = new User("user1");
+		User user2 = new User("user2");
 		Statistics.addAccess(user1);
 		Statistics.addAccess(user1);
 		Statistics.addAccess(user2);
