@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Map;
 
 import model.Range;
 import model.User;
@@ -35,16 +34,10 @@ public final class AccessControl {
 
 		XMLLoginLogDAO dao = new XMLLoginLogDAO("test_loginLog.xml",
 				"src/loginLog.xsd");
-		Map<LocalDate, Integer> logins = dao.getUserLogins(user);
-		Integer quantity = logins.get(today);
+		int qty = dao.getUserLogins(user, new LocalDate());
 
-		// First login of day
-		if (quantity == null) {
-			dao.addLoginLog(user, today);
-			return false;
-		} else if (quantity < maxLogins) {
-			// Update login
-			dao.addLoginLog(user, today);
+		if (qty < maxLogins) {
+			dao.saveLogin(user, today, qty + 1);
 			return false;
 		}
 		return true;

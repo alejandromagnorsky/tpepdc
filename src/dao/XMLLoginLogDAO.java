@@ -1,9 +1,5 @@
 package dao;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -14,9 +10,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import dao.login.ObjectFactory;
-import dao.login.XMLLogin;
 import dao.login.XMLLoginLog;
-import dao.login.XMLUserLoginList;
+import dao.login.XMLUserLogin;
 
 public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 
@@ -30,29 +25,31 @@ public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 		return objFact.createXMLLoginLog();
 	}
 
-	public XMLUserLoginList getListByUser(User user) {
-		for (XMLUserLoginList list : rootElement.getUserLoginList())
-			if (list.getUser().equals(user.getName()))
-				return list;
+	public XMLUserLogin getLoginByUser(User user) {
+		for (XMLUserLogin login : rootElement.getUserLoginList())
+			if (login.getUser().equals(user.getName()))
+				return login;
 		return null;
 	}
 
-	private LocalDate convertToDateTime(XMLGregorianCalendar calendar) {
+	private LocalDate convertToLocalDate(XMLGregorianCalendar calendar) {
 		if (calendar == null)
 			return null;
 		return new DateTime(calendar.toGregorianCalendar().getTimeInMillis())
 				.toLocalDate();
 	}
 
-	public Map<LocalDate, Integer> getUserLogins(User user) {
-		Map<LocalDate, Integer> out = new HashMap<LocalDate, Integer>();
+	public int getUserLogins(User user, LocalDate date) {
+		XMLUserLogin login = getLoginByUser(user);
 
-		XMLUserLoginList list = getListByUser(user);
+		LocalDate lastDate = convertToLocalDate(login.getDate());
+		int quantity = login.getQuantity();
 
-		for (XMLLogin login : list.getLogin())
-			out.put(convertToDateTime(login.getDate()), login.getQuantity());
-
-		return out;
+		// If date doesn't exist, return 0 (this can be viewed as an auto reset)
+		if (!lastDate.equals(date)) {
+			return 0;
+		} else
+			return quantity;
 	}
 
 	private XMLGregorianCalendar convertToXMLGregorianCalendar(LocalDate date) {
@@ -69,43 +66,17 @@ public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 		return xgc;
 	}
 
-	// O(n), I'm sorry
-	private XMLLogin getLoginByDate(List<XMLLogin> list, LocalDate date) {
-		for (XMLLogin login : list)
-			if (login.getDate().equals(convertToXMLGregorianCalendar(date)))
-				return login;
-		return null;
-	}
-
-	public void addLoginLog(User user, LocalDate date) {
-		XMLUserLoginList list = getListByUser(user);
-		XMLLogin login = null;
+	public void saveLogin(User user, LocalDate date, int quantity) {
+		XMLUserLogin login = getLoginByUser(user);
 		ObjectFactory objFact = new ObjectFactory();
 
-		// Update
-		if (list != null) {
-			login = getLoginByDate(list.getLogin(), date);
-
-			// If login entry doesn't exist, create it
-			if (login == null) {
-				login = objFact.createXMLLogin();
-				list.getLogin().add(login);
-				login.setDate(convertToXMLGregorianCalendar(date));
-			}
-		} else {
-			// Create entire user list
-			list = objFact.createXMLUserLoginList();
-			list.setUser(user.getName());
-			login = objFact.createXMLLogin();
-			login.setDate(convertToXMLGregorianCalendar(date));
-
-			// getLogin is a list, sorry for names...
-			list.getLogin().add(login);
-			rootElement.getUserLoginList().add(list);
+		if (login == null) {
+			login = objFact.createXMLUserLogin();
+			login.setUser(user.getName());
+			rootElement.getUserLoginList().add(login);
 		}
 
-		// Now modify values
-		int qty = login.getQuantity();
-		login.setQuantity(qty + 1);
+		login.setDate(convertToXMLGregorianCalendar(date));
+		login.setQuantity(quantity);
 	}
 }

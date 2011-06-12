@@ -1,5 +1,3 @@
-import java.util.Map;
-
 import junit.framework.TestCase;
 import model.EraseSettings;
 import model.User;
@@ -21,23 +19,15 @@ public class TestXMLDAO extends TestCase {
 		User user = new User();
 		user.setName("Krillin");
 
-		dao.addLoginLog(user, new LocalDate(2010, 10, 23));
-		dao.addLoginLog(user, new LocalDate(2010, 10, 23));
-		dao.addLoginLog(user, new LocalDate(2010, 10, 23));
-
-		dao.addLoginLog(user, new LocalDate(2010, 10, 24));
-		dao.addLoginLog(user, new LocalDate(2010, 10, 24));
-
-		dao.addLoginLog(user, new LocalDate(2010, 10, 25));
-		dao.addLoginLog(user, new LocalDate(2010, 10, 25));
-		dao.addLoginLog(user, new LocalDate(2010, 10, 26));
-
 		User otherUser = new User();
 		otherUser.setName("Piccoro");
 
-		dao.addLoginLog(otherUser, new LocalDate(2010, 10, 25));
-		dao.addLoginLog(otherUser, new LocalDate(2010, 10, 25));
-		dao.addLoginLog(otherUser, new LocalDate(2010, 10, 26));
+		dao.saveLogin(user, new LocalDate(2010, 10, 23), 0);
+		dao.saveLogin(user, new LocalDate(2010, 10, 23), 3);
+		dao.saveLogin(user, new LocalDate(2010, 10, 23), 5);
+		dao.saveLogin(user, new LocalDate(2010, 10, 23), 6);
+
+		dao.saveLogin(otherUser, new LocalDate(), 5);
 
 		dao.commit();
 
@@ -50,18 +40,27 @@ public class TestXMLDAO extends TestCase {
 			return;
 		}
 
-		Map<LocalDate, Integer> map = otherDao.getUserLogins(user);
+		assertEquals(
+				otherDao.getUserLogins(user, new LocalDate(2010, 10, 23)) == 6,
+				true);
 
-		assertEquals(map.get(new LocalDate(2010, 10, 23)) == 3, true);
-		assertEquals(map.get(new LocalDate(2010, 10, 24)) == 2, true);
-		assertEquals(map.get(new LocalDate(2010, 10, 25)) == 2, true);
-		assertEquals(map.get(new LocalDate(2010, 10, 26)) == 1, true);
-		
+		assertEquals(otherDao.getUserLogins(user, new LocalDate()) == 0, true);
 
-		Map<LocalDate, Integer> otherMap = otherDao.getUserLogins(otherUser);
+		assertEquals(otherDao.getUserLogins(otherUser, new LocalDate()) == 5,
+				true);
 
-		assertEquals(otherMap.get(new LocalDate(2010, 10, 25)) == 2, true);
-		assertEquals(otherMap.get(new LocalDate(2010, 10, 26)) == 1, true);
+		dao.saveLogin(user, new LocalDate(), 6);
+		dao.commit();
+
+		try {
+			otherDao.load();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+
+		assertEquals(otherDao.getUserLogins(user, new LocalDate()) == 6, true);
+
 	}
 
 	@Test

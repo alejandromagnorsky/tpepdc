@@ -5,23 +5,20 @@
     
     <complexType name="XMLLoginLog">
     	<sequence>
-    		<element name="userLoginList" type="tns:XMLUserLoginList" maxOccurs="unbounded" minOccurs="0"></element>
+    		<element name="userLoginList" type="tns:XMLUserLogin" maxOccurs="unbounded" minOccurs="0"></element>
     	</sequence>
     	
     </complexType>
     
 
-    <complexType name="XMLUserLoginList">
+    <complexType name="XMLUserLogin">
     	<sequence>
-            <element name="user" type="string" maxOccurs="1" minOccurs="1"></element>
-            <element name="login" type="tns:XMLLogin" maxOccurs="unbounded" minOccurs="0"></element>
-    	</sequence>
-    </complexType>
-
-    <complexType name="XMLLogin">
-    	<sequence>
+    		<element name="user" type="string" maxOccurs="1"
+    			minOccurs="1">
+    		</element>
     		<element name="quantity" type="int" maxOccurs="1" minOccurs="1"></element>
     		<element name="date" type="date" maxOccurs="1" minOccurs="1"></element>
     	</sequence>
     </complexType>
+
 </schema>
