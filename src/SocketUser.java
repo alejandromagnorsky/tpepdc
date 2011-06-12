@@ -13,7 +13,7 @@ public class SocketUser {
 
 	protected BufferedReader reader;
 	protected PrintWriter writer;
-	
+
 	public boolean isConnected() {
 		return socket != null && socket.isConnected();
 	}
