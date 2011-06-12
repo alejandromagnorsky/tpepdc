@@ -34,7 +34,7 @@ public final class AccessControl {
 
 		XMLLoginLogDAO dao = new XMLLoginLogDAO("test_loginLog.xml",
 				"src/loginLog.xsd");
-		int qty = dao.getUserLogins(user, new LocalDate());
+		int qty = dao.getUserLogins(user, today);
 
 		if (qty < maxLogins) {
 			dao.saveLogin(user, today, qty + 1);
