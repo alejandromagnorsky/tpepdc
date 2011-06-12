@@ -42,14 +42,16 @@ public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 	public int getUserLogins(User user, LocalDate date) {
 		XMLUserLogin login = getLoginByUser(user);
 
-		LocalDate lastDate = convertToLocalDate(login.getDate());
-		int quantity = login.getQuantity();
-
-		// If date doesn't exist, return 0 (this can be viewed as an auto reset)
-		if (!lastDate.equals(date)) {
-			return 0;
-		} else
-			return quantity;
+		if(login != null) {
+			LocalDate lastDate = convertToLocalDate(login.getDate());
+			int quantity = login.getQuantity();
+			
+			// If date doesn't exist, return 0 (this can be viewed as an auto reset)
+			if (!lastDate.equals(date)) {
+				return quantity;
+			}
+		}
+		return -1;
 	}
 
 	private XMLGregorianCalendar convertToXMLGregorianCalendar(LocalDate date) {
