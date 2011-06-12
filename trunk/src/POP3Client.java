@@ -85,7 +85,7 @@ public class POP3Client extends Client {
 		while (!(response = readResponseLine()).equals(".")) {
 			bodyBuilder.append(response + "\n");
 
-			if (response.equals("--" + boundary))
+			if (response.contains("--" + boundary))
 				addContent(message, boundary, bodyBuilder);
 		}
 		message.setBody(bodyBuilder.toString());

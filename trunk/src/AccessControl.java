@@ -1,45 +1,56 @@
+import java.util.List;
+
+import model.LoginsPerDay;
+import model.Range;
+import model.User;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
 
 
 public final class AccessControl {
-//
-//	//TODO permitir minutos?
-//	public static boolean hourIsOutOfRange(User user) {
-//		ScheduleRestriction restriction = user.getSchedule();
-//		int from = restriction.getFrom().getHour();
-//		int to = restriction.getTo().getHour();
-//		
+	
+	public static boolean hourIsOutOfRange(User user) {
+		Range<Integer> range = user.getSettings().getSchedule();
+		int from = range.getFrom();
+		int to = range.getTo();
+		int now = new DateTime().getMinuteOfDay();
+		
+		//TODO ver esta validacion
 //		if(to < from || to > 24 || from < 0) {
 //			throw new IllegalArgumentException();
 //		}
-//		DateFormat df = new SimpleDateFormat("HH");
-//		int now = Integer.valueOf(df.format(new Date()));
-//		if(from > now || to < now) {
-//			return true;
-//		}
-//		return false;
-//	}
-//	
-//	//TODO ver si se pueden manejar mejor las fechas
-//	public static boolean exceedsMaxLogins(User user) {
-//		if(user.getLoginsPerDay().getDate().getDay() == new Date().getDay() &&
-//				user.getLoginsPerDay().getDate().getMonth() == new Date().getMonth() &&
-//				user.getLoginsPerDay().getDate().getYear() == new Date().getYear()) {
-//			
-//			if(user.getLoginsPerDay().getTimes() >= user.getMaxLogins()) {
-//				return true;
-//			}
-//			
-//			
-//		}
-//		user.getLoginsPerDay().getDate().setDay(new Date().getDay());
-//		user.getLoginsPerDay().getDate().setMonth(new Date().getMonth());
-//		user.getLoginsPerDay().getDate().setYear(new Date().getYear());
-//		
-//		return false;
-//	}
-////	
-//	public static boolean ipIsDenied(IPBlacklist ipBlackList, String ip) {
-//		return ipBlackList.getIp().contains(ip);
-//	}
+		
+		if(from > now || to < now) {
+			return true;
+		}
+		
+		return false;
+	}
+
+	public static boolean exceedsMaxLogins(User user, LoginsPerDay loginsPerDay) {
+		int maxLogins = user.getSettings().getMaxLogins();
+		LocalDate today = new LocalDate();
+		
+		if(loginsPerDay.getDate().isBefore(today)) {
+			loginsPerDay.reset();
+			return false;
+		}
+		
+		if(loginsPerDay.getQuantity() >= maxLogins) {
+			return true;
+		}
+		
+		
+		return false;
+	}
+	
+	public static boolean ipIsDenied(List<String> ipBlackList, String ip) {
+		if(ipBlackList != null && ip != null && !ip.equals("")) {
+			return ipBlackList.contains(ip);
+		}
+		return false;
+	}
 
 }

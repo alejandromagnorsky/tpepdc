@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 public class StatisticsServer implements Runnable {
 
-	private static int STATISTICS_PORT = 9000;
+	private static int STATISTICS_PORT = 9008;
 	private static Logger logger = Logger.getLogger("logger");
 	
 	public void run() {
