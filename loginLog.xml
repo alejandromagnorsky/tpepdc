@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<XMLLoginLogRoot xmlns="http://www.example.org/loginLog">
+    <userLoginList>
+        <user>Krillin</user>
+        <login>
+            <quantity>3</quantity>
+            <date>2010-10-23-03:00</date>
+        </login>
+        <login>
+            <quantity>2</quantity>
+            <date>2010-10-24-03:00</date>
+        </login>
+        <login>
+            <quantity>2</quantity>
+            <date>2010-10-25-03:00</date>
+        </login>
+        <login>
+            <quantity>1</quantity>
+            <date>2010-10-26-03:00</date>
+        </login>
+    </userLoginList>
+</XMLLoginLogRoot>

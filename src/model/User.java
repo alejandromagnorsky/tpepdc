@@ -1,12 +1,9 @@
 package model;
 
-import settings.UserSettings;
-
 public class User {
 
 	private String name;
 	private UserSettings settings;
-	private LoginsPerDay loginsPerDay;
 
 	public String toString() {
 		return name;
@@ -28,14 +25,6 @@ public class User {
 		return settings;
 	}
 
-	public LoginsPerDay getLoginsPerDay() {
-		return loginsPerDay;
-	}
-
-	public void setLoginsPerDay(LoginsPerDay loginsPerDay) {
-		this.loginsPerDay = loginsPerDay;
-	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;

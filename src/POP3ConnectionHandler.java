@@ -3,9 +3,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import model.LoginsPerDay;
 import model.User;
-import settings.XMLSettingsDAO;
+import dao.XMLSettingsDAO;
 
 public class POP3ConnectionHandler extends ConnectionHandler {
 
@@ -15,10 +14,9 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 	// TODO cargar el usuario, la blacklist y los loginsPerDay
 	private User user;
 	private List<String> ipBlackList;
-	private LoginsPerDay loginsPerDay;
 	
 	//TODO cambiar esto cuando el loader sea un singleton
-	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml");
+	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml", "settings.xsd");
 	 
 	public POP3ConnectionHandler(Socket socket) {
 		super(socket);
@@ -30,7 +28,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		}
 		this.POP3client = new POP3Client();
 		this.ipBlackList = loader.getBlacklistIP();
-		this.loginsPerDay = new LoginsPerDay();
 	}
 
 	public void run() {
@@ -89,7 +86,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 	}
 	
 	private boolean accessIsDenied(String ip) {
-		if(AccessControl.exceedsMaxLogins(user, loginsPerDay)) {
+		if(AccessControl.exceedsMaxLogins(user)) {
 			writer.println("ERROR. You have exceeded the ammount of " +
 					"logins for today. Please try again tomorrow");
 			return true;

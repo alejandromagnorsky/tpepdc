@@ -1,60 +1,34 @@
-package settings;
+package dao;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventLocator;
-import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
 
+import model.EraseSettings;
 import model.User;
+import model.UserSettings;
 
 import org.joda.time.DateTime;
-import org.xml.sax.SAXException;
 
-import dao.ObjectFactory;
-import dao.XMLEraseSettings;
-import dao.XMLIPBlacklist;
-import dao.XMLSettings;
-import dao.XMLUser;
+import dao.settings.ObjectFactory;
+import dao.settings.XMLEraseSettings;
+import dao.settings.XMLIPBlacklist;
+import dao.settings.XMLSettings;
+import dao.settings.XMLUser;
 
-public class XMLSettingsDAO {
+public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
-	String filename;
-	XMLSettings settings;
-
-	public XMLSettingsDAO(String filename) {
-		this.filename = filename;
-
-		// Create root by default
-		ObjectFactory objFact = new ObjectFactory();
-		settings = objFact.createXMLSettings();
+	public XMLSettingsDAO(String dataFilename, String schemaFilename) {
+		super(dataFilename, schemaFilename);
 	}
 
-	public void load() throws FileNotFoundException, JAXBException {
-		InputStream input = null;
-		input = new FileInputStream(filename);
-		settings = unmarshal(XMLSettings.class, input, new File(
-				"src/settings.xsd"));
-
-		if (settings == null)
-			throw new IllegalAccessError("Error reading XML file.");
+	@Override
+	protected XMLSettings createRoot() {
+		ObjectFactory objFact = new ObjectFactory();
+		return objFact.createXMLSettings();
 	}
 
 	private DateTime convertToDateTime(XMLGregorianCalendar calendar) {
@@ -66,7 +40,7 @@ public class XMLSettingsDAO {
 	private EraseSettings constructEraseSettings(int index) {
 		EraseSettings out = new EraseSettings();
 
-		XMLEraseSettings xmlErase = settings.getUser().get(index)
+		XMLEraseSettings xmlErase = rootElement.getUser().get(index)
 				.getEraseSettings();
 
 		out.getSize().setFrom(xmlErase.getSizeBytes().getFrom());
@@ -89,7 +63,7 @@ public class XMLSettingsDAO {
 
 	private UserSettings constructUserSettings(int index) {
 		UserSettings out = new UserSettings();
-		XMLUser xmlUser = settings.getUser().get(index);
+		XMLUser xmlUser = rootElement.getUser().get(index);
 
 		out.setServer(xmlUser.getServer());
 		out.setMaxLogins(xmlUser.getMaxLogins());
@@ -106,9 +80,9 @@ public class XMLSettingsDAO {
 
 	public List<User> getUserList() {
 		List<User> out = new ArrayList<User>();
-		for (int i = 0; i < settings.getUser().size(); i++) {
+		for (int i = 0; i < rootElement.getUser().size(); i++) {
 			User user = new User();
-			user.setName(settings.getUser().get(i).getName());
+			user.setName(rootElement.getUser().get(i).getName());
 			UserSettings userSettings = constructUserSettings(i);
 			user.setSettings(userSettings);
 			out.add(user);
@@ -117,11 +91,11 @@ public class XMLSettingsDAO {
 	}
 
 	public List<String> getBlacklistIP() {
-		return settings.getBlacklist().getIp();
+		return rootElement.getBlacklist().getIp();
 	}
 
 	private XMLUser getXMLUser(User user) {
-		for (XMLUser u : settings.getUser())
+		for (XMLUser u : rootElement.getUser())
 			if (u.getName().equals(user.getName()))
 				return u;
 		return null;
@@ -184,7 +158,7 @@ public class XMLSettingsDAO {
 			xmlUser.setTransformSettings(objFact.createXMLTransformation());
 
 			// And add the newly constructed user to root
-			settings.getUser().add(xmlUser);
+			rootElement.getUser().add(xmlUser);
 		}
 
 		if (user.getSettings() != null) {
@@ -200,7 +174,7 @@ public class XMLSettingsDAO {
 	}
 
 	public void saveBlacklistedIP(String ip) {
-		XMLIPBlacklist blacklist = settings.getBlacklist();
+		XMLIPBlacklist blacklist = rootElement.getBlacklist();
 
 		if (blacklist != null) {
 			List<String> list = blacklist.getIp();
@@ -214,7 +188,7 @@ public class XMLSettingsDAO {
 	}
 
 	public void saveBlacklistIP(List<String> ipList) {
-		for(String ip: ipList)
+		for (String ip : ipList)
 			saveBlacklistedIP(ip);
 	}
 
@@ -223,69 +197,4 @@ public class XMLSettingsDAO {
 			saveUser(user);
 	}
 
-	// This is the final commit to save the data
-	public void commit() {
-		marshal(filename);
-	}
-
-	private void marshal(String filename) {
-		try {
-			JAXBContext context = JAXBContext.newInstance(XMLSettings.class
-					.getPackage().getName());
-
-			Marshaller m = context.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			m.marshal(settings, new FileOutputStream(filename));
-		} catch (Exception e) {
-			System.err.println("Error saving configuration file.");
-			System.out.println("--------------------------------");
-			e.printStackTrace();
-
-		}
-	}
-
-	// Unmarshal and validate XML file
-	private <T> T unmarshal(Class<T> docClass, InputStream inputStream,
-			File schemaFile) {
-
-		ValidationEventCollector vec = new ValidationEventCollector();
-		String packageName = docClass.getPackage().getName();
-		try {
-			JAXBContext jc = JAXBContext.newInstance(packageName);
-			Unmarshaller u = jc.createUnmarshaller();
-
-			Schema schema = null;
-			SchemaFactory sf = SchemaFactory
-					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			try {
-				schema = sf.newSchema(schemaFile);
-			} catch (SAXException saxe) {
-				System.err.println("Error loading schema file");
-			}
-
-			u.setSchema(schema);
-			u.setEventHandler(vec);
-
-			@SuppressWarnings("unchecked")
-			JAXBElement<T> doc = (JAXBElement<T>) u.unmarshal(inputStream);
-			return doc.getValue();
-		} catch (JAXBException e) {
-		} finally {
-			if (vec != null && vec.hasEvents()) {
-
-				System.out.println("Error validating XML file.");
-				System.out.println("--------------------------");
-
-				for (ValidationEvent ve : vec.getEvents()) {
-					String msg = ve.getMessage();
-					ValidationEventLocator vel = ve.getLocator();
-					int line = vel.getLineNumber();
-					int column = vel.getColumnNumber();
-					System.err.println("Line: " + line + ", Column: " + column
-							+ ": " + msg);
-				}
-			}
-		}
-		return null;
-	}
 }

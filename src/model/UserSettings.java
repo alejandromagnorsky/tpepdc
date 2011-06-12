@@ -1,6 +1,5 @@
-package settings;
+package model;
 
-import model.Range;
 
 public class UserSettings {
 
