@@ -17,7 +17,7 @@ public class POP3Client extends Client {
 
 	private static final int PORT = 995; // TODO
 	private int id;
-	
+
 	public void connect(String host) throws IOException {
 		connect(host, PORT);
 		// To automatically read the welcome message
@@ -91,20 +91,19 @@ public class POP3Client extends Client {
 		message.setBody(bodyBuilder.toString());
 	}
 
-	
-	private void addContent(Message message, String boundary, StringBuilder bodyBuilder) throws IOException{
+	private void addContent(Message message, String boundary,
+			StringBuilder bodyBuilder) throws IOException {
 		Content content;
 		String response, contentTypeHeader, type;
-		StringBuilder contentText; 
-		
+		StringBuilder contentText;
+
 		response = readResponseLine();
-		
+
 		if (response.contains("Content-Type:")) {
 			id++;
-			contentTypeHeader = response.substring(response
-					.indexOf(':') + 2);
-			type = contentTypeHeader
-					.substring(0, contentTypeHeader.indexOf('/'));
+			contentTypeHeader = response.substring(response.indexOf(':') + 2);
+			type = contentTypeHeader.substring(0,
+					contentTypeHeader.indexOf('/'));
 			if (type.equals("text"))
 				content = new TextContent(contentTypeHeader);
 			else if (type.equals("image"))
@@ -113,52 +112,59 @@ public class POP3Client extends Client {
 				content = new OtherContent(contentTypeHeader);
 			content.setId(id);
 
-			do 
+			do
 				bodyBuilder.append(response + "\n");
 			while ((response = readResponseLine()).length() != 0);
 			bodyBuilder.append(response + "\n");
 
 			contentText = new StringBuilder();
-			while (!(response = readResponseLine()).contains("--" + boundary)){
+			while (!(response = readResponseLine()).contains("--" + boundary)) {
 				bodyBuilder.append(response + "\n");
 				contentText.append(response);
 			}
-						
+
 			if (type.equals("text"))
-				((TextContent)content).setText(contentText.toString());
+				((TextContent) content).setText(contentText.toString());
 			else if (type.equals("image"))
-				((ImageContent)content).setImage(base64ToImage(contentText.toString()));
+				((ImageContent) content).setImage(base64ToImage(contentText
+						.toString()));
 			else
 				content = new OtherContent(contentTypeHeader);
-			
+
 			message.addContent(content);
-			if(response.equals("--"+boundary+"--"))
+			if (response.equals("--" + boundary + "--"))
 				return;
 			addContent(message, boundary, bodyBuilder);
 		}
 	}
-	
+
 	private BufferedImage base64ToImage(String base64String) {
 		try {
 			byte[] imageInBytes = Base64.decode(base64String);
 			return ImageIO.read(new ByteArrayInputStream(imageInBytes));
-		} catch(Exception e){
+		} catch (Exception e) {
 			return null;
-		}		
+		}
 	}
-	
-	public static void main(String args[]){
+
+	public static void main(String args[]) {
 		try {
-			POP3Client client = new POP3Client();		
+			POP3Client client = new POP3Client();
 			client.reader = new BufferedReader(new FileReader("email.txt"));
 			Message message = client.getMessage();
 			System.out.println(message.getContents().size());
-			for(Content content: message.getContents()){
-				if(content.getType().equals(Content.Type.TEXT))
-					System.out.println(((TextContent)content).getText());
-				else
-					ImageIO.write(((ImageContent)content).getImage(), "png", new File("email.png"));
-			}		
+			for (Content content : message.getContents()) {
+				if (content.getType().equals(Content.Type.TEXT))
+					System.out.println(((TextContent) content).getText());
+				else {
+
+					ImageTransformerFilter rotate = new ImageTransformerFilter();
+					rotate.apply(message);
+
+					ImageIO.write(((ImageContent) content).getImage(), "png",
+							new File("email.png"));
+				}
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
