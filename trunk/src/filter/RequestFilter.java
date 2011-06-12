@@ -1,4 +1,8 @@
+package filter;
+
 import java.io.PrintWriter;
+
+import proxy.POP3Client;
 
 public abstract class RequestFilter {
 

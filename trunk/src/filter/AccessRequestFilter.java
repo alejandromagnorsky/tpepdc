@@ -1,8 +1,13 @@
+package filter;
+
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.List;
 
+import model.AccessControl;
 import model.User;
+import proxy.POP3Client;
+import proxy.POP3ConnectionHandler;
 import dao.XMLSettingsDAO;
 
 public class AccessRequestFilter extends RequestFilter {

@@ -1,7 +1,6 @@
+package model;
 import java.util.List;
 
-import model.Range;
-import model.User;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;

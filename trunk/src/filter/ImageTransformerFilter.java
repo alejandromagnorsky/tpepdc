@@ -1,8 +1,15 @@
+package filter;
+
 
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+
+import proxy.Content;
+import proxy.ImageContent;
+import proxy.Message;
+
 
 
 public class ImageTransformerFilter implements Filter {

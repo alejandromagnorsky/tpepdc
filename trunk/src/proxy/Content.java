@@ -1,3 +1,4 @@
+package proxy;
 public abstract class Content implements Comparable<Content> {
 
 	private int id;
