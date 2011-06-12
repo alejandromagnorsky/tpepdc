@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import filter.AccessRequestFilter;
+import filter.ExternalProgramFilter;
 import filter.Filter;
 import filter.ImageTransformerFilter;
 import filter.MessageTransformerFilter;
@@ -43,8 +44,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 			do {
 				request = reader.readLine();
-				if (request == null)
-					request = "";
+				if (request == null || request.isEmpty())
+					continue;
 				response = filterChain.doFilter(request, writer, POP3client);
 
 				writer.println(response);
@@ -66,7 +67,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private void processMessage(Message message) {
 		List<Filter> filters = new ArrayList<Filter>();
-		filters.add(new ExternalProgram("./printBody"));
+		filters.add(new ExternalProgramFilter("./printBody"));
 		filters.add(new MessageTransformerFilter());
 		filters.add(new ImageTransformerFilter());
 		for (Filter f : filters)
