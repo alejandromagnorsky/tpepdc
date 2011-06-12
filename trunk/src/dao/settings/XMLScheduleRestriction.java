@@ -6,27 +6,39 @@
 //
 
 
-package dao;
+package dao.settings;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * <p>Java class for XMLDateRestriction complex type.
+ * <p>Java class for XMLScheduleRestriction complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="XMLDateRestriction">
+ * &lt;complexType name="XMLScheduleRestriction">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="from" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="to" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
+ *         &lt;element name="from" minOccurs="0">
+ *           &lt;simpleType>
+ *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}int">
+ *               &lt;minInclusive value="0"/>
+ *               &lt;maxInclusive value="1440"/>
+ *             &lt;/restriction>
+ *           &lt;/simpleType>
+ *         &lt;/element>
+ *         &lt;element name="to" minOccurs="0">
+ *           &lt;simpleType>
+ *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}int">
+ *               &lt;minInclusive value="0"/>
+ *               &lt;maxInclusive value="1440"/>
+ *             &lt;/restriction>
+ *           &lt;/simpleType>
+ *         &lt;/element>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,26 +48,24 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "XMLDateRestriction", propOrder = {
+@XmlType(name = "XMLScheduleRestriction", propOrder = {
     "from",
     "to"
 })
-public class XMLDateRestriction {
+public class XMLScheduleRestriction {
 
-    @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar from;
-    @XmlSchemaType(name = "date")
-    protected XMLGregorianCalendar to;
+    protected Integer from;
+    protected Integer to;
 
     /**
      * Gets the value of the from property.
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Integer }
      *     
      */
-    public XMLGregorianCalendar getFrom() {
+    public Integer getFrom() {
         return from;
     }
 
@@ -64,10 +74,10 @@ public class XMLDateRestriction {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Integer }
      *     
      */
-    public void setFrom(XMLGregorianCalendar value) {
+    public void setFrom(Integer value) {
         this.from = value;
     }
 
@@ -76,10 +86,10 @@ public class XMLDateRestriction {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Integer }
      *     
      */
-    public XMLGregorianCalendar getTo() {
+    public Integer getTo() {
         return to;
     }
 
@@ -88,10 +98,10 @@ public class XMLDateRestriction {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Integer }
      *     
      */
-    public void setTo(XMLGregorianCalendar value) {
+    public void setTo(Integer value) {
         this.to = value;
     }
 

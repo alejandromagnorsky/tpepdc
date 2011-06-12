@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/loginLog" xmlns:tns="http://www.example.org/loginLog" elementFormDefault="qualified">
+
+    <element name="XMLLoginLogRoot" type="tns:XMLLoginLog"></element>
+    
+    <complexType name="XMLLoginLog">
+    	<sequence>
+    		<element name="userLoginList" type="tns:XMLUserLoginList" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    	
+    </complexType>
+    
+
+    <complexType name="XMLUserLoginList">
+    	<sequence>
+            <element name="user" type="string" maxOccurs="1" minOccurs="1"></element>
+            <element name="login" type="tns:XMLLogin" maxOccurs="unbounded" minOccurs="0"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="XMLLogin">
+    	<sequence>
+    		<element name="quantity" type="int" maxOccurs="1" minOccurs="1"></element>
+    		<element name="date" type="date" maxOccurs="1" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+</schema>

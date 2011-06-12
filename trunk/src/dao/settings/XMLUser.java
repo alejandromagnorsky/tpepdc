@@ -6,7 +6,7 @@
 //
 
 
-package dao;
+package dao.settings;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

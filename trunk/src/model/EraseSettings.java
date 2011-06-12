@@ -1,9 +1,8 @@
-package settings;
+package model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import model.Range;
 
 import org.joda.time.DateTime;
 
