@@ -54,7 +54,6 @@ public class AccessRequestFilter extends RequestFilter {
 				request = request.toUpperCase();
 
 			if (request.contains("USER ") && !client.isConnected()) {
-				// Substring is because of /ip
 
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
 
