@@ -3,10 +3,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import settings.XMLSettingsLoader;
-
 import model.LoginsPerDay;
 import model.User;
+import settings.XMLSettingsDAO;
 
 public class POP3ConnectionHandler extends ConnectionHandler {
 
@@ -19,7 +18,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 	private LoginsPerDay loginsPerDay;
 	
 	//TODO cambiar esto cuando el loader sea un singleton
-	private XMLSettingsLoader loader = new XMLSettingsLoader("settings.xml");
+	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml");
 	 
 	public POP3ConnectionHandler(Socket socket) {
 		super(socket);

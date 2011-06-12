@@ -18,13 +18,12 @@
 			<xsd:element name="header-pattern" type="xsd:string"
 				maxOccurs="unbounded" minOccurs="0">
 			</xsd:element>
-			<xsd:element name="content-type" type="xsd:string"
-				maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="content-type" type="xsd:string" maxOccurs="unbounded" minOccurs="0">
 			</xsd:element>
-			<xsd:element name="size-bytes" type="XMLSizeRestriction"
+            <xsd:element name="size-bytes" type="XMLSizeRestriction"
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
-			<xsd:element name="structure" type="xsd:string"></xsd:element>
+			<xsd:element name="structure" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -34,7 +33,7 @@
 			<xsd:element name="user" type="XMLUser" maxOccurs="unbounded"
 				minOccurs="0">
 			</xsd:element>
-			<xsd:element name="blacklist" type="XMLIPBlacklist"></xsd:element>
+			<xsd:element name="blacklist" type="XMLIPBlacklist" maxOccurs="1" minOccurs="0"></xsd:element>
 
 		</xsd:sequence>
 	</xsd:complexType>
@@ -54,7 +53,7 @@
 				maxOccurs="1" minOccurs="0">
 			</xsd:element>
 			<xsd:element name="server" type="xsd:string" maxOccurs="1"
-				minOccurs="1">
+				minOccurs="0">
 			</xsd:element>
 
 		</xsd:sequence>

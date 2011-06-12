@@ -12,7 +12,7 @@ public class EraseSettings {
 	private Range<DateTime> date = new Range<DateTime>();
 	private Range<Integer> size = new Range<Integer>();
 	private List<String> senders = new ArrayList<String>();
-	private List<String> contentHeaders = new ArrayList<String>();;
+	private List<String> contentTypes = new ArrayList<String>();;
 	private List<String> headerPatterns = new ArrayList<String>();;
 	private String structure = null;
 
@@ -31,7 +31,7 @@ public class EraseSettings {
 		out += "Structure: " + structure + ", ";
 
 		out += senders.toString();
-		out += contentHeaders.toString();
+		out += contentTypes.toString();
 		out += headerPatterns.toString();
 		return out;
 	}
@@ -44,12 +44,12 @@ public class EraseSettings {
 		this.senders.add(sender);
 	}
 
-	public List<String> getContentHeader() {
-		return contentHeaders;
+	public List<String> getContentTypes() {
+		return contentTypes;
 	}
 
 	public void addContentHeader(String contentHeader) {
-		this.contentHeaders.add(contentHeader);
+		this.contentTypes.add(contentHeader);
 	}
 
 	public List<String> getHeaderPattern() {

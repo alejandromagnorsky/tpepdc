@@ -53,7 +53,7 @@ public class UserSettings {
 		this.rotate = rotate != null ? rotate : false;
 	}
 
-	public boolean isRotate() {
+	public Boolean isRotate() {
 		return rotate;
 	}
 
@@ -61,7 +61,7 @@ public class UserSettings {
 		this.leet = leet != null ? leet : false;
 	}
 
-	public boolean isLeet() {
+	public Boolean isLeet() {
 		return leet;
 	}
 
