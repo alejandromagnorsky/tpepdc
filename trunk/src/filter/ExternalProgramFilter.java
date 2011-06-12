@@ -1,18 +1,18 @@
-package proxy;
+package filter;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-import filter.Filter;
+import proxy.Message;
 
 
-public class ExternalProgram implements Filter{
+public class ExternalProgramFilter implements Filter{
 
 	private String path; 
 	
-	public ExternalProgram(String path){
+	public ExternalProgramFilter(String path){
 		this.path = path;
 	}
 	
