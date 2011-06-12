@@ -36,7 +36,7 @@ public final class AccessControl {
 				"src/loginLog.xsd");
 		int qty = dao.getUserLogins(user, today);
 
-		if (qty < maxLogins) {
+		if (qty < maxLogins || qty == -1) {
 			dao.saveLogin(user, today, qty + 1);
 			return false;
 		}

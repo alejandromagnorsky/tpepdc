@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <XMLProxySettings>
-    <user max-logins="0" name="Vegeta">
+    <user max-logins="0" name="tpepdc">
         <erase-settings>
             <date>
                 <from>2001-01-01</from>
@@ -18,9 +18,9 @@
         <transform-settings leet="true" rotate="true"/>
         <schedule>
             <from>0</from>
-            <to>0</to>
+            <to>1440</to>
         </schedule>
-        <server>server</server>
+        <server>pop.mail.yahoo.com.ar</server>
     </user>
     <user max-logins="10" name="Goku">
         <erase-settings>

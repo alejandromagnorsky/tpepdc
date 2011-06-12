@@ -3,6 +3,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.Minutes;
+
 import model.User;
 import dao.XMLSettingsDAO;
 
@@ -15,7 +17,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 	private User user;
 	private List<String> ipBlackList;
 
-	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml", "src/settings.xsd");
+	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml",
+			"src/settings.xsd");
 
 	public POP3ConnectionHandler(Socket socket) {
 		super(socket);
@@ -35,41 +38,45 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 			do {
 				request = reader.readLine();
+				boolean accesDenied = false;
+
 				if (!request.toUpperCase().contains("PASS"))
 					request = request.toUpperCase();
-				
+
 				if (request.contains("USER ") && !POP3client.isConnected()) {
-					/*
-					loadUser(request.substring(request.lastIndexOf(' ') + 1));
-					
-					String userServer = user.getSettings().getServer();
-					String server;
 					String ip = socket.getInetAddress().toString();
-					if (userServer == null || userServer.equals("")) {
-						server = DEFAULT_SERVER;
-					} else {
-						server = userServer;
+					String server = DEFAULT_SERVER;
+
+					loadUser(request.substring(request.lastIndexOf(' ') + 1));
+
+					if (this.user != null && user.getSettings() != null) {
+						String userServer = user.getSettings().getServer();
+						if (userServer != null && !userServer.equals("")) {
+							server = userServer;
+						}
+						accesDenied = accessIsDenied(ip);
+						if (accesDenied) {
+							this.user = null;
+							if (POP3client.isConnected()) {
+								request = "QUIT";
+								POP3client.send(request);
+							}
+						}
 					}
 
-					// TODO borrar la siguiente linea cuando arregle el resto
-					server = DEFAULT_SERVER;
+					if (!accesDenied) {
+						POP3client.connect(server);
+					}
 
-					if (accessIsDenied(ip)) {
-						response = "-ERR. Access denied.";
-						writer.println(response);
-						if(POP3client.isConnected()){
-							request = "QUIT";
-							POP3client.send(request);
-						}												
-					} else */
-						POP3client.connect(DEFAULT_SERVER);
 				}
-				
-				if(POP3client.isConnected())
-					response = POP3client.send(request);					
-				else 
+
+				if (POP3client.isConnected())
+					response = POP3client.send(request);
+				else if (!accesDenied)
 					response = "-ERR. Must use USER command first.";
-				
+				else
+					response = "-ERR. Access denied.";
+
 				writer.println(response);
 				if (request.contains("RETR") && response.contains("+OK")) {
 					Message message = POP3client.getMessage();
@@ -78,8 +85,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 				}
 
 			} while (isConnected() && !request.contains("QUIT"));
-			
-			if(POP3client.isConnected())
+
+			if (POP3client.isConnected())
 				POP3client.disconnect();
 			disconnect();
 		} catch (IOException e) {
@@ -96,21 +103,22 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 	}
 
 	private boolean accessIsDenied(String ip) {
+
+		if (AccessControl.ipIsDenied(ipBlackList, ip)) {
+			writer.println("-ERR. Login failed");
+			return true;
+		}
+
 		if (AccessControl.exceedsMaxLogins(user)) {
-			writer.println("ERROR. You have exceeded the ammount of "
+			writer.println("-ERR. You have exceeded the ammount of "
 					+ "logins for today. Please try again tomorrow");
 			return true;
 		}
 
 		if (AccessControl.hourIsOutOfRange(user)) {
-			writer.println("ERROR. You are not allowed to login now. Try again"
-					+ "between " + user.getSettings().getSchedule().getFrom()
-					+ "and " + user.getSettings().getSchedule().getTo() + "hs");
-			return true;
-		}
-
-		if (AccessControl.ipIsDenied(ipBlackList, ip)) {
-			writer.println("ERROR. Login failed");
+			writer.println("-ERR. You are not allowed to login now. Try again"
+					+ "between " + minutesToString(user.getSettings().getSchedule().getFrom())
+					+ " and " + minutesToString(user.getSettings().getSchedule().getTo()) + "hs");
 			return true;
 		}
 
@@ -126,4 +134,13 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			}
 		}
 	}
+	
+	public String minutesToString(int mins) {
+		String str = "";
+		str += (mins - mins % 60) / 60;
+		str+= ":";
+		str += mins % 60;
+		return str;
+	}
+	
 }
