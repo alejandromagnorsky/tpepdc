@@ -20,7 +20,7 @@ public final class AccessControl {
 		// if(to < from || to > 24 || from < 0) {
 		// throw new IllegalArgumentException();
 		// }
-
+		
 		if (from > now || to < now) {
 			return true;
 		}
@@ -32,12 +32,18 @@ public final class AccessControl {
 		int maxLogins = user.getSettings().getMaxLogins();
 		LocalDate today = new LocalDate();
 
-		XMLLoginLogDAO dao = new XMLLoginLogDAO("test_loginLog.xml",
+		XMLLoginLogDAO dao = new XMLLoginLogDAO("logins.xml",
 				"src/loginLog.xsd");
+		try {
+			dao.load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		int qty = dao.getUserLogins(user, today);
 
-		if (qty < maxLogins || qty == -1) {
+		if (qty < maxLogins) {
 			dao.saveLogin(user, today, qty + 1);
+			dao.commit(); // TODO OJO CON ESTOOO
 			return false;
 		}
 		return true;
