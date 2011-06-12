@@ -1,9 +1,12 @@
+package proxy;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
+
+import statistics.StatisticsServer;
 
 /*
  * user: tpepdc@yahoo.com.ar

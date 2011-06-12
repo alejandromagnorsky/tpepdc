@@ -1,3 +1,4 @@
+package proxy;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -10,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+
+import filter.ImageTransformerFilter;
 
 import net.iharder.Base64;
 
@@ -30,7 +33,7 @@ public class POP3Client extends Client {
 		return response;
 	}
 
-	protected String send(String command) throws IOException {
+	public String send(String command) throws IOException {
 		logger.info("[out]: " + command);
 		writer.println(command);
 		return readResponseLine();

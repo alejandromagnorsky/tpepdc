@@ -1,5 +1,9 @@
+package statistics;
+
 import java.io.IOException;
 import java.net.Socket;
+
+import proxy.ConnectionHandler;
 
 import model.User;
 

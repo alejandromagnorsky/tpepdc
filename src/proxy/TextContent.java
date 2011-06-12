@@ -1,3 +1,4 @@
+package proxy;
 
 
 public class TextContent extends Content{

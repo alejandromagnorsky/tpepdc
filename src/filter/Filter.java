@@ -1,3 +1,6 @@
+package filter;
+import proxy.Message;
+
 
 public interface Filter {
 

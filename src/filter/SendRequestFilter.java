@@ -1,5 +1,9 @@
+package filter;
+
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import proxy.POP3Client;
 
 // Final entry in filter chain
 public class SendRequestFilter extends RequestFilter {

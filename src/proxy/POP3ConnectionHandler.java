@@ -1,7 +1,16 @@
+package proxy;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+
+import filter.AccessRequestFilter;
+import filter.Filter;
+import filter.ImageTransformerFilter;
+import filter.MessageTransformerFilter;
+import filter.RequestFilter;
+import filter.SendRequestFilter;
 
 public class POP3ConnectionHandler extends ConnectionHandler {
 
