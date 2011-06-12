@@ -40,11 +40,12 @@ public class AccessRequestFilter extends RequestFilter {
 	}
 
 	@Override
-	protected String apply(String request, PrintWriter responseWriter,
+	protected String apply(Request r, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
 
 		try {
 
+			String request = r.getRequestString();
 			// Check this constantly, so that an user can be blocked even when
 			// it is connected
 			String ip = userSocket.getInetAddress().toString().substring(1);
@@ -54,9 +55,7 @@ public class AccessRequestFilter extends RequestFilter {
 				request = request.toUpperCase();
 
 			if (request.contains("USER ") && !client.isConnected()) {
-
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
-
 				loadUser(request.substring(request.lastIndexOf(' ') + 1));
 
 				if (this.user != null && user.getSettings() != null) {
@@ -64,13 +63,17 @@ public class AccessRequestFilter extends RequestFilter {
 					if (userServer != null && !userServer.equals("")) {
 						server = userServer;
 					}
-					accessDenied = accessIsDenied(responseWriter, ip);
+					accessDenied = accessDenied
+							&& accessIsDenied(responseWriter, ip);
 
 				}
 
 				if (!accessDenied) {
 					client.connect(server);
-					return chain.doFilter(request, responseWriter, client);
+					
+					// Inject user for first login
+					r.setUser(user);
+					return chain.doFilter(r, responseWriter, client);
 				}
 			}
 
@@ -91,8 +94,11 @@ public class AccessRequestFilter extends RequestFilter {
 				return "";
 			}
 
+			// Inject user
+			r.setUser(user);
+			
 			// If nothing strange happens, continue
-			return chain.doFilter(request, responseWriter, client);
+			return chain.doFilter(r, responseWriter, client);
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -9,15 +9,15 @@ import proxy.POP3Client;
 public class SendRequestFilter extends RequestFilter {
 
 	@Override
-	protected String apply(String request, PrintWriter responseWriter,
+	protected String apply(Request request, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
 		if (client.isConnected())
 			try {
-				return client.send(request);
+				return client.send(request.getRequestString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		return "";
 	}
 

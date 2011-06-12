@@ -12,11 +12,11 @@ public abstract class RequestFilter {
 		this.next = next;
 	}
 
-	public String doFilter(String request, PrintWriter responseWriter,
+	public String doFilter(Request request, PrintWriter responseWriter,
 			POP3Client client) {
 		return apply(request, responseWriter, client, next);
 	}
 
-	protected abstract String apply(String request, PrintWriter responseWriter,
-			POP3Client client, RequestFilter chain);
+	protected abstract String apply(Request request,
+			PrintWriter responseWriter, POP3Client client, RequestFilter chain);
 }
