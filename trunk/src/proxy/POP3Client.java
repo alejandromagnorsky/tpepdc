@@ -1,4 +1,5 @@
 package proxy;
+
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -85,11 +86,13 @@ public class POP3Client extends Client {
 				.substring(contentTypeHeader.indexOf("=") + 1);
 
 		StringBuilder bodyBuilder = new StringBuilder();
-		while (!(response = readResponseLine()).equals(".")) {
+		response = readResponseLine();
+		while (!response.equals(".")) {
 			bodyBuilder.append(response + "\n");
 
-			if (response.contains("--" + boundary))
-				addContent(message, boundary, bodyBuilder);
+			// if (response.contains("--" + boundary))
+			addContent(message, boundary, bodyBuilder);
+			response = readResponseLine();
 		}
 		message.setBody(bodyBuilder.toString());
 	}
@@ -101,18 +104,31 @@ public class POP3Client extends Client {
 		StringBuilder contentText;
 
 		response = readResponseLine();
+		if (response.contains("multipart")) {
+			String subBoundary = response.substring(response.indexOf("=") + 1);
+			response = readResponseLine();
+			addContent(message, subBoundary, bodyBuilder);
+			response = readResponseLine();
+		}
 
+		if (response.contains("--" + boundary)) {
+			response = readResponseLine();
+		}
 		if (response.contains("Content-Type:")) {
+			// if (response.contains("multipart")) {
+			//					
+			// }
 			id++;
 			contentTypeHeader = response.substring(response.indexOf(':') + 2);
-			type = contentTypeHeader.substring(0,
-					contentTypeHeader.indexOf('/'));
+			type = contentTypeHeader.substring(0, contentTypeHeader
+					.indexOf('/'));
 			if (type.equals("text"))
 				content = new TextContent(contentTypeHeader);
 			else if (type.equals("image"))
 				content = new ImageContent(contentTypeHeader);
 			else
 				content = new OtherContent(contentTypeHeader);
+
 			content.setId(id);
 
 			do
@@ -139,6 +155,7 @@ public class POP3Client extends Client {
 				return;
 			addContent(message, boundary, bodyBuilder);
 		}
+
 	}
 
 	private BufferedImage base64ToImage(String base64String) {
@@ -157,15 +174,23 @@ public class POP3Client extends Client {
 			Message message = client.getMessage();
 			System.out.println(message.getContents().size());
 			for (Content content : message.getContents()) {
-				if (content.getType().equals(Content.Type.TEXT))
+				if (content.getType().equals(Content.Type.TEXT)) {
+					System.out.println("--------------------------");
+					System.out.println("TEXT");
 					System.out.println(((TextContent) content).getText());
-				else {
-
+				}
+				else if (content.getType().equals(Content.Type.IMAGE)) {
+					System.out.println("--------------------------");
+					System.out.println("IMAGE");
 					ImageTransformerFilter rotate = new ImageTransformerFilter();
 					rotate.apply(message);
 
 					ImageIO.write(((ImageContent) content).getImage(), "png",
 							new File("email.png"));
+				} else {
+					System.out.println("--------------------------");
+					System.out.println("OTHERRRR");
+					System.out.println(((OtherContent) content).getContentTypeHeader());
 				}
 			}
 		} catch (Exception e) {
