@@ -3,8 +3,8 @@ package model;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 
@@ -136,7 +135,7 @@ public class MessageParser {
 		
 		if (type.equals("text")){
 			if(encoding != null && encoding.equals("quoted-printable"))
-				((TextContent) content).setText(quotedPrintableToText(contentText.toString()));
+				((TextContent) content).setText(decodeQuotedPrintable(contentText.toString()));
 			else
 				((TextContent) content).setText(contentText.toString());
 		} else if (type.equals("image"))
@@ -186,17 +185,17 @@ public class MessageParser {
 		}
 	}
 	
-	private String quotedPrintableToText(String quotedPrintableString){
+	private String decodeQuotedPrintable(String quotedPrintable){
 		try {
-			quotedPrintableString = quotedPrintableString.replaceAll("=\n", "-\n");
+			quotedPrintable = quotedPrintable.replaceAll("=\n", "-\n");
 			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
-			return codec.decode(quotedPrintableString);
+			return codec.decode(quotedPrintable);
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	private String textToQuotedPrintable(String text){
+	private String encodeQuotedPrintable(String text){
 		try {
 			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
 			String ans = codec.encode(text);

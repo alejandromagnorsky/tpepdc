@@ -1,12 +1,16 @@
 package proxy;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 import model.Message;
@@ -66,8 +70,7 @@ public class POP3Client extends Client {
 					ImageTransformerFilter rotate = new ImageTransformerFilter();
 					rotate.apply(message);
 
-					ImageIO.write(((ImageContent) content).getImage(), "png",
-							new File("email.png"));
+					ImageIO.write(((ImageContent) content).getImage(), "png",	new File("email.png"));				
 				} else {
 					System.out.println("--------------------------");
 					System.out.println("OTHERRRR");
@@ -80,4 +83,6 @@ public class POP3Client extends Client {
 			e.printStackTrace();
 		}
 	}
+	
+	
 }
