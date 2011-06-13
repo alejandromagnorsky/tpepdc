@@ -2,16 +2,26 @@ package model;
 
 public class Administrator {
 
-	String name, password;
+	private String name;
+	private String password;
 
-	public Administrator(String name) {
+	public Administrator(String name, String password) {
 		this.name = name;
+		this.password = password;
 	}
 
 	public String getName() {
 		return name;
 	}
+	
+	public String getPassword() {
+		return password;
+	}
 
+	public boolean verifyPassword(String password){
+		return this.password.equals(password);
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -36,13 +46,4 @@ public class Administrator {
 			return false;
 		return true;
 	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 }
