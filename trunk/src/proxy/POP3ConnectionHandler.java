@@ -5,8 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.Message;
 import filter.AccessRequestFilter;
-import filter.EraseRequestFilter;
 import filter.ExternalProgramFilter;
 import filter.Filter;
 import filter.ImageTransformerFilter;

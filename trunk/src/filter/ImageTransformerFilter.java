@@ -6,9 +6,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import model.Message;
+
 import proxy.Content;
 import proxy.ImageContent;
-import proxy.Message;
 
 
 

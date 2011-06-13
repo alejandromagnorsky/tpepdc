@@ -1,5 +1,5 @@
 package filter;
-import proxy.Message;
+import model.Message;
 
 
 public class MessageTransformerFilter implements Filter {

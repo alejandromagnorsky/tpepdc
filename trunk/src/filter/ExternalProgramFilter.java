@@ -5,7 +5,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-import proxy.Message;
+import model.Message;
+
 
 
 public class ExternalProgramFilter implements Filter{
