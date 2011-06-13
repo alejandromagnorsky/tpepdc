@@ -15,25 +15,6 @@ public class EraseSettings {
 	private List<String> headerPatterns = new ArrayList<String>();;
 	private String structure = null;
 
-	public String toString() {
-		String out = "";
-		
-		if (date.getFrom() != null)
-			out += "Date from: " + date.getFrom() + ", ";
-		if (date.getTo() != null)
-			out += "Date to: " + date.getTo() + ", ";
-		if (size.getFrom() != null)
-			out += "Size from: " + size.getFrom() + ", ";
-		if (size.getTo() != null)
-			out += "Size to: " + size.getTo() + ", ";
-
-		out += "Structure: " + structure + ", ";
-
-		out += senders.toString();
-		out += contentTypes.toString();
-		out += headerPatterns.toString();
-		return out;
-	}
 
 	public List<String> getSenders() {
 		return senders;

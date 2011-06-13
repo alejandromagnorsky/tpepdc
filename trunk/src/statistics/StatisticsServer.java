@@ -6,6 +6,7 @@ import java.net.Socket;
 import org.apache.log4j.Logger;
 
 import proxy.POP3Proxy;
+import proxy.handler.StatisticsConnectionHandler;
 
 
 public class StatisticsServer implements Runnable {
