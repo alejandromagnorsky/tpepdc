@@ -79,20 +79,25 @@ public class POP3Client extends Client {
 	}
 
 	private void processBody(Message message) throws IOException {
-		String response, boundary, contentTypeHeader;
+		String response, contentTypeHeader, boundary = "";
 		id = 0;
 		contentTypeHeader = message.getHeaders().get("Content-Type").get(0);
-		boundary = contentTypeHeader
-				.substring(contentTypeHeader.indexOf("=") + 1);
+		if (contentTypeHeader.contains("multipart")) {
+			boundary = contentTypeHeader.substring(contentTypeHeader
+					.indexOf("=") + 1);
+		}
 
 		StringBuilder bodyBuilder = new StringBuilder();
 		response = readResponseLine();
-		while (!response.equals(".")) {
-			bodyBuilder.append(response + "\n");
-
-			// if (response.contains("--" + boundary))
+		if (boundary == "") {
 			addContent(message, boundary, bodyBuilder);
-			response = readResponseLine();
+		} else {
+			while (!response.equals(".")) {
+				bodyBuilder.append(response + "\n");
+
+				addContent(message, boundary, bodyBuilder);
+				response = readResponseLine();
+			}
 		}
 		message.setBody(bodyBuilder.toString());
 	}
@@ -114,20 +119,24 @@ public class POP3Client extends Client {
 		if (response.contains("--" + boundary)) {
 			response = readResponseLine();
 		}
-		if (response.contains("Content-Type:")) {
-			// if (response.contains("multipart")) {
-			//					
-			// }
-			id++;
-			contentTypeHeader = response.substring(response.indexOf(':') + 2);
+		if (boundary == "" || response.contains("Content-Type:")) {
+			if (boundary == "") {
+				contentTypeHeader = message.getHeaders().get("Content-Type")
+						.get(0).substring(response.indexOf(':') + 1);
+			} else {
+				contentTypeHeader = response
+						.substring(response.indexOf(':') + 2);
+			}
 			type = contentTypeHeader.substring(0, contentTypeHeader
 					.indexOf('/'));
-			if (type.equals("text"))
+			id++;
+			if (type.equals("text")) {
 				content = new TextContent(contentTypeHeader);
-			else if (type.equals("image"))
+			} else if (type.equals("image")) {
 				content = new ImageContent(contentTypeHeader);
-			else
+			} else {
 				content = new OtherContent(contentTypeHeader);
+			}
 
 			content.setId(id);
 
@@ -137,9 +146,18 @@ public class POP3Client extends Client {
 			bodyBuilder.append(response + "\n");
 
 			contentText = new StringBuilder();
-			while (!(response = readResponseLine()).contains("--" + boundary)) {
-				bodyBuilder.append(response + "\n");
-				contentText.append(response);
+
+			if (boundary == "") {
+				while (!(response = readResponseLine()).equals(".")) {
+					bodyBuilder.append(response + "\n");
+					contentText.append(response);
+				}
+			} else {
+				while (!(response = readResponseLine()).contains("--"
+						+ boundary)) {
+					bodyBuilder.append(response + "\n");
+					contentText.append(response);
+				}
 			}
 
 			if (type.equals("text"))
@@ -151,7 +169,7 @@ public class POP3Client extends Client {
 				content = new OtherContent(contentTypeHeader);
 
 			message.addContent(content);
-			if (response.equals("--" + boundary + "--"))
+			if (boundary == "" || response.equals("--" + boundary + "--"))
 				return;
 			addContent(message, boundary, bodyBuilder);
 		}
@@ -178,8 +196,7 @@ public class POP3Client extends Client {
 					System.out.println("--------------------------");
 					System.out.println("TEXT");
 					System.out.println(((TextContent) content).getText());
-				}
-				else if (content.getType().equals(Content.Type.IMAGE)) {
+				} else if (content.getType().equals(Content.Type.IMAGE)) {
 					System.out.println("--------------------------");
 					System.out.println("IMAGE");
 					ImageTransformerFilter rotate = new ImageTransformerFilter();
@@ -190,7 +207,8 @@ public class POP3Client extends Client {
 				} else {
 					System.out.println("--------------------------");
 					System.out.println("OTHERRRR");
-					System.out.println(((OtherContent) content).getContentTypeHeader());
+					System.out.println(((OtherContent) content)
+							.getContentTypeHeader());
 				}
 			}
 		} catch (Exception e) {
