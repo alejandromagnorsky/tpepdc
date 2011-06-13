@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.codec.net.QuotedPrintableCodec;
+
 import model.Message;
 import model.MessageParser;
 import filter.ImageTransformerFilter;
@@ -54,6 +56,7 @@ public class POP3Client extends Client {
 					System.out.println("--------------------------");
 					System.out.println("TEXT");
 					System.out.println(((TextContent) content).getText());
+					System.out.println("--------------------------");
 				} else if (content.getType().equals(Content.Type.IMAGE)) {
 					System.out.println("--------------------------");
 					System.out.println("IMAGE");

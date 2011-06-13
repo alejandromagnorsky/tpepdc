@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,10 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import net.iharder.Base64;
+import org.apache.commons.codec.CharEncoding;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
+
 import proxy.Content;
 import proxy.ImageContent;
 import proxy.OtherContent;
@@ -89,7 +93,8 @@ public class MessageParser {
 	private String putContent(Message message, String header, String boundary, StringBuilder bodyBuilder) throws IOException{
 		Content content;
 		String response, contentTypeHeader = header.substring(header.indexOf(':') + 2);
-		String type = contentTypeHeader.substring(0, contentTypeHeader.indexOf('/'));			
+		String type = contentTypeHeader.substring(0, contentTypeHeader.indexOf('/'));
+		String encoding = null;
 		if (type.equals("text")) 
 			content = new TextContent(contentTypeHeader);
 		else if (type.equals("image"))
@@ -105,10 +110,15 @@ public class MessageParser {
 			// because if the message is a simple content, it has the
 			// content's headers in the message's headers
 			response = header;
-			do
+			do {
 				bodyBuilder.append(response + "\n");
-			while ((response = readResponseLine()).length() != 0);
+				if(response.contains("Content-Transfer-Encoding:"))
+					encoding = response.substring(response.indexOf(":")+2);
+			} while ((response = readResponseLine()).length() != 0);
 			bodyBuilder.append(response + "\n");
+		} else {
+			if(message.getHeaders().get("Content-Transfer-Encoding") != null)
+				encoding = message.getHeaders().get("Content-Transfer-Encoding").get(0);
 		}
 		
 		// Put context's data in contentText
@@ -116,18 +126,22 @@ public class MessageParser {
 		if(!boundary.isEmpty())
 			while (!(response = readResponseLine()).contains("--" + boundary)) {
 				bodyBuilder.append(response + "\n");
-				contentText.append(response);
+				contentText.append(response + "\n");
 			}
 		else
 			while (!(response = readResponseLine()).equals(".")) {
 				bodyBuilder.append(response + "\n");
-				contentText.append(response);
+				contentText.append(response + "\n");
 			}
 		
-		if (type.equals("text"))
+		if (type.equals("text")){
+			if(encoding != null && encoding.equals("quoted-printable"))
+				((TextContent) content).setText(quotedPrintableToText(contentText.toString()));
+			else
 				((TextContent) content).setText(contentText.toString());
-		else if (type.equals("image"))
-			((ImageContent) content).setImage(base64ToImage(contentText.toString()));
+		} else if (type.equals("image"))
+			if(encoding != null && encoding.equals("base64"))
+				((ImageContent) content).setImage(base64ToImage(contentText.toString()));
 			
 		// Add content to message
 		message.addContent(content);
@@ -165,8 +179,30 @@ public class MessageParser {
 
 	private BufferedImage base64ToImage(String base64String) {
 		try {
-			byte[] imageInBytes = Base64.decode(base64String);
+			byte[] imageInBytes = Base64.decodeBase64(base64String);
 			return ImageIO.read(new ByteArrayInputStream(imageInBytes));
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private String quotedPrintableToText(String quotedPrintableString){
+		try {
+			quotedPrintableString = quotedPrintableString.replaceAll("=\n", "-\n");
+			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+			return codec.decode(quotedPrintableString);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private String textToQuotedPrintable(String text){
+		try {
+			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+			String ans = codec.encode(text);
+			ans = ans.replaceAll("-=0A", "=\n");
+			ans = ans.replaceAll("=0A", "\n");
+			return ans;
 		} catch (Exception e) {
 			return null;
 		}
