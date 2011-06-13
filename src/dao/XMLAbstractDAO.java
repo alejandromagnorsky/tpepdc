@@ -18,7 +18,10 @@ import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
+
+import proxy.POP3Proxy;
 
 public abstract class XMLAbstractDAO<T> {
 
@@ -36,9 +39,7 @@ public abstract class XMLAbstractDAO<T> {
 		try {
 			marshal(dataFilename);
 		} catch (Exception e) {
-			System.err.println("Error saving configuration file.");
-			System.out.println("--------------------------------");
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error saving configuration file");
 		}
 	}
 
@@ -79,7 +80,7 @@ public abstract class XMLAbstractDAO<T> {
 			try {
 				schema = sf.newSchema(schemaFile);
 			} catch (SAXException saxe) {
-				System.err.println("Error loading schema file");
+				POP3Proxy.logger.fatal("Error loading schema file");
 			}
 
 			u.setSchema(schema);
@@ -92,15 +93,14 @@ public abstract class XMLAbstractDAO<T> {
 		} finally {
 			if (vec != null && vec.hasEvents()) {
 
-				System.out.println("Error validating XML file.");
-				System.out.println("--------------------------");
-
+				POP3Proxy.logger.fatal("Error validating XML file");
+				
 				for (ValidationEvent ve : vec.getEvents()) {
 					String msg = ve.getMessage();
 					ValidationEventLocator vel = ve.getLocator();
 					int line = vel.getLineNumber();
 					int column = vel.getColumnNumber();
-					System.err.println("Line: " + line + ", Column: " + column
+					POP3Proxy.logger.fatal("Line: " + line + ", Column: " + column
 							+ ": " + msg);
 				}
 			}

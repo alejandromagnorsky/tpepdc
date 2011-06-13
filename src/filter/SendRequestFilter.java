@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import proxy.POP3Client;
+import proxy.POP3Proxy;
 
 // Final entry in filter chain
 public class SendRequestFilter extends RequestFilter {
@@ -15,7 +16,7 @@ public class SendRequestFilter extends RequestFilter {
 			try {
 				return client.send(request.getRequestString());
 			} catch (IOException e) {
-				e.printStackTrace();
+				POP3Proxy.logger.fatal("Error sending message to POP3 server");
 			}
 
 		return "";

@@ -7,7 +7,7 @@ import proxy.POP3Client;
 public abstract class RequestFilter {
 
 	private RequestFilter next = null;
-
+	
 	public void setNext(RequestFilter next) {
 		this.next = next;
 	}

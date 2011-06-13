@@ -8,6 +8,7 @@ import model.AccessControl;
 import model.User;
 import proxy.POP3Client;
 import proxy.POP3ConnectionHandler;
+import proxy.POP3Proxy;
 import dao.XMLSettingsDAO;
 
 public class AccessRequestFilter extends RequestFilter {
@@ -23,7 +24,7 @@ public class AccessRequestFilter extends RequestFilter {
 		try {
 			loader.load();
 		} catch (Exception e) {
-			// TODO
+			POP3Proxy.logger.fatal("Error loading Settings");
 		}
 		this.ipBlackList = loader.getBlacklistIP();
 		this.userSocket = userSocket;

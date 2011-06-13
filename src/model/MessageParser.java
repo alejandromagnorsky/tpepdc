@@ -12,20 +12,17 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import net.iharder.Base64;
-
-import org.apache.log4j.Logger;
-
 import proxy.Content;
 import proxy.ImageContent;
 import proxy.OtherContent;
+import proxy.POP3Proxy;
 import proxy.TextContent;
 
 public class MessageParser {
 
 	private int id;
 	private BufferedReader reader;
-	private Logger logger = Logger.getLogger("logger");
-	
+		
 	public MessageParser(BufferedReader reader) {
 		this.id = 0;
 		this.reader = reader;
@@ -33,7 +30,7 @@ public class MessageParser {
 	
 	private String readResponseLine() throws IOException {
 		String response = reader.readLine();
-		logger.info("[in]: " + response);
+		POP3Proxy.logger.info("[in]: " + response);
 		return response;
 	}
 

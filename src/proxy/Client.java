@@ -22,7 +22,7 @@ public abstract class Client extends SocketUser {
 		// Enable auto-flush after println
 		writer = new PrintWriter(new OutputStreamWriter(socket
 				.getOutputStream()), true);
-		logger.info("Connected to the host " + socket.getInetAddress());
+		POP3Proxy.logger.info("Connected to the host " + socket.getInetAddress());
 	}
 
 }

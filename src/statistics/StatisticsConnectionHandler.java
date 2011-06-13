@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import model.User;
+import proxy.POP3Proxy;
 import proxy.ServiceConnectionHandler;
 import dao.XMLSettingsDAO;
 
@@ -17,7 +18,7 @@ public class StatisticsConnectionHandler extends ServiceConnectionHandler {
 		try {
 			loader.load();
 		} catch (Exception e) {
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error loading Settings");
 		}
 	}
 

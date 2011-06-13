@@ -7,7 +7,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import proxy.Content;
-import proxy.Content.Type;
 
 public class Message {
 
