@@ -3,35 +3,23 @@ package statistics;
 import java.io.IOException;
 import java.net.Socket;
 
+import dao.XMLSettingsDAO;
+
 import proxy.ConnectionHandler;
 
 import model.User;
 
 public class StatisticsConnectionHandler extends ConnectionHandler {
 
+	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml", "src/settings.xsd");
+
 	public StatisticsConnectionHandler(Socket socket) {
 		super(socket);
-
-		User user1 = new User("USER1");
-		User user2 = new User("USER2");
-
-		Statistics.addAccess(user1);
-		Statistics.addAccess(user1);
-		Statistics.addAccess(user2);
-		Statistics.addAccess(user1);
-		Statistics.addAccess(user1);
-		Statistics.addAccess(user2);
-		Statistics.addAccess(user1);
-		Statistics.addAccess(user2);
-		Statistics.addAccess(user2);
-		Statistics.addBytesTransfered(user1, (long) 1000);
-		Statistics.addBytesTransfered(user1, (long) 1000);
-		Statistics.addBytesTransfered(user2, (long) 5000);
-		Statistics.addRed(user2);
-		Statistics.addRed(user2);
-		Statistics.addRed(user2);
-		Statistics.addRed(user1);
-		Statistics.addDeleted(user2);
+		try {
+			loader.load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void run() {
@@ -43,10 +31,15 @@ public class StatisticsConnectionHandler extends ConnectionHandler {
 
 				if (request.startsWith("USER ")) {
 					// TODO Obtener al user del XML
-					user = new User(request
-							.substring(request.lastIndexOf(' ') + 1));
-					response = "OK. Now the statistics are for the user "
-							+ user.getName();
+					String username = request.substring(request
+							.lastIndexOf(' ') + 1);
+					user = loader.getUser(username);
+					if (user == null)
+						response = "ERROR. User " + username
+								+ " doesn't exists";
+					else
+						response = "OK. Now the statistics are for the user "
+								+ user.getName();
 				} else if (request.equals("PUBLIC")) {
 					user = null;
 					response = "OK. Now the statistics are public";
@@ -92,5 +85,4 @@ public class StatisticsConnectionHandler extends ConnectionHandler {
 		}
 
 	}
-
 }
