@@ -4,16 +4,16 @@
         <erase-settings>
             <date>
                 <from>2001-01-01</from>
-                <to>2001-01-01</to>
+                <to>2021-01-01</to>
             </date>
             <sender>sender</sender>
-            <header-pattern>header-pattern</header-pattern>
+            <header-pattern>From a*</header-pattern>
             <content-type>content-type</content-type>
             <size-bytes>
                 <from>0</from>
-                <to>500</to>
+                <to>50400</to>
             </size-bytes>
-            <structure>structure</structure>
+            <structure>ATTACH</structure>
         </erase-settings>
         <transform-settings leet="true" rotate="true"/>
         <schedule>

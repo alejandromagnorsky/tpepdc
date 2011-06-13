@@ -17,7 +17,7 @@ public class EraseSettings {
 
 	public String toString() {
 		String out = "";
-
+		
 		if (date.getFrom() != null)
 			out += "Date from: " + date.getFrom() + ", ";
 		if (date.getTo() != null)

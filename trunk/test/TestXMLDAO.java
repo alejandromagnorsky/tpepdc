@@ -13,6 +13,7 @@ public class TestXMLDAO extends TestCase {
 
 	@Test
 	public void testLoginSaveLoad() {
+
 		XMLLoginLogDAO dao = new XMLLoginLogDAO("test_loginLog.xml",
 				"src/loginLog.xsd");
 

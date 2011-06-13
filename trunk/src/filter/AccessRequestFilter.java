@@ -44,7 +44,10 @@ public class AccessRequestFilter extends RequestFilter {
 
 			if (request.contains("USER ") && !client.isConnected()) {
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
-				user = loader.getUser(request.substring(request.lastIndexOf(' ') + 1));
+
+				System.out.println("LEVANTANDO USER");
+				user = loader.getUser(request.substring(request
+						.lastIndexOf(' ') + 1));
 
 				if (this.user != null && user.getSettings() != null) {
 					String userServer = user.getSettings().getServer();
@@ -58,7 +61,7 @@ public class AccessRequestFilter extends RequestFilter {
 
 				if (!accessDenied) {
 					client.connect(server);
-					
+
 					// Inject user for first login
 					r.setUser(user);
 					return chain.doFilter(r, responseWriter, client);
@@ -84,7 +87,7 @@ public class AccessRequestFilter extends RequestFilter {
 
 			// Inject user
 			r.setUser(user);
-			
+
 			// If nothing strange happens, continue
 			return chain.doFilter(r, responseWriter, client);
 
