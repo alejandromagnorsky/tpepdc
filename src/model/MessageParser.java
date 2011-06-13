@@ -26,13 +26,13 @@ public class MessageParser {
 	private int id;
 	private BufferedReader reader;
 	private StringBuilder skeleton;
-		
+
 	public MessageParser(BufferedReader reader) {
 		this.id = 0;
 		this.reader = reader;
 		this.skeleton = new StringBuilder();
 	}
-	
+
 	private String readResponseLine() throws IOException {
 		String response = reader.readLine();
 		POP3Proxy.logger.info("[in]: " + response);
@@ -76,59 +76,64 @@ public class MessageParser {
 
 	private void processBody(Message message) throws IOException {
 		String response, contentTypeHeader, boundary = "";
-		contentTypeHeader = "Content-Type: "+message.getHeaders().get("Content-Type").get(0);
+		contentTypeHeader = "Content-Type: "
+				+ message.getHeaders().get("Content-Type").get(0);
 		if (contentTypeHeader.contains("multipart"))
 			boundary = getBoundary(contentTypeHeader);
 
 		StringBuilder bodyBuilder = new StringBuilder();
-		if(boundary.isEmpty())
+		if (boundary.isEmpty())
 			// Single content
 			putContent(message, contentTypeHeader, boundary, bodyBuilder);
 		else {
 			// Multipart content
 			do
 				processContent(message, boundary, bodyBuilder);
-			while(!(response = readResponseLine()).equals("."));
+			while (!(response = readResponseLine()).equals("."));
 		}
 		message.setBody(bodyBuilder.toString());
 		message.setBodySkeleton(skeleton.toString());
 	}
 
-	private String putContent(Message message, String header, String boundary, StringBuilder bodyBuilder) throws IOException{
+	private String putContent(Message message, String header, String boundary,
+			StringBuilder bodyBuilder) throws IOException {
 		Content content;
-		String response, contentTypeHeader = header.substring(header.indexOf(':') + 2);
-		String type = contentTypeHeader.substring(0, contentTypeHeader.indexOf('/'));
+		String response, contentTypeHeader = header.substring(header
+				.indexOf(':') + 2);
+		String type = contentTypeHeader.substring(0,
+				contentTypeHeader.indexOf('/'));
 		String encoding = null;
-		if (type.equals("text")) 
+		if (type.equals("text"))
 			content = new TextContent(contentTypeHeader);
 		else if (type.equals("image"))
 			content = new ImageContent(contentTypeHeader);
 		else
 			content = new OtherContent(contentTypeHeader);
-		
+
 		id++;
 		skeleton.append(">>" + id + "<<" + "\n");
 		content.setId(id);
-		
-		if(!boundary.isEmpty()){
+
+		if (!boundary.isEmpty()) {
 			// Read content's headers if the message use multipart
 			// because if the message is a simple content, it has the
 			// content's headers in the message's headers
 			response = header;
 			do {
 				bodyBuilder.append(response + "\n");
-				if(response.contains("Content-Transfer-Encoding:"))
-					encoding = response.substring(response.indexOf(":")+2);
+				if (response.contains("Content-Transfer-Encoding:"))
+					encoding = response.substring(response.indexOf(":") + 2);
 			} while ((response = readResponseLine()).length() != 0);
 			bodyBuilder.append(response + "\n");
 		} else {
-			if(message.getHeaders().get("Content-Transfer-Encoding") != null)
-				encoding = message.getHeaders().get("Content-Transfer-Encoding").get(0);
+			if (message.getHeaders().get("Content-Transfer-Encoding") != null)
+				encoding = message.getHeaders()
+						.get("Content-Transfer-Encoding").get(0);
 		}
-		
+
 		// Put context's data in contentText
 		StringBuilder contentText = new StringBuilder();
-		if(!boundary.isEmpty())
+		if (!boundary.isEmpty())
 			while (!(response = readResponseLine()).contains("--" + boundary)) {
 				bodyBuilder.append(response + "\n");
 				contentText.append(response + "\n");
@@ -138,30 +143,32 @@ public class MessageParser {
 				bodyBuilder.append(response + "\n");
 				contentText.append(response + "\n");
 			}
-		
-		if (type.equals("text")){
-			if(encoding != null && encoding.equals("quoted-printable"))
-				((TextContent) content).setText(decodeQuotedPrintable(contentText.toString()));
+
+		if (type.equals("text")) {
+			if (encoding != null && encoding.equals("quoted-printable"))
+				((TextContent) content)
+						.setText(decodeQuotedPrintable(contentText.toString()));
 			else
 				((TextContent) content).setText(contentText.toString());
 		} else if (type.equals("image"))
-			if(encoding != null && encoding.equals("base64"))
-				((ImageContent) content).setImage(base64ToImage(contentText.toString()));
-			
+			if (encoding != null && encoding.equals("base64"))
+				((ImageContent) content).setImage(base64ToImage(contentText
+						.toString()));
+
 		// Add content to message
 		message.addContent(content);
 		return response;
 	}
-	
+
 	private void processContent(Message message, String boundary,
 			StringBuilder bodyBuilder) throws IOException {
 		String response = readResponseLine();
-		
+
 		if (response.contains("--" + boundary)) {
 			response = readResponseLine();
 			skeleton.append(response + "\n");
 		}
-		
+
 		if (response.contains("Content-Type:")) {
 			if (response.contains("multipart")) {
 				String subBoundary = getBoundary(response);
@@ -187,6 +194,37 @@ public class MessageParser {
 		return boundary;
 	}
 
+	// Format: png,jpg etc
+	private String imageToString(BufferedImage image, String format) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(image, format, baos);
+			byte[] buf = baos.toByteArray();
+			return byteArrayToString(buf);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private String byteArrayToString(byte[] buf) {
+		char[] cbuf = new char[buf.length];
+
+		for (int i = 0; i < buf.length; i++)
+			cbuf[i] = (char) buf[i];
+		return new String(cbuf, 0, cbuf.length);
+	}
+
+	private String encodeBase64(String plain) {
+		return Base64.encodeBase64String(plain.getBytes());
+	}
+
+	private String decodeBase64(String base64String) {
+		byte[] buf = Base64.decodeBase64(base64String);
+
+		return byteArrayToString(buf);
+	}
+
 	private BufferedImage base64ToImage(String base64String) {
 		try {
 			byte[] imageInBytes = Base64.decodeBase64(base64String);
@@ -195,8 +233,8 @@ public class MessageParser {
 			return null;
 		}
 	}
-	
-	private String decodeQuotedPrintable(String quotedPrintable){
+
+	private String decodeQuotedPrintable(String quotedPrintable) {
 		try {
 			quotedPrintable = quotedPrintable.replaceAll("=\n", "-\n");
 			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
@@ -205,8 +243,8 @@ public class MessageParser {
 			return null;
 		}
 	}
-	
-	private String encodeQuotedPrintable(String text){
+
+	private String encodeQuotedPrintable(String text) {
 		try {
 			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
 			String ans = codec.encode(text);
