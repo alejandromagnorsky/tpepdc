@@ -1,49 +1,19 @@
-Delivered-To: alejandromagnorsky@gmail.com
-Received: by 10.220.97.146 with SMTP id l18cs48274vcn;
-        Sat, 4 Jun 2011 17:43:43 -0700 (PDT)
-Return-Path: <jimenabpose@gmail.com>
-Received-SPF: pass (google.com: domain of jimenabpose@gmail.com designates 10.204.136.213 as permitted sender) client-ip=10.204.136.213;
-Authentication-Results: mr.google.com; spf=pass (google.com: domain of jimenabpose@gmail.com designates 10.204.136.213 as permitted sender) smtp.mail=jimenabpose@gmail.com; dkim=pass header.i=jimenabpose@gmail.com
-Received: from mr.google.com ([10.204.136.213])
-        by 10.204.136.213 with SMTP id s21mr3467370bkt.0.1307234622160 (num_hops = 1);
-        Sat, 04 Jun 2011 17:43:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=gamma;
-        h=domainkey-signature:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:content-type;
-        bh=/LfejqC91oHZRTB1QkcfDTYZk+Kp1qdbEKPwUhGzpnQ=;
-        b=bZGDdzTNm4Erg7kRsPmwlmCW/IalPf2JRcqecneM+OJowZj+qiU8sJhNrDak9rEKlw
-         rEIjdohXugl9Ghv+mMiTV2UMVg1iSlOErVla3rPW9+MwFifgLTY4P5fFOU5T+dX0xkUE
-         wU4rVc9kAeKKuI/JWLtN7+NjsJGS5OrFQnz+0=
-DomainKey-Signature: a=rsa-sha1; c=nofws;
-        d=gmail.com; s=gamma;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :content-type;
-        b=hMCIJHtpZwpqTHwSsw8ZVUa4OFZ1QLLuK5zJEh4RDSBQ2E1FZBGyTc94KZnBSFiSM4
-         i5dQc1Op8j+iQe+7VBKR6SkP8EymvwOMTZ7+aCY/cRsjyvp2q54pKjKSm+FOMK4qX6kI
-         6+nrKstEnbmAtP4WIIEB7f33uwaSdCcva27LQ=
-Received: by 10.204.136.213 with SMTP id s21mr3467370bkt.0.1307234622136; Sat,
- 04 Jun 2011 17:43:42 -0700 (PDT)
+                                                                                                                                                                                                                                                               
 MIME-Version: 1.0
-Received: by 10.204.70.194 with HTTP; Sat, 4 Jun 2011 17:43:22 -0700 (PDT)
-In-Reply-To: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
-References: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
-From: Jimena Pose <jimenabpose@gmail.com>
-Date: Sat, 4 Jun 2011 21:43:22 -0300
-Message-ID: <BANLkTikm9VKSJ-_WGRE9BDXxE_dN8hEFbg@mail.gmail.com>
-Subject: Fwd: prueba pdc
-To: Ale Magnorsky ITBA <alejandromagnorsky@gmail.com>
-Content-Type: multipart/related; boundary=0015175cda644a63a104a4ec4772
-
---0015175cda644a63a104a4ec4772
-Content-Type: text/plain; charset=ISO-8859-1
-
----------- Forwarded message ----------
-From: Jimena Pose <jimenabpose@gmail.com>
-Date: 2011/6/4
+Received: by 10.204.70.194 with HTTP; Sat, 4 Jun 2011 12:42:00 -0700 (PDT)
+Date: Sat, 4 Jun 2011 16:42:00 -0300
+Delivered-To: jimenabpose@gmail.com
+Message-ID: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
 Subject: prueba pdc
+From: Jimena Pose <jimenabpose@gmail.com>
 To: Jimena Pose <jimenabpose@gmail.com>
+Content-Type: multipart/related; boundary=485b3979da0e60253504a4e810cd
 
+--485b3979da0e60253504a4e810cd
+Content-Type: multipart/alternative; boundary=485b3979da0e60253304a4e810cc
+
+--485b3979da0e60253304a4e810cc
+Content-Type: text/plain; charset=ISO-8859-1
 
 asdfasfdasdfasfd
 
@@ -60,18 +30,14 @@ asfasdfsdf
 
 asdfasdfasdf
 
---0015175cda644a63a104a4ec4772
+--485b3979da0e60253304a4e810cc
 Content-Type: text/html; charset=ISO-8859-1
 
-<br><br><div class="gmail_quote">---------- Forwarded message ----------<br>From: <b class="gmail_sendername">Jimena Pose</b> <span dir="ltr">&lt;<a href="mailto:jimenabpose@gmail.com">jimenabpose@gmail.com</a>&gt;</span><br>
-
-Date: 2011/6/4<br>Subject: prueba pdc<br>To: Jimena Pose &lt;<a href="mailto:jimenabpose@gmail.com">jimenabpose@gmail.com</a>&gt;<br><br><br>asdfasfdasdfasfd<div><br></div><div>&lt;html&gt;</div><div>&lt;head&gt;</div><div>
-
-&lt;/head&gt;</div><div>&lt;body&gt;</div><div>&lt;h1&gt; holaaaa!!! &lt;/h1&gt;</div><div>&lt;/body&gt;</div><div>&lt;/html&gt;</div><div>asfasdfsdf</div>
+asdfasfdasdfasfd<div><br></div><div>&lt;html&gt;</div><div>&lt;head&gt;</div><div>&lt;/head&gt;</div><div>&lt;body&gt;</div><div>&lt;h1&gt; holaaaa!!! &lt;/h1&gt;</div><div>&lt;/body&gt;</div><div>&lt;/html&gt;</div><div>asfasdfsdf</div>
 <div><br></div><div><img src="cid:ii_1305c2cb17e34b40" alt="image.png" title="image.png"><br></div><div><br></div><div>asdfasdfasdf</div><div><br></div>
-</div><br>
 
---0015175cda644a63a104a4ec4772
+--485b3979da0e60253304a4e810cc--
+--485b3979da0e60253504a4e810cd
 Content-Type: image/png; name="image.png"
 Content-Transfer-Encoding: base64
 Content-ID: <ii_1305c2cb17e34b40>
@@ -485,5 +451,5 @@ gov1bqTV+GKbkKxjlQLGrwdhul3bEG+Isz9cxdHIuVEHQw0+eBF5U6tRne7/14LME6V9Yy5I2e1t
 8JywRFk9ub0dg1+DaN46JC/zgknxJ3CJMENG/gpSSLATpKtW0ndfGL+enP0Ekz417ZLdyhuVrPet
 D/8H/picBt9hbX73JgEFBgYiNze3A4hCoRBZWVkd2p7lB429drT+D7oMBqX5ItSnAAAAAElFTkSu
 QmCC
---0015175cda644a63a104a4ec4772--
+--485b3979da0e60253504a4e810cd--
 .
