@@ -25,10 +25,12 @@ public class MessageParser {
 
 	private int id;
 	private BufferedReader reader;
+	private StringBuilder skeleton;
 		
 	public MessageParser(BufferedReader reader) {
 		this.id = 0;
 		this.reader = reader;
+		this.skeleton = new StringBuilder();
 	}
 	
 	private String readResponseLine() throws IOException {
@@ -40,9 +42,11 @@ public class MessageParser {
 	public Message parseMessage() throws IOException {
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
 		String headerName, headerValue, response;
+		StringBuilder mainHeader = new StringBuilder();
 
 		// Process headers
 		while ((response = readResponseLine()).length() != 0) {
+			mainHeader.append(response + "\n");
 			if (response.startsWith("\t"))
 				continue;
 
@@ -65,7 +69,7 @@ public class MessageParser {
 		}
 
 		// Between the header and the body there is a \n
-		Message message = new Message(headers);
+		Message message = new Message(headers, mainHeader.toString());
 		processBody(message);
 		return message;
 	}
@@ -87,6 +91,7 @@ public class MessageParser {
 			while(!(response = readResponseLine()).equals("."));
 		}
 		message.setBody(bodyBuilder.toString());
+		message.setBodySkeleton(skeleton.toString());
 	}
 
 	private String putContent(Message message, String header, String boundary, StringBuilder bodyBuilder) throws IOException{
@@ -102,6 +107,7 @@ public class MessageParser {
 			content = new OtherContent(contentTypeHeader);
 		
 		id++;
+		skeleton.append(">>" + id + "<<" + "\n");
 		content.setId(id);
 		
 		if(!boundary.isEmpty()){
@@ -151,18 +157,23 @@ public class MessageParser {
 			StringBuilder bodyBuilder) throws IOException {
 		String response = readResponseLine();
 		
-		if (response.contains("--" + boundary)) 
+		if (response.contains("--" + boundary)) {
 			response = readResponseLine();
+			skeleton.append(response + "\n");
+		}
 		
 		if (response.contains("Content-Type:")) {
 			if (response.contains("multipart")) {
 				String subBoundary = getBoundary(response);
 				response = readResponseLine();
+				skeleton.append(response + "\n");
 				processContent(message, subBoundary, bodyBuilder);
 			} else {
 				response = putContent(message, response, boundary, bodyBuilder);
-				if (response.equals("--" + boundary + "--"))
+				if (response.equals("--" + boundary + "--")) {
+					skeleton.append(response + "\n");
 					return;
+				}
 				processContent(message, boundary, bodyBuilder);
 			}
 		}
