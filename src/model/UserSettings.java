@@ -1,6 +1,5 @@
 package model;
 
-
 public class UserSettings {
 
 	private String server;
@@ -11,18 +10,6 @@ public class UserSettings {
 	private Boolean rotate, leet;
 	private EraseSettings eraseSettings;
 
-	public String toString() {
-		String out = "";
-		if (getSchedule().getFrom() != null)
-			out += "ScheduleFrom: " + getSchedule().getFrom() / 60 + "hs, ";
-		if (getSchedule().getTo() != null)
-			out += "ScheduleTo: " + getSchedule().getTo() / 60 + "hs, ";
-		out += "Max logins: " + maxLogins + ", ";
-		out += "Transform: leet=" + leet + ", rotate=" + rotate + ", ";
-		out += "Server: " + server;
-
-		return out;
-	}
 
 	public String getServer() {
 		return server;

@@ -7,8 +7,8 @@ import java.util.List;
 import model.AccessControl;
 import model.User;
 import proxy.POP3Client;
-import proxy.POP3ConnectionHandler;
 import proxy.POP3Proxy;
+import proxy.handler.POP3ConnectionHandler;
 import dao.XMLSettingsDAO;
 
 public class AccessRequestFilter extends RequestFilter {

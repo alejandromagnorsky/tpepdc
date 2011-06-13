@@ -10,6 +10,11 @@ public class Range<T> {
 		this.to = to;
 	}
 
+	// To speedify things
+	public boolean hasValues() {
+		return from != null || to != null;
+	}
+
 	public Range() {
 	}
 

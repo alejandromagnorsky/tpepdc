@@ -41,7 +41,6 @@ public class EraseRequestFilter extends RequestFilter {
 					return "";
 			}
 		}
-
 		return chain.doFilter(r, responseWriter, client);
 	}
 
@@ -56,9 +55,6 @@ public class EraseRequestFilter extends RequestFilter {
 				Message message = client.getMessage();
 
 				Map<String, List<String>> headers = message.getHeaders();
-
-				System.err.println(response);
-				System.err.println(headers.get("Date"));
 
 				if (structureMatches(user, message)) {
 					writer.println("-ERR. You are not allowed to delete this message due to message structure restrictions.");
@@ -103,9 +99,7 @@ public class EraseRequestFilter extends RequestFilter {
 				if (c.getType() != Content.Type.TEXT)
 					return true;
 		} else if (structure.contains("SENDERCOUNT_G")) {
-
 			String tmp = structure.substring(structure.indexOf(" ") + 1);
-
 			Integer count = Integer.valueOf(tmp);
 			if (count != null) {
 				List<String> senders = message.getHeaders().get("From");
@@ -113,14 +107,12 @@ public class EraseRequestFilter extends RequestFilter {
 					return true;
 			}
 		}
-
 		return false;
 	}
 
 	private boolean headerMatches(User user, Map<String, List<String>> headers) {
 		List<String> patternList = user.getSettings().getEraseSettings()
 				.getHeaderPattern();
-
 		for (String pattern : patternList) {
 
 			int low = pattern.indexOf(" ");
@@ -136,7 +128,6 @@ public class EraseRequestFilter extends RequestFilter {
 
 	private boolean containsRestrictedContent(User user,
 			SortedSet<Content> contentSet) {
-
 		List<String> contentList = user.getSettings().getEraseSettings()
 				.getContentTypes();
 
@@ -145,7 +136,6 @@ public class EraseRequestFilter extends RequestFilter {
 			if (contentList.contains(header))
 				return true;
 		}
-
 		return false;
 	}
 
@@ -167,7 +157,6 @@ public class EraseRequestFilter extends RequestFilter {
 			else if (range.getTo() != null && range.getTo().isBefore(date))
 				return true;
 		}
-
 		return false;
 	}
 
@@ -180,7 +169,8 @@ public class EraseRequestFilter extends RequestFilter {
 			Range<Integer> range = user.getSettings().getEraseSettings()
 					.getSize();
 			if (range != null
-					&& (range.getFrom() != null && range.getFrom().compareTo(size) > 0)
+					&& (range.getFrom() != null && range.getFrom().compareTo(
+							size) > 0)
 					|| (range.getTo() != null && range.getTo().compareTo(size) < 0)) {
 				return true;
 			}
@@ -189,9 +179,7 @@ public class EraseRequestFilter extends RequestFilter {
 	}
 
 	private boolean containsRestrictedSenders(User user, List<String> raw) {
-
 		EraseSettings e = user.getSettings().getEraseSettings();
-
 		for (String r : raw) {
 			int low = r.indexOf("<") + 1;
 			int high = r.indexOf(">");
@@ -199,7 +187,6 @@ public class EraseRequestFilter extends RequestFilter {
 			if (e.getSenders().contains(sender))
 				return false;
 		}
-
 		return false;
 	}
 }

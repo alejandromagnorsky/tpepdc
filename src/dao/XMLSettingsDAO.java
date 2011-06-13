@@ -200,7 +200,11 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 		for (User user : getUserList())
 			if (username.toUpperCase().equals(user.getName().toUpperCase()))
 				return user;
-		return new User(username); // default, on memory, empty user
+
+		User empty = new User(username);
+		empty.setSettings(new UserSettings());
+		empty.getSettings().setEraseSettings(new EraseSettings());
+		return empty; // default, on memory, empty user
 	}
 
 }
