@@ -6,6 +6,8 @@ import model.UserSettings;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
+import org.apache.commons.codec.binary.Base64;
+
 import dao.XMLLoginLogDAO;
 import dao.XMLSettingsDAO;
 
