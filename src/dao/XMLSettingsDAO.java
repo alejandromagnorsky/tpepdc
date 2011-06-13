@@ -195,12 +195,12 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 		for (User user : modifiedUsers)
 			saveUser(user);
 	}
-	
+
 	public User getUser(String username) {
-		for (User user: getUserList()) 
+		for (User user : getUserList())
 			if (username.toUpperCase().equals(user.getName().toUpperCase()))
 				return user;
-		return null;
+		return new User(username); // default, on memory, empty user
 	}
 
 }

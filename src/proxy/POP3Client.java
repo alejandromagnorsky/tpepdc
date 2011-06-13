@@ -38,7 +38,7 @@ public class POP3Client extends Client {
 		return Integer.parseInt(response.split(" ")[1]);
 	}
 
-	protected Message getMessage() throws IOException {
+	public Message getMessage() throws IOException {
 		MessageParser messageParser = new MessageParser(reader);
 		return messageParser.parseMessage();
 	}

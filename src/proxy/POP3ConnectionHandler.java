@@ -7,6 +7,7 @@ import java.util.List;
 
 import model.Message;
 import filter.AccessRequestFilter;
+import filter.EraseRequestFilter;
 import filter.ExternalProgramFilter;
 import filter.Filter;
 import filter.ImageTransformerFilter;
@@ -41,7 +42,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		// Prepare filter chain
 		addRequestFilter(new SendRequestFilter());
 		addRequestFilter(new StatisticsFilter());
-		//addRequestFilter(new EraseRequestFilter());
+		addRequestFilter(new EraseRequestFilter());
 
 		// Este filtro va al final, asi se ejecuta primero
 		addRequestFilter(new AccessRequestFilter(this.socket));
