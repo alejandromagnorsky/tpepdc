@@ -14,6 +14,7 @@ import filter.MessageTransformerFilter;
 import filter.Request;
 import filter.RequestFilter;
 import filter.SendRequestFilter;
+import filter.StatisticsFilter;
 
 public class POP3ConnectionHandler extends ConnectionHandler {
 
@@ -39,7 +40,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 		// Prepare filter chain
 		addRequestFilter(new SendRequestFilter());
-		addRequestFilter(new EraseRequestFilter());
+		addRequestFilter(new StatisticsFilter());
+		//addRequestFilter(new EraseRequestFilter());
 
 		// Este filtro va al final, asi se ejecuta primero
 		addRequestFilter(new AccessRequestFilter(this.socket));
@@ -49,6 +51,9 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 			do {
 				request = reader.readLine();
+				if (!request.toUpperCase().contains("PASS"))
+					request = request.toUpperCase();
+				
 				if (request != null && !request.isEmpty()) {
 					response = filterChain.doFilter(new Request(null, request),
 							writer, POP3client);

@@ -29,16 +29,6 @@ public class AccessRequestFilter extends RequestFilter {
 		this.userSocket = userSocket;
 	}
 
-	private void loadUser(String username) {
-		List<User> users = loader.getUserList();
-		for (User u : users) {
-			if (username.toUpperCase().equals(u.getName().toUpperCase())) {
-				this.user = u;
-				return;
-			}
-		}
-	}
-
 	@Override
 	protected String apply(Request r, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
@@ -51,12 +41,9 @@ public class AccessRequestFilter extends RequestFilter {
 			String ip = userSocket.getInetAddress().toString().substring(1);
 			boolean accessDenied = ipIsBlacklisted(responseWriter, ip);
 
-			if (!request.toUpperCase().contains("PASS"))
-				request = request.toUpperCase();
-
 			if (request.contains("USER ") && !client.isConnected()) {
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
-				loadUser(request.substring(request.lastIndexOf(' ') + 1));
+				user = loader.getUser(request.substring(request.lastIndexOf(' ') + 1));
 
 				if (this.user != null && user.getSettings() != null) {
 					String userServer = user.getSettings().getServer();
