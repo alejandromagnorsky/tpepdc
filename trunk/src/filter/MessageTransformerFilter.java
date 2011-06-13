@@ -1,4 +1,6 @@
 package filter;
+import proxy.Content;
+import proxy.TextContent;
 import model.Message;
 
 
@@ -6,8 +8,12 @@ public class MessageTransformerFilter implements Filter {
 
 	public void apply(Message message) {
 		
-		//TODO falta filtrar por tipo de body, depende de como dejemos el message
-		l33t(message.getBody());
+		for (Content c : message.getContents()) {
+			if (c.getType().equals(Content.Type.TEXT) && c.getContentTypeHeader().contains("text/plain")) {
+				String leet = l33t(((TextContent)c).getText());
+				((TextContent)c).setText(leet);
+			}
+		}
 	}
 	
 	public String l33t(String message) {
