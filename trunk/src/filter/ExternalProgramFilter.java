@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import proxy.POP3Proxy;
+
 import model.Message;
 
 
@@ -33,15 +35,14 @@ public class ExternalProgramFilter implements Filter{
 			
 			int code = process.waitFor();
 			if(code != 0)
-				throw new RuntimeException("Error ejecutando la aplicacion "+path);
+				POP3Proxy.logger.fatal("Error executing the external program "+path);
 			
 			reader.close();
 			writer.close();
 			process.destroy();
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error executing the external program "+path);
 		}
 		
 	}

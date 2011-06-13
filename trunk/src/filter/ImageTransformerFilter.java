@@ -10,6 +10,7 @@ import model.Message;
 
 import proxy.Content;
 import proxy.ImageContent;
+import proxy.POP3Proxy;
 
 
 
@@ -19,7 +20,7 @@ public class ImageTransformerFilter implements Filter {
 		for (Content c : message.getContents()) {
 			if (c.getType().equals(Content.Type.IMAGE)) {
 
-				System.out.println(c.getContentTypeHeader());
+				POP3Proxy.logger.info(c.getContentTypeHeader());
 				ImageContent iContent = (ImageContent) c;
 
 				BufferedImage image = iContent.getImage();

@@ -17,7 +17,7 @@ public abstract class ConnectionHandler extends SocketUser implements Runnable {
 			this.writer = new PrintWriter(new OutputStreamWriter(socket
 					.getOutputStream()), true);
 		} catch (IOException e) {
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error creating the reader and the writer from the socket");
 		}
 	}
 

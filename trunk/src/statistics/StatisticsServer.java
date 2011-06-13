@@ -5,6 +5,8 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import proxy.POP3Proxy;
+
 
 public class StatisticsServer implements Runnable {
 
@@ -23,8 +25,7 @@ public class StatisticsServer implements Runnable {
 				thread.start();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error connecting Statistics Server");
 		}
 		
 	}

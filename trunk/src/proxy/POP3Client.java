@@ -23,12 +23,12 @@ public class POP3Client extends Client {
 
 	protected String readResponseLine() throws IOException {
 		String response = reader.readLine();
-		logger.info("[in]: " + response);
+		POP3Proxy.logger.info("[in]: " + response);
 		return response;
 	}
 
 	public String send(String command) throws IOException {
-		logger.info("[out]: " + command);
+		POP3Proxy.logger.info("[out]: " + command);
 		writer.println(command);
 		return readResponseLine();
 	}

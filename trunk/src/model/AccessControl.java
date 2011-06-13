@@ -1,14 +1,14 @@
 package model;
 import java.util.List;
 
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import proxy.POP3Proxy;
 import dao.XMLLoginLogDAO;
 
 public final class AccessControl {
-
+	
 	public static boolean hourIsOutOfRange(User user) {
 		Range<Integer> range = user.getSettings().getSchedule();
 		int from = range.getFrom();
@@ -36,7 +36,7 @@ public final class AccessControl {
 		try {
 			dao.load();
 		} catch (Exception e) {
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error loading Logins");
 		}
 		int qty = dao.getUserLogins(user, today);
 

@@ -17,7 +17,7 @@ import statistics.StatisticsServer;
 public class POP3Proxy {
 
 	private static int POP3_PORT = 9999;
-	private static Logger logger = Logger.getLogger("logger");
+	public static Logger logger = Logger.getLogger("logger");
 	
 	public static void main(String args[]) {
 		PropertyConfigurator.configure("resources/log4j.properties");
@@ -37,8 +37,7 @@ public class POP3Proxy {
 				thread.start();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.fatal("Error connecting POP3 proxy");
 		}
 	}
 

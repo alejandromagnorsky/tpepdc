@@ -12,7 +12,6 @@ public class StatisticsFilter extends RequestFilter {
 			POP3Client client, RequestFilter chain) {
 		String response = chain.doFilter(request, responseWriter, client);
 		
-		// TODO Las estadisticas deben registrarse para aquellos usuarios no registrados?
 		if (response.contains("+OK") && request.getUser() != null) {
 			if (request.getRequestString().contains("RETR")) {
 				Statistics.addRed(request.getUser());
