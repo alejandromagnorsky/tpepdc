@@ -12,6 +12,7 @@ import org.apache.commons.codec.net.QuotedPrintableCodec;
 import model.Message;
 import model.MessageParser;
 import filter.ImageTransformerFilter;
+import filter.MessageTransformerFilter;
 
 public class POP3Client extends Client {
 
@@ -55,6 +56,8 @@ public class POP3Client extends Client {
 				if (content.getType().equals(Content.Type.TEXT)) {
 					System.out.println("--------------------------");
 					System.out.println("TEXT");
+					MessageTransformerFilter mstr = new MessageTransformerFilter();
+					mstr.apply(message);
 					System.out.println(((TextContent) content).getText());
 					System.out.println("--------------------------");
 				} else if (content.getType().equals(Content.Type.IMAGE)) {
