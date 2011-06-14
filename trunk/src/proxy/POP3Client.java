@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 import model.Content;
 import model.ImageContent;
 import model.Message;
-import model.MessageEnsambler;
+import model.MessageAssembler;
 import model.MessageParser;
 import model.OtherContent;
 import model.TextContent;
@@ -79,7 +79,7 @@ public class POP3Client extends Client {
 			}
 
 			System.out.println("**********************************");
-			MessageEnsambler me = new MessageEnsambler();
+			MessageAssembler me = new MessageAssembler();
 			System.out.println(me.getMessage(message));
 			System.out.println("**********************************");
 		} catch (Exception e) {
