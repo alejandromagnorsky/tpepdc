@@ -3,7 +3,6 @@ package model;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,12 +34,17 @@ public class MessageParser {
 
 	public Message parseMessage() throws IOException {
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
-		String headerName, headerValue, response;
+		String headerName, headerValue, response, boundary = "";
 		StringBuilder mainHeader = new StringBuilder();
 
 		// Process headers
 		while ((response = readResponseLine()).length() != 0) {
 			mainHeader.append(response + "\n");
+			if(!response.contains("Content-Type") && response.contains("boundary=")){
+				List<String> contentTypeValue = headers.get("Content-Type");
+				contentTypeValue.set(0, contentTypeValue.get(0).concat(response));
+				continue;
+			}
 			if (response.startsWith("\t"))
 				continue;
 
@@ -59,23 +63,23 @@ public class MessageParser {
 				headerValues = new ArrayList<String>();
 				headers.put(headerName, headerValues);
 			}
-			headerValues.add(headerValue);
+			headerValues.add(headerValue);				
 		}
 
 		// Between the header and the body there is a \n
 		Message message = new Message(headers, mainHeader.toString());
-		processBody(message);
+		processBody(message, boundary);
 		return message;
 	}
 
-	private void processBody(Message message) throws IOException {
-		String response, contentTypeHeader, boundary = "";
+	private void processBody(Message message, String boundary) throws IOException {
+		String response, contentTypeHeader;
+		StringBuilder bodyBuilder = new StringBuilder();
 		contentTypeHeader = "Content-Type: "
 				+ message.getHeaders().get("Content-Type").get(0);
 		if (contentTypeHeader.contains("multipart"))
-			boundary = getBoundary(contentTypeHeader);
+			boundary = getBoundary(contentTypeHeader, bodyBuilder);
 
-		StringBuilder bodyBuilder = new StringBuilder();
 		if (boundary.isEmpty())
 			// Single content
 			putContent(message, contentTypeHeader, boundary, bodyBuilder);
@@ -163,9 +167,10 @@ public class MessageParser {
 
 		if (response.contains("Content-Type:")) {
 			if (response.contains("multipart")) {
-				String subBoundary = getBoundary(response);
 				bodyBuilder.append("--" + boundary + "\n");
-				bodyBuilder.append(response + "\n\n");
+				bodyBuilder.append(response + "\n");
+				String subBoundary = getBoundary(response, bodyBuilder);
+				bodyBuilder.append("\n");
 				response = readResponseLine();
 				processContent(message, subBoundary, bodyBuilder);
 			} else {
@@ -179,8 +184,13 @@ public class MessageParser {
 		}
 	}
 
-	private String getBoundary(String line) {
-		String boundary = line.substring(line.indexOf("=") + 1);
+	private String getBoundary(String line, StringBuilder bodyBuilder) throws IOException {
+		if(line.indexOf("=") == -1){
+			System.out.println(line);
+			line = readResponseLine();
+			bodyBuilder.append(line + "\n");
+		}
+		String boundary = line.substring(line.indexOf("=") + 1);			
 		String[] tmp = boundary.split("\"");
 		if (tmp.length == 2)
 			boundary = tmp[1];
