@@ -7,9 +7,13 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import model.Content;
+import model.ImageContent;
 import model.Message;
 import model.MessageEnsambler;
 import model.MessageParser;
+import model.OtherContent;
+import model.TextContent;
 import filter.ImageTransformerFilter;
 import filter.MessageTransformerFilter;
 
@@ -48,7 +52,7 @@ public class POP3Client extends Client {
 	public static void main(String args[]) {
 		try {
 			POP3Client client = new POP3Client();
-			client.reader = new BufferedReader(new FileReader("email.txt"));
+			client.reader = new BufferedReader(new FileReader("email2.txt"));
 			Message message = client.getMessage();
 			System.out.println(message.getContents().size());
 			for (Content content : message.getContents()) {

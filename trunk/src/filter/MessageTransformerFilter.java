@@ -1,8 +1,8 @@
 package filter;
 
-import proxy.Content;
-import proxy.TextContent;
+import model.Content;
 import model.Message;
+import model.TextContent;
 
 public class MessageTransformerFilter implements Filter {
 

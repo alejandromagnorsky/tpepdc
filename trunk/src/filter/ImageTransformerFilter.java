@@ -6,10 +6,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
+import model.Content;
+import model.ImageContent;
 import model.Message;
-
-import proxy.Content;
-import proxy.ImageContent;
 import proxy.POP3Proxy;
 
 
