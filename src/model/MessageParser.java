@@ -3,7 +3,6 @@ package model;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +14,7 @@ import javax.imageio.ImageIO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 
-import proxy.Content;
-import proxy.ImageContent;
-import proxy.OtherContent;
 import proxy.POP3Proxy;
-import proxy.TextContent;
 
 public class MessageParser {
 

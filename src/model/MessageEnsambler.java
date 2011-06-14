@@ -1,13 +1,5 @@
 package model;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.log4j.chainsaw.Main;
-
-import proxy.Content;
-import proxy.OtherContent;
-import proxy.TextContent;
 
 public class MessageEnsambler {
 

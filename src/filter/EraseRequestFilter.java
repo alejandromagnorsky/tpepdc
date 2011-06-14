@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 
+import model.Content;
 import model.EraseSettings;
 import model.Message;
 import model.Range;
@@ -16,7 +17,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import proxy.Content;
 import proxy.POP3Client;
 
 public class EraseRequestFilter extends RequestFilter {

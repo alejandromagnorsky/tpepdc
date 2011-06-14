@@ -1,4 +1,4 @@
-package proxy;
+package model;
 import java.awt.image.BufferedImage;
 
 

@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import proxy.Content;
-
 public class Message {
 
 	private final Map<String, List<String>> headers;
