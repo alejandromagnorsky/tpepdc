@@ -13,7 +13,6 @@ public class Message {
 	private SortedSet<Content> orderedContent = new TreeSet<Content>(); 
 	private Map<Content.Type, List<Content>> contentMap = new HashMap<Content.Type, List<Content>>();
 	private String body;
-	private String bodySkeleton;
 
 	//TODO borrar? no se esta usando..
 //	protected Message(Map<String, List<String>> headers, String body) {
@@ -36,14 +35,6 @@ public class Message {
 	
 	public void setBody(String body) {
 		this.body = body;
-	}
-	
-	public String getBodySkeleton() {
-		return bodySkeleton;
-	}
-
-	public void setBodySkeleton(String bodySkeleton) {
-		this.bodySkeleton = bodySkeleton;
 	}
 	
 	public String getMainHeader() {

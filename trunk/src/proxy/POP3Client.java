@@ -52,7 +52,7 @@ public class POP3Client extends Client {
 	public static void main(String args[]) {
 		try {
 			POP3Client client = new POP3Client();
-			client.reader = new BufferedReader(new FileReader("email2.txt"));
+			client.reader = new BufferedReader(new FileReader("email.txt"));
 			Message message = client.getMessage();
 			System.out.println(message.getContents().size());
 			for (Content content : message.getContents()) {
@@ -80,6 +80,7 @@ public class POP3Client extends Client {
 			System.out.println("**********************************");
 			MessageEnsambler me = new MessageEnsambler();
 			System.out.println(me.getMessage(message));
+//			System.out.println(message.getBody());
 			System.out.println("**********************************");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
