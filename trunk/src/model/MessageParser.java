@@ -106,9 +106,8 @@ public class MessageParser {
 		id++;
 		content.setId(id);
 		
-		bodyBuilder.append("--" + boundary + "\n");
-
 		if (!boundary.isEmpty()) {
+			bodyBuilder.append("--" + boundary + "\n");
 			// Read content's headers if the message use multipart
 			// because if the message is a simple content, it has the
 			// content's headers in the message's headers
@@ -131,12 +130,10 @@ public class MessageParser {
 		StringBuilder contentText = new StringBuilder();
 		if (!boundary.isEmpty())
 			while (!(response = readResponseLine()).contains("--" + boundary)) {
-//				bodyBuilder.append(response + "\n");
 				contentText.append(response + "\n");
 			}
 		else
 			while (!(response = readResponseLine()).equals(".")) {
-//				bodyBuilder.append(response + "\n");
 				contentText.append(response + "\n");
 			}
 
@@ -190,10 +187,6 @@ public class MessageParser {
 		return boundary;
 	}
 
-	private String encodeBase64(String plain) {
-		return Base64.encodeBase64String(plain.getBytes());
-	}
-
 	private BufferedImage base64ToImage(String base64String) {
 		try {
 			byte[] imageInBytes = Base64.decodeBase64(base64String);
@@ -212,16 +205,9 @@ public class MessageParser {
 			return null;
 		}
 	}
-
-	private String encodeQuotedPrintable(String text) {
-		try {
-			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
-			String ans = codec.encode(text);
-			ans = ans.replaceAll("-=0A", "=\n");
-			ans = ans.replaceAll("=0A", "\n");
-			return ans;
-		} catch (Exception e) {
-			return null;
-		}
+	
+	private String decodeBase64(String base64String) {
+		byte[] buf = Base64.decodeBase64(base64String);
+		return new String(buf);
 	}
 }
