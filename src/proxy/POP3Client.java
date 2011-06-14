@@ -68,7 +68,8 @@ public class POP3Client extends Client {
 					System.out.println("IMAGE");
 					ImageTransformerFilter rotate = new ImageTransformerFilter();
 					rotate.apply(message);
-					ImageIO.write(((ImageContent) content).getImage(), "png",	new File("email.png"));				
+					ImageIO.write(((ImageContent) content).getImage(), "png",
+							new File("email.png"));
 				} else {
 					System.out.println("--------------------------");
 					System.out.println("OTHERRRR");
@@ -76,17 +77,16 @@ public class POP3Client extends Client {
 							.getContentTypeHeader());
 				}
 			}
-			
+
 			System.out.println("**********************************");
 			MessageEnsambler me = new MessageEnsambler();
 			System.out.println(me.getMessage(message));
-//			System.out.println(message.getBody());
+//			 System.out.println(message.getBody());
 			System.out.println("**********************************");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 }
