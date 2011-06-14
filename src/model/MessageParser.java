@@ -34,7 +34,7 @@ public class MessageParser {
 
 	public Message parseMessage() throws IOException {
 		Map<String, List<String>> headers = new HashMap<String, List<String>>();
-		String headerName, headerValue, response, boundary = "";
+		String headerName, headerValue, response;
 		StringBuilder mainHeader = new StringBuilder();
 
 		// Process headers
@@ -68,15 +68,14 @@ public class MessageParser {
 
 		// Between the header and the body there is a \n
 		Message message = new Message(headers, mainHeader.toString());
-		processBody(message, boundary);
+		processBody(message);
 		return message;
 	}
 
-	private void processBody(Message message, String boundary) throws IOException {
-		String response, contentTypeHeader;
+	private void processBody(Message message) throws IOException {
+		String response, contentTypeHeader, boundary = "";
 		StringBuilder bodyBuilder = new StringBuilder();
-		contentTypeHeader = "Content-Type: "
-				+ message.getHeaders().get("Content-Type").get(0);
+		contentTypeHeader = "Content-Type: " + message.getHeaders().get("Content-Type").get(0);
 		if (contentTypeHeader.contains("multipart"))
 			boundary = getBoundary(contentTypeHeader, bodyBuilder);
 
@@ -186,7 +185,6 @@ public class MessageParser {
 
 	private String getBoundary(String line, StringBuilder bodyBuilder) throws IOException {
 		if(line.indexOf("=") == -1){
-			System.out.println(line);
 			line = readResponseLine();
 			bodyBuilder.append(line + "\n");
 		}
