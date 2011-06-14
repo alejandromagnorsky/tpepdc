@@ -88,7 +88,7 @@ public class MessageParser {
 			while (!(response = readResponseLine()).equals("."));
 		}
 		message.setBody(skeleton.toString());
-//		message.setBodySkeleton(skeleton.toString());
+		// message.setBodySkeleton(skeleton.toString());
 	}
 
 	private String putContent(Message message, String header, String boundary,
@@ -125,11 +125,11 @@ public class MessageParser {
 				encoding = message.getHeaders()
 						.get("Content-Transfer-Encoding").get(0);
 		}
-		
+
 		skeleton.append("--" + boundary + "\n");
 		skeleton.append(contentTypeHeader + "\n\n");
 		skeleton.append(">>" + id + "<<" + "\n\n");
-		
+
 		// Put context's data in contentText
 		StringBuilder contentText = new StringBuilder();
 		if (!boundary.isEmpty())
@@ -193,13 +193,9 @@ public class MessageParser {
 		return boundary;
 	}
 
-	
-
 	private String encodeBase64(String plain) {
 		return Base64.encodeBase64String(plain.getBytes());
 	}
-
-	
 
 	private BufferedImage base64ToImage(String base64String) {
 		try {
