@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 public class MessageEnsambler {
 
@@ -47,10 +48,7 @@ public class MessageEnsambler {
 				msg.append(s + "\n");
 			}
 		}
-	}
-
-	private String encodeBase64(String plain) {
-		return Base64.encodeBase64String(plain.getBytes());
+		msg.append(".");
 	}
 
 	// Format: png,jpg etc
@@ -66,8 +64,19 @@ public class MessageEnsambler {
 		return null;
 	}
 
-	private String decodeBase64(String base64String) {
-		byte[] buf = Base64.decodeBase64(base64String);
-		return new String(buf);
+	private String encodeQuotedPrintable(String text) {
+		try {
+			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+			String ans = codec.encode(text);
+			ans = ans.replaceAll("-=0A", "=\n");
+			ans = ans.replaceAll("=0A", "\n");
+			return ans;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	private String encodeBase64(String plain) {
+		return Base64.encodeBase64String(plain.getBytes());
 	}
 }
