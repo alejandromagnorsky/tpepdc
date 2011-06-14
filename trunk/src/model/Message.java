@@ -14,12 +14,6 @@ public class Message {
 	private Map<Content.Type, List<Content>> contentMap = new HashMap<Content.Type, List<Content>>();
 	private String body;
 
-	//TODO borrar? no se esta usando..
-//	protected Message(Map<String, List<String>> headers, String body) {
-//		this.headers = headers;
-//		this.body = body;
-//	}
-	
 	protected Message(Map<String, List<String>> headers, String mainHeader){
 		this.headers = headers;
 		this.mainHeader = mainHeader;
