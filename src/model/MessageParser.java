@@ -87,8 +87,8 @@ public class MessageParser {
 				processContent(message, boundary, bodyBuilder);
 			while (!(response = readResponseLine()).equals("."));
 		}
-		message.setBody(bodyBuilder.toString());
-		message.setBodySkeleton(skeleton.toString());
+		message.setBody(skeleton.toString());
+//		message.setBodySkeleton(skeleton.toString());
 	}
 
 	private String putContent(Message message, String header, String boundary,
@@ -107,7 +107,6 @@ public class MessageParser {
 			content = new OtherContent(contentTypeHeader);
 
 		id++;
-		skeleton.append(">>" + id + "<<" + "\n");
 		content.setId(id);
 
 		if (!boundary.isEmpty()) {
@@ -126,7 +125,11 @@ public class MessageParser {
 				encoding = message.getHeaders()
 						.get("Content-Transfer-Encoding").get(0);
 		}
-
+		
+		skeleton.append("--" + boundary + "\n");
+		skeleton.append(contentTypeHeader + "\n\n");
+		skeleton.append(">>" + id + "<<" + "\n\n");
+		
 		// Put context's data in contentText
 		StringBuilder contentText = new StringBuilder();
 		if (!boundary.isEmpty())
@@ -162,14 +165,14 @@ public class MessageParser {
 
 		if (response.contains("--" + boundary)) {
 			response = readResponseLine();
-			skeleton.append(response + "\n");
 		}
 
 		if (response.contains("Content-Type:")) {
 			if (response.contains("multipart")) {
 				String subBoundary = getBoundary(response);
+				skeleton.append("--" + boundary + "\n");
+				skeleton.append(response + "\n\n");
 				response = readResponseLine();
-				skeleton.append(response + "\n");
 				processContent(message, subBoundary, bodyBuilder);
 			} else {
 				response = putContent(message, response, boundary, bodyBuilder);
@@ -190,36 +193,13 @@ public class MessageParser {
 		return boundary;
 	}
 
-	// Format: png,jpg etc
-	private String imageToString(BufferedImage image, String format) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			ImageIO.write(image, format, baos);
-			byte[] buf = baos.toByteArray();
-			return byteArrayToString(buf);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	private String byteArrayToString(byte[] buf) {
-		char[] cbuf = new char[buf.length];
-
-		for (int i = 0; i < buf.length; i++)
-			cbuf[i] = (char) buf[i];
-		return new String(cbuf, 0, cbuf.length);
-	}
+	
 
 	private String encodeBase64(String plain) {
 		return Base64.encodeBase64String(plain.getBytes());
 	}
 
-	private String decodeBase64(String base64String) {
-		byte[] buf = Base64.decodeBase64(base64String);
-
-		return byteArrayToString(buf);
-	}
+	
 
 	private BufferedImage base64ToImage(String base64String) {
 		try {
