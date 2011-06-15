@@ -29,7 +29,6 @@ public class AccessRequestFilter extends RequestFilter {
 			POP3Client client, RequestFilter chain) {
 
 		try {
-
 			String request = r.getRequestString();
 			// Check this constantly, so that an user can be blocked even when
 			// it is connected

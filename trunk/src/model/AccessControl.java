@@ -33,12 +33,6 @@ public final class AccessControl {
 		LocalDate today = new LocalDate();
 
 		XMLLoginLogDAO dao = XMLLoginLogDAO.getInstance();
-
-		try {
-			dao.load();
-		} catch (Exception e) {
-			POP3Proxy.logger.fatal("Error loading Logins");
-		}
 		int qty = dao.getUserLogins(user, today);
 
 		if (qty < maxLogins) {
