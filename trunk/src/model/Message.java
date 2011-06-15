@@ -63,8 +63,11 @@ public class Message {
 
 	public String putEnters(String message) {
 		StringBuilder builder = new StringBuilder();
-		int count = 0;
-		for(int i = 0; i < message.length(); i++){
+		int i, count = 0;
+		builder.append(message.charAt(0));
+		for(i = 1; !(message.charAt(i-1) == '\n' && message.charAt(i) == '\n') && i < message.length(); i++)
+			builder.append(message.charAt(i));
+		while(i < message.length()){
 			if(message.charAt(i) == '\n')
 				count = 0;
 			else
@@ -76,6 +79,7 @@ public class Message {
 				count = 0;
 				builder.append('\n');			
 			}
+			i++;
 		}
 		
 		return builder.toString();		

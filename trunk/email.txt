@@ -1,50 +1,5 @@
-Return-Path: <jimenabpose@gmail.com>
-Received: from daedalus.alu.itba.edu.ar ([unix socket])
-by daedalus (Cyrus v2.3.7) with LMTPA;
-Wed, 15 Jun 2011 18:20:41 -0300
-X-Sieve: CMU Sieve 2.3
-Received: from coyote.itba.edu.ar (coyote.itba.edu.ar [209.13.158.67])
-by daedalus.alu.itba.edu.ar (Postfix) with ESMTP id 7ECCB1509
-for <ndamonte@daedalus.alu.itba.edu.ar>; Wed, 15 Jun 2011 18:20:41 -0300 (ART)
-Received: from localhost (localhost [127.0.0.1])
-by coyote.itba.edu.ar (Postfix) with ESMTP id C27191943BB
-for <ndamonte@daedalus.alu.itba.edu.ar>; Wed, 15 Jun 2011 18:20:45 -0300 (ART)
-X-Virus-Scanned: amavisd-new at itba.edu.ar
-X-Spam-Score: 0.527
-X-Spam-Level:
-X-Spam-Status: No, score=0.527 tagged_above=-999 required=4
-tests=[BAYES_00=-2.599, HTML_IMAGE_ONLY_08=3.126, HTML_MESSAGE=0.001,
-SPF_PASS=-0.001]
-Received: from coyote.itba.edu.ar ([127.0.0.1])
-by localhost (coyote.itba.edu.ar [127.0.0.1]) (amavisd-new, port 10024)
-with LMTP id sXZZbvg-+g3U for <ndamonte@daedalus.alu.itba.edu.ar>;
-Wed, 15 Jun 2011 18:20:44 -0300 (ART)
-Received: from mail-bw0-f48.google.com (mail-bw0-f48.google.com [209.85.214.48])
-(using TLSv1 with cipher RC4-SHA (128/128 bits))
-(No client certificate requested)
-by coyote.itba.edu.ar (Postfix) with ESMTP id C384D1943B7
-for <ndamonte@alu.itba.edu.ar>; Wed, 15 Jun 2011 18:20:39 -0300 (ART)
-Received: by bwz8 with SMTP id 8so842609bwz.7
-for <ndamonte@alu.itba.edu.ar>; Wed, 15 Jun 2011 14:20:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-d=gmail.com; s=gamma;
-h=domainkey-signature:mime-version:in-reply-to:references:from:date
-:message-id:subject:to:content-type;
-bh=6Vs3LZloQN8AQLgFLUt9+OS9n+Rwm7AVb3UIiv4kA48=;
-b=vybZ8hiii0HOei2JBVdcKomB4iHHxQE7o+x1bgFD82wnFmGwYGmc1Z1+lOBSI56ITr
-Bs19rGJU9+pUq0qFdR28tF3Cd+HBHhmwrkVN3CHswNoejkiA6mfGtiUfexjXUaj7cX8a
-y87RHPgKZOwlZ8WMpx1yblNVvvOqzc0IrHLZw=
-DomainKey-Signature: a=rsa-sha1; c=nofws;
-d=gmail.com; s=gamma;
-h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-:content-type;
-b=R8KvRkzOMb9T2oPJxxMzqMoFu7Lb0cL1dshlXnDKPFtE8XSVkoDZZNfjRhQHUTcUTK
-YT/kAGjvTYVMZ3Nvf9xBh5eC90NXNKHFv/bgx4oFhmddHTYlUdGu2yUnvz+uK0gbqlkY
-79bgbCxvoFRgJ+ELSZorGQPKsYTxU0wPvm84M=
-Received: by 10.204.140.18 with SMTP id g18mr87165bku.59.1308172837158; Wed,
-15 Jun 2011 14:20:37 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 10.204.36.81 with HTTP; Wed, 15 Jun 2011 14:20:17 -0700 (PDT)
+Received: by 10.204.36.81 with HTTP; Wed, 15 adsadasdasadasdJun 2011 14:20:17 -0700 (PDT)
 In-Reply-To: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
 References: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
 From: Jimena Pose <jimenabpose@gmail.com>

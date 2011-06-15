@@ -14,10 +14,10 @@ main(void){
 	while(i < MAX_ROWS && fgets(body[i], MAX_LENGTH, stdin) != NULL && body[i][0] != '.')
 		i++;
 	
-	printf("-------------------------------\n");
-	printf("Texto del mensaje:\n");
+	/*printf("-------------------------------\n");
+	printf("Texto del mensaje:\n");*/
 	for(j = 0; j < i; j++)
 		printf("%s\n", body[j]);
-	printf("-------------------------------\n");
+	/*printf("-------------------------------\n");*/
 	return 0;
 }
