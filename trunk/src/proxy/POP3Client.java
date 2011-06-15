@@ -19,7 +19,7 @@ import filter.MessageTransformerFilter;
 
 public class POP3Client extends Client {
 
-	private static final int PORT = 995; // TODO
+	private static final int PORT = 110;
 
 	public void connect(String host) throws IOException {
 		connect(host, PORT);

@@ -52,8 +52,10 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		try {
 			String request, response;
 
+			writer.println("+OK Welcome");
 			do {
 				request = reader.readLine();
+				
 				if (request != null && !request.toUpperCase().contains("PASS"))
 					request = request.toUpperCase();
 
@@ -62,17 +64,17 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 					writer.println(response);
 					
-					if (request.contains("LIST") && response.contains("+OK"))
-						writer.println(POP3client.getListOfMessage());					
-					
-					if (request.contains("RETR") && response.contains("+OK")) {
-						Message message = POP3client.getMessage();
-						processMessage(message);
-						writer.println(message.toString());
+					if(response.contains("+OK")){
+						if (request.contains("LIST") || request.contains("UIDL"))
+							writer.println(POP3client.getListOfMessage());					
+						else if (request.contains("RETR")) {
+							Message message = POP3client.getMessage();
+							processMessage(message);
+							writer.println(message.toString());
+						}
 					}
 				}
-			} while (isConnected()
-					&& (request != null && !request.contains("QUIT")));
+			} while (isConnected() && (request != null && !request.contains("QUIT")));
 
 			if (POP3client.isConnected())
 				POP3client.disconnect();
