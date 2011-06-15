@@ -164,17 +164,22 @@ public class EraseRequestFilter extends RequestFilter {
 		int low = raw.indexOf(" ") + 1;
 		int high = raw.lastIndexOf(" ");
 
-		Integer size = Integer.valueOf(raw.substring(low, high));
-		if (size != null) {
-			Range<Integer> range = user.getSettings().getEraseSettings()
-					.getSize();
-			if (range != null
-					&& (range.getFrom() != null && range.getFrom().compareTo(
-							size) > 0)
-					|| (range.getTo() != null && range.getTo().compareTo(size) < 0)) {
-				return true;
+		try {
+			Integer size = Integer.valueOf(raw.substring(low, high));
+			if (size != null) {
+				Range<Integer> range = user.getSettings().getEraseSettings()
+				.getSize();
+				if (range != null
+						&& (range.getFrom() != null && range.getFrom().compareTo(
+								size) > 0)
+								|| (range.getTo() != null && range.getTo().compareTo(size) < 0)) {
+					return true;
+				}
 			}
+		} catch (NumberFormatException e) {
+			
 		}
+		
 		return false;
 	}
 

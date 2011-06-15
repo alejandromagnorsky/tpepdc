@@ -89,8 +89,7 @@ public class POP3Client extends Client {
 			}
 
 			System.out.println("**********************************");
-			MessageAssembler me = new MessageAssembler();
-			System.out.println(me.getMessage(message));
+			System.out.println(message.reconstruct());
 			System.out.println("**********************************");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

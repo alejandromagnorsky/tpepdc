@@ -1,18 +1,71 @@
+Return-Path: <jimenabpose@gmail.com>
+Received: from daedalus.alu.itba.edu.ar ([unix socket])
+by daedalus (Cyrus v2.3.7) with LMTPA;
+Wed, 15 Jun 2011 18:20:41 -0300
+X-Sieve: CMU Sieve 2.3
+Received: from coyote.itba.edu.ar (coyote.itba.edu.ar [209.13.158.67])
+by daedalus.alu.itba.edu.ar (Postfix) with ESMTP id 7ECCB1509
+for <ndamonte@daedalus.alu.itba.edu.ar>; Wed, 15 Jun 2011 18:20:41 -0300 (ART)
+Received: from localhost (localhost [127.0.0.1])
+by coyote.itba.edu.ar (Postfix) with ESMTP id C27191943BB
+for <ndamonte@daedalus.alu.itba.edu.ar>; Wed, 15 Jun 2011 18:20:45 -0300 (ART)
+X-Virus-Scanned: amavisd-new at itba.edu.ar
+X-Spam-Score: 0.527
+X-Spam-Level:
+X-Spam-Status: No, score=0.527 tagged_above=-999 required=4
+tests=[BAYES_00=-2.599, HTML_IMAGE_ONLY_08=3.126, HTML_MESSAGE=0.001,
+SPF_PASS=-0.001]
+Received: from coyote.itba.edu.ar ([127.0.0.1])
+by localhost (coyote.itba.edu.ar [127.0.0.1]) (amavisd-new, port 10024)
+with LMTP id sXZZbvg-+g3U for <ndamonte@daedalus.alu.itba.edu.ar>;
+Wed, 15 Jun 2011 18:20:44 -0300 (ART)
+Received: from mail-bw0-f48.google.com (mail-bw0-f48.google.com [209.85.214.48])
+(using TLSv1 with cipher RC4-SHA (128/128 bits))
+(No client certificate requested)
+by coyote.itba.edu.ar (Postfix) with ESMTP id C384D1943B7
+for <ndamonte@alu.itba.edu.ar>; Wed, 15 Jun 2011 18:20:39 -0300 (ART)
+Received: by bwz8 with SMTP id 8so842609bwz.7
+for <ndamonte@alu.itba.edu.ar>; Wed, 15 Jun 2011 14:20:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+d=gmail.com; s=gamma;
+h=domainkey-signature:mime-version:in-reply-to:references:from:date
+:message-id:subject:to:content-type;
+bh=6Vs3LZloQN8AQLgFLUt9+OS9n+Rwm7AVb3UIiv4kA48=;
+b=vybZ8hiii0HOei2JBVdcKomB4iHHxQE7o+x1bgFD82wnFmGwYGmc1Z1+lOBSI56ITr
+Bs19rGJU9+pUq0qFdR28tF3Cd+HBHhmwrkVN3CHswNoejkiA6mfGtiUfexjXUaj7cX8a
+y87RHPgKZOwlZ8WMpx1yblNVvvOqzc0IrHLZw=
+DomainKey-Signature: a=rsa-sha1; c=nofws;
+d=gmail.com; s=gamma;
+h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+:content-type;
+b=R8KvRkzOMb9T2oPJxxMzqMoFu7Lb0cL1dshlXnDKPFtE8XSVkoDZZNfjRhQHUTcUTK
+YT/kAGjvTYVMZ3Nvf9xBh5eC90NXNKHFv/bgx4oFhmddHTYlUdGu2yUnvz+uK0gbqlkY
+79bgbCxvoFRgJ+ELSZorGQPKsYTxU0wPvm84M=
+Received: by 10.204.140.18 with SMTP id g18mr87165bku.59.1308172837158; Wed,
+15 Jun 2011 14:20:37 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 10.204.70.194 with HTTP; Sat, 4 Jun 2011 12:42:00 -0700 (PDT)
-Date: Sat, 4 Jun 2011 16:42:00 -0300
-Delivered-To: jimenabpose@gmail.com
-Message-ID: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
-Subject: prueba pdc
+Received: by 10.204.36.81 with HTTP; Wed, 15 Jun 2011 14:20:17 -0700 (PDT)
+In-Reply-To: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
+References: <BANLkTinWA6a+e5YJ_RdsPXLjS-kWNSxTFw@mail.gmail.com>
 From: Jimena Pose <jimenabpose@gmail.com>
-To: Jimena Pose <jimenabpose@gmail.com>
-Content-Type: multipart/related; boundary=485b3979da0e60253504a4e810cd
+Date: Wed, 15 Jun 2011 18:20:17 -0300
+Message-ID: <BANLkTinqX5aHW7gZjT4qktf-675b-5B5kA@mail.gmail.com>
+Subject: Fwd: prueba pdc
+To: ndamonte <ndamonte@alu.itba.edu.ar>
+Content-Type: multipart/related; boundary=0015174c3b0e43817504a5c6b9f7
 
---485b3979da0e60253504a4e810cd
-Content-Type: multipart/alternative; boundary=485b3979da0e60253304a4e810cc
+--0015174c3b0e43817504a5c6b9f7 
+Content-Type: multipart/alternative; boundary=0015174c3b0e43815a04a5c6b9f6
 
---485b3979da0e60253304a4e810cc
+--0015174c3b0e43815a04a5c6b9f6 
 Content-Type: text/plain; charset=ISO-8859-1
+
+---------- Forwarded message ----------
+From: Jimena Pose <jimenabpose@gmail.com>
+Date: 2011/6/4
+Subject: prueba pdc
+To: Jimena Pose <jimenabpose@gmail.com>
+
 
 asdfasfdasdfasfd
 
@@ -29,14 +82,19 @@ asfasdfsdf
 
 asdfasdfasdf
 
---485b3979da0e60253304a4e810cc
+--0015174c3b0e43815a04a5c6b9f6 
 Content-Type: text/html; charset=ISO-8859-1
 
-asdfasfdasdfasfd<div><br></div><div>&lt;html&gt;</div><div>&lt;head&gt;</div><div>&lt;/head&gt;</div><div>&lt;body&gt;</div><div>&lt;h1&gt; holaaaa!!! &lt;/h1&gt;</div><div>&lt;/body&gt;</div><div>&lt;/html&gt;</div><div>asfasdfsdf</div>
-<div><br></div><div><img src="cid:ii_1305c2cb17e34b40" alt="image.png" title="image.png"><br></div><div><br></div><div>asdfasdfasdf</div><div><br></div>
+<br><br><div class="gmail_quote">---------- Forwarded message ----------<br>From: <b class="gmail_sendername">Jimena Pose</b> <span dir="ltr">&lt;<a href="mailto:jimenabpose@gmail.com">jimenabpose@gmail.com</a>&gt;</span><br>
 
---485b3979da0e60253304a4e810cc--
---485b3979da0e60253504a4e810cd
+Date: 2011/6/4<br>Subject: prueba pdc<br>To: Jimena Pose &lt;<a href="mailto:jimenabpose@gmail.com">jimenabpose@gmail.com</a>&gt;<br><br><br>asdfasfdasdfasfd<div><br></div><div>&lt;html&gt;</div><div>&lt;head&gt;</div><div>
+
+&lt;/head&gt;</div><div>&lt;body&gt;</div><div>&lt;h1&gt; holaaaa!!! &lt;/h1&gt;</div><div>&lt;/body&gt;</div><div>&lt;/html&gt;</div><div>asfasdfsdf</div>
+<div><br></div><div><img src="cid:ii_1305c2cb17e34b40" alt="image.png" title="image.png"><br></div><div><br></div><div>asdfasdfasdf</div><div><br></div>
+</div><br>
+
+--0015174c3b0e43815a04a5c6b9f6--
+--0015174c3b0e43817504a5c6b9f7 
 Content-Type: image/png; name="image.png"
 Content-Transfer-Encoding: base64
 Content-ID: <ii_1305c2cb17e34b40>
@@ -450,5 +508,5 @@ gov1bqTV+GKbkKxjlQLGrwdhul3bEG+Isz9cxdHIuVEHQw0+eBF5U6tRne7/14LME6V9Yy5I2e1t
 8JywRFk9ub0dg1+DaN46JC/zgknxJ3CJMENG/gpSSLATpKtW0ndfGL+enP0Ekz417ZLdyhuVrPet
 D/8H/picBt9hbX73JgEFBgYiNze3A4hCoRBZWVkd2p7lB429drT+D7oMBqX5ItSnAAAAAElFTkSu
 QmCC
---485b3979da0e60253504a4e810cd--
+--0015174c3b0e43817504a5c6b9f7--
 .
