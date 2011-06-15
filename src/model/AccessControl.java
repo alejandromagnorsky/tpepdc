@@ -37,7 +37,7 @@ public final class AccessControl {
 
 		if (qty < maxLogins) {
 			dao.saveLogin(user, today, qty + 1);
-			dao.commit(); // TODO OJO CON ESTOOO
+			dao.commit();
 			return false;
 		}
 		return true;
