@@ -54,18 +54,25 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 			do {
 				request = reader.readLine();
-				if (!request.toUpperCase().contains("PASS"))
+				if (request != null && !request.toUpperCase().contains("PASS"))
 					request = request.toUpperCase();
-				
+
 				if (request != null && !request.isEmpty()) {
 					response = filterChain.doFilter(new Request(null, request),
 							writer, POP3client);
 
+					if (request.contains("LIST")) {
+						while (!response.equals(".")) {
+							writer.println(response);
+							response = filterChain.doFilter(new Request(null, request),
+									writer, POP3client);
+						}
+					}
 					writer.println(response);
 					if (request.contains("RETR") && response.contains("+OK")) {
 						Message message = POP3client.getMessage();
 						processMessage(message);
-						writer.println(message.getBody());
+						writer.println(message.toString());
 					}
 				}
 			} while (isConnected()
