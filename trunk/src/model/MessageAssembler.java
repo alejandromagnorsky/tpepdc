@@ -38,7 +38,7 @@ public class MessageAssembler {
 							.getContentTypeHeader();
 					format = format.substring(format.indexOf("/") + 1,
 							format.indexOf(";"));
-					String imageString = imageToString(img, format);
+					String imageString = encodeBase64(imageToString(img, format));
 					msg.append(imageString);
 				} else {
 					msg.append(((OtherContent) content).getContent());

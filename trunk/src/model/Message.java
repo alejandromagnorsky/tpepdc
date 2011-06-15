@@ -53,4 +53,10 @@ public class Message {
 		return this.orderedContent;
 	}
 	
+	@Override
+	public String toString() {
+		MessageAssembler messageAssembler = new MessageAssembler();
+		return messageAssembler.getMessage(this);
+	}
+	
 }
