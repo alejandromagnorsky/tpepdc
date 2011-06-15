@@ -38,6 +38,23 @@
         <transform-settings leet="true"/>
         <schedule/>
     </user>
+    <user max-logins="10" name="ndamonte">
+        <erase-settings>
+            <date/>
+            <size-bytes/>
+        </erase-settings>
+        <transform-settings leet="false" rotate="false"/>
+        <schedule/>
+        <server>pop3.alu.itba.edu.ar</server>
+    </user>
+    <user name="pepe">
+        <erase-settings>
+            <date/>
+            <size-bytes/>
+        </erase-settings>
+        <transform-settings/>
+        <schedule/>
+    </user>
     <blacklist>
         <ip>186.136.102.62</ip>
         <ip>200.200.200.23</ip>

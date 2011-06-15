@@ -38,17 +38,17 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 				writer.println("OK. Welcome to the configuration service.");
 				do {
 					response = "";
-					request = reader.readLine().toUpperCase();
-					if (request.equals("HELP")) {
+					request = reader.readLine();
+					if (request.toUpperCase().equals("HELP")) {
 						showHelp();
-					} else if (request.equals("COMMIT")) {
+					} else if (request.toUpperCase().equals("COMMIT")) {
 						if (changed) {
 							loader.commit();
 							response = "OK. Commit successful.";
 							changed = false;
 						} else
 							response = "OK. No new changes.";
-					} else if (request.startsWith("BLACKLIST")) {
+					} else if (request.toUpperCase().startsWith("BLACKLIST")) {
 						String[] args = request.split(" ");
 
 						if (args[1] != null
@@ -60,7 +60,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									+ " to IP blacklist.";
 						} else
 							response = "Error. Please enter a valid IP value.";
-					} else if (request.startsWith("USER ")) {
+					} else if (request.toUpperCase().startsWith("USER ")) {
 						String username = request.substring(request
 								.lastIndexOf(' ') + 1);
 						user = loader.getUser(username);
@@ -73,12 +73,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 						}
 						// Commands need a user
 					} else if (user != null) {
-						if (request.equals("GET USERSETTINGS")) {
+						if (request.toUpperCase().equals("GET USERSETTINGS")) {
 							response = printSettings(user.getSettings());
-						} else if (request.equals("GET ERASESETTINGS")) {
+						} else if (request.toUpperCase().equals("GET ERASESETTINGS")) {
 							response = printEraseSettings(user.getSettings()
 									.getEraseSettings());
-						} else if (request.startsWith("SET ROTATE")) {
+						} else if (request.toUpperCase().startsWith("SET ROTATE")) {
 
 							String[] args = request.split(" ");
 
@@ -92,7 +92,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid boolean value.";
 
-						} else if (request.startsWith("SET LEET")) {
+						} else if (request.toUpperCase().startsWith("SET LEET")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null
@@ -105,7 +105,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid boolean value.";
 
-						} else if (request.startsWith("SET SERVER")) {
+						} else if (request.toUpperCase().startsWith("SET SERVER")) {
 
 							String[] args = request.split(" ");
 
@@ -118,7 +118,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid string value.";
 
-						} else if (request.startsWith("SET MAXLOGINS")) {
+						} else if (request.toUpperCase().startsWith("SET MAXLOGINS")) {
 
 							String[] args = request.split(" ");
 
@@ -132,19 +132,19 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid integer value.";
 
-						} else if (request.startsWith("SET SCHEDULE_MIN")) {
+						} else if (request.toUpperCase().startsWith("SET SCHEDULE_MIN")) {
 							response = setScheduleMinimum(user, request);
-						} else if (request.startsWith("SET SCHEDULE_MAX")) {
+						} else if (request.toUpperCase().startsWith("SET SCHEDULE_MAX")) {
 							response = setScheduleMaximum(user, request);
-						} else if (request.startsWith("SET DATE_MIN")) {
+						} else if (request.toUpperCase().startsWith("SET DATE_MIN")) {
 							response = setDateMinimum(user, request);
-						} else if (request.startsWith("SET DATE_MAX")) {
+						} else if (request.toUpperCase().startsWith("SET DATE_MAX")) {
 							response = setDateMaximum(user, request);
-						} else if (request.startsWith("SET SIZE_MIN")) {
+						} else if (request.toUpperCase().startsWith("SET SIZE_MIN")) {
 							response = setSizeMinimum(user, request);
-						} else if (request.startsWith("SET SIZE_MAX")) {
+						} else if (request.toUpperCase().startsWith("SET SIZE_MAX")) {
 							response = setSizeMaximum(user, request);
-						} else if (request.startsWith("SET STRUCTURE")) {
+						} else if (request.toUpperCase().startsWith("SET STRUCTURE")) {
 							String[] args = request.split(" ");
 							if (args[2] != null) {
 								EraseSettings erase = user.getSettings()
@@ -157,7 +157,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ". ";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.startsWith("ADD CONTENT")) {
+						} else if (request.toUpperCase().startsWith("ADD CONTENT")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null) {
@@ -171,7 +171,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ".";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.startsWith("ADD HEADER")) {
+						} else if (request.toUpperCase().startsWith("ADD HEADER")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null) {
@@ -185,7 +185,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ".";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.startsWith("ADD SENDER")) {
+						} else if (request.toUpperCase().startsWith("ADD SENDER")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null) {
@@ -198,7 +198,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ".";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.equals("EXIT"))
+						} else if (request.toUpperCase().equals("EXIT"))
 							response = "OK.";
 					} else
 						response = "Error. Invalid command, or user not set.";
@@ -208,7 +208,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 					}
 
 					writer.println(response);
-				} while (isConnected() && !request.equals("EXIT"));
+				} while (isConnected() && !request.toUpperCase().equals("EXIT"));
 			} else {
 				writer.println("ERROR. User or password incorrect");
 			}
