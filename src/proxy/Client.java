@@ -5,17 +5,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
+import java.net.Socket;
 
 public abstract class Client extends SocketUser {
 
-	private static final SSLSocketFactory SocketFactory = (SSLSocketFactory) SSLSocketFactory
-			.getDefault();
-
 	public void connect(String host, int port) throws IOException {
-		socket = (SSLSocket) SocketFactory.createSocket();
+		socket = new Socket();
 		socket.connect(new InetSocketAddress(host, port));
 		reader = new BufferedReader(new InputStreamReader(socket
 				.getInputStream()));

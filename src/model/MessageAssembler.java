@@ -47,6 +47,7 @@ public class MessageAssembler {
 				msg.append(s + "\n");
 			}
 		}
+		msg.append(".");
 	}
 
 	private String encodeBase64(String plain) {
