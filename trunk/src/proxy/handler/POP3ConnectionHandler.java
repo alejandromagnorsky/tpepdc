@@ -56,7 +56,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			do {
 				request = reader.readLine();
 				
-				if (request != null && !request.toUpperCase().contains("PASS"))
+				if (request != null && !request.toUpperCase().contains("PASS") && 
+						!request.toUpperCase().contains("USER"))
 					request = request.toUpperCase();
 
 				if (request != null && !request.isEmpty()) {
