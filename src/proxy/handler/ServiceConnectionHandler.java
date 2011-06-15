@@ -15,11 +15,6 @@ public abstract class ServiceConnectionHandler extends ConnectionHandler {
 
 	public ServiceConnectionHandler(Socket socket) {
 		super(socket);
-		try {
-			adminDAO.load();
-		} catch (Exception e) {
-			POP3Proxy.logger.fatal("Error loading Admin");
-		}
 	}
 
 	protected boolean validateLogin() {

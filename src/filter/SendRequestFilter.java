@@ -10,16 +10,17 @@ import proxy.POP3Proxy;
 public class SendRequestFilter extends RequestFilter {
 
 	@Override
-	protected String apply(Request request, PrintWriter responseWriter,
+	protected Response apply(Request request, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
 		if (client.isConnected())
 			try {
-				return client.send(request.getRequestString());
+				return new Response(request.getUser(), client.send(request
+						.getRequestString()));
 			} catch (IOException e) {
 				POP3Proxy.logger.fatal("Error sending message to POP3 server");
 			}
 
-		return "";
+		return new Response(request.getUser(), "");
 	}
 
 }
