@@ -55,7 +55,6 @@ public class AccessRequestFilter extends RequestFilter {
 					}
 					accessDenied = accessDenied
 							&& accessIsDenied(responseWriter, ip);
-
 				}
 
 				if (!accessDenied) {

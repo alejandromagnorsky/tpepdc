@@ -5,12 +5,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import proxy.POP3Client;
-
 import model.Message;
+import proxy.POP3Client;
 import filter.AccessRequestFilter;
 import filter.EraseRequestFilter;
-import filter.ExternalProgramFilter;
 import filter.Filter;
 import filter.ImageTransformerFilter;
 import filter.MessageTransformerFilter;
@@ -22,7 +20,7 @@ import filter.StatisticsFilter;
 public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private POP3Client POP3client;
-	public static String DEFAULT_SERVER = "pop.mail.yahoo.com.ar";
+	public static String DEFAULT_SERVER = "pop3.alu.itba.edu.ar";
 
 	private RequestFilter filterChain;
 
