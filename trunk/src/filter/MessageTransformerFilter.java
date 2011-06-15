@@ -3,18 +3,21 @@ package filter;
 import model.Content;
 import model.Message;
 import model.TextContent;
+import model.User;
 
-public class MessageTransformerFilter implements Filter {
+public class MessageTransformerFilter extends ResponseFilter {
 
-	public void apply(Message message) {
-
-		for (Content c : message.getContents()) {
-			if (c.getType().equals(Content.Type.TEXT)
-					&& c.getContentTypeHeader().contains("text/plain")) {
-				String leet = l33t(((TextContent) c).getText(), message);
-				((TextContent) c).setText(leet);
+	public void apply(Message message, User user, ResponseFilter chain) {
+		if (user != null && user.getSettings() != null
+				&& user.getSettings().isLeet())
+			for (Content c : message.getContents()) {
+				if (c.getType().equals(Content.Type.TEXT)
+						&& c.getContentTypeHeader().contains("text/plain")) {
+					String leet = l33t(((TextContent) c).getText(), message);
+					((TextContent) c).setText(leet);
+				}
 			}
-		}
+		chain.doFilter(message, user);
 	}
 
 	public String l33t(String message, Message completeMessage) {

@@ -9,9 +9,9 @@ import statistics.Statistics;
 public class StatisticsFilter extends RequestFilter {
 
 	@Override
-	protected String apply(Request request, PrintWriter responseWriter,
+	protected Response apply(Request request, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
-		String response = chain.doFilter(request, responseWriter, client);
+		String response = chain.doFilter(request, responseWriter, client).getResponseString();
 		
 		if (response.contains("+OK") && request.getUser() != null) {
 			if (request.getRequestString().contains("RETR")) {
@@ -29,7 +29,7 @@ public class StatisticsFilter extends RequestFilter {
 			else if (request.getRequestString().contains("DELE"))
 				Statistics.addDeleted(request.getUser());
 		}
-		return response;
+		return new Response(request.getUser(), response);
 	}
 
 }

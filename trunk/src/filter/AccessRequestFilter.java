@@ -20,18 +20,12 @@ public class AccessRequestFilter extends RequestFilter {
 
 	public AccessRequestFilter(Socket userSocket) {
 		this.loader = XMLSettingsDAO.getInstance();
-		// TODO el load deberia estar aca?
-		try {
-			loader.load();
-		} catch (Exception e) {
-			POP3Proxy.logger.fatal("Error loading Settings");
-		}
 		this.ipBlackList = loader.getBlacklistIP();
 		this.userSocket = userSocket;
 	}
 
 	@Override
-	protected String apply(Request r, PrintWriter responseWriter,
+	protected Response apply(Request r, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
 
 		try {
@@ -42,7 +36,8 @@ public class AccessRequestFilter extends RequestFilter {
 			String ip = userSocket.getInetAddress().toString().substring(1);
 			boolean accessDenied = ipIsBlacklisted(responseWriter, ip);
 			POP3Proxy.logger.info(request);
-			if (request.toUpperCase().contains("USER ") && !client.isConnected()) {
+			if (request.toUpperCase().contains("USER ")
+					&& !client.isConnected()) {
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
 
 				user = loader.getUser(request.substring(request
@@ -74,13 +69,13 @@ public class AccessRequestFilter extends RequestFilter {
 					request = "QUIT";
 					client.send(request);
 					responseWriter.println("-ERR. Access denied.");
-					return "";
+					return new Response(user, "");
 				}
 			}
 
 			if (!client.isConnected() && !accessDenied) {
 				responseWriter.println("-ERR. Must use USER command first.");
-				return "";
+				return new Response(user, "");
 			}
 
 			// Inject user
@@ -92,7 +87,7 @@ public class AccessRequestFilter extends RequestFilter {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "";
+		return new Response(user, "");
 	}
 
 	private boolean ipIsBlacklisted(PrintWriter writer, String ip) {

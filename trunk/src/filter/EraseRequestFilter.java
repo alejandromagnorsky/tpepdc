@@ -22,7 +22,7 @@ import proxy.POP3Client;
 public class EraseRequestFilter extends RequestFilter {
 
 	@Override
-	protected String apply(Request r, PrintWriter responseWriter,
+	protected Response apply(Request r, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
 
 		String request = r.getRequestString();
@@ -38,7 +38,7 @@ public class EraseRequestFilter extends RequestFilter {
 				int number = msgNumber;
 
 				if (!canDeleteMail(user, number, client, responseWriter))
-					return "";
+					return new Response(user, "");
 			}
 		}
 		return chain.doFilter(r, responseWriter, client);
