@@ -45,7 +45,6 @@ public class AccessRequestFilter extends RequestFilter {
 			if (request.contains("USER ") && !client.isConnected()) {
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
 
-				System.out.println("LEVANTANDO USER");
 				user = loader.getUser(request.substring(request
 						.lastIndexOf(' ') + 1));
 

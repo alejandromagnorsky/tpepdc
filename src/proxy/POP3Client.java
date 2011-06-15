@@ -48,6 +48,16 @@ public class POP3Client extends Client {
 		MessageParser messageParser = new MessageParser(reader);
 		return messageParser.parseMessage();
 	}
+	
+	public String getListOfMessage() throws IOException{
+		String response;
+		StringBuilder listBuilder = new StringBuilder();
+		
+		while(!(response = readResponseLine()).equals("."))
+			listBuilder.append(response+"\n");
+		listBuilder.append(".");
+		return listBuilder.toString();
+	}
 
 	public static void main(String args[]) {
 		try {

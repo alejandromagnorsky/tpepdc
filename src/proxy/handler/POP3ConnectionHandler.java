@@ -58,17 +58,13 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					request = request.toUpperCase();
 
 				if (request != null && !request.isEmpty()) {
-					response = filterChain.doFilter(new Request(null, request),
-							writer, POP3client);
+					response = filterChain.doFilter(new Request(null, request), writer, POP3client);
 
-					if (request.contains("LIST")) {
-						while (!response.equals(".")) {
-							writer.println(response);
-							response = filterChain.doFilter(new Request(null, request),
-									writer, POP3client);
-						}
-					}
 					writer.println(response);
+					
+					if (request.contains("LIST") && response.contains("+OK"))
+						writer.println(POP3client.getListOfMessage());					
+					
 					if (request.contains("RETR") && response.contains("+OK")) {
 						Message message = POP3client.getMessage();
 						processMessage(message);
@@ -88,7 +84,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private void processMessage(Message message) {
 		List<Filter> filters = new ArrayList<Filter>();
-		filters.add(new ExternalProgramFilter("./printBody"));
+		//filters.add(new ExternalProgramFilter("./printBody"));
 		filters.add(new MessageTransformerFilter());
 		filters.add(new ImageTransformerFilter());
 		for (Filter f : filters)
