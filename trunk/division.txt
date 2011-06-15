@@ -1,3 +1,0 @@
-jime -control de accesos, multiplexer de cuentas, l33t
-ale -logging, estadisticas, monitoreo ( transf. app externas )
-mariano- borrado condicional, image, configuracion

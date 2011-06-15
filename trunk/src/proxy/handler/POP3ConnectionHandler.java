@@ -54,6 +54,12 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			do {
 				request = reader.readLine();
 				
+				if(request != null && request.toUpperCase().contains("CAPA")) {
+					writer.println("+OK Capability list follows");
+					writer.println("USER");
+					writer.println(".");
+				}
+				
 				if (request != null && !request.toUpperCase().contains("PASS") && 
 						!request.toUpperCase().contains("USER"))
 					request = request.toUpperCase();
@@ -69,7 +75,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 						else if (request.contains("RETR")) {
 							Message message = POP3client.getMessage();
 							processMessage(message);
-							writer.println(message.toString());
+							writer.println(message.reconstruct());
 						}
 					}
 				}
@@ -87,7 +93,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		List<Filter> filters = new ArrayList<Filter>();
 		//filters.add(new ExternalProgramFilter("./printBody"));
 		filters.add(new MessageTransformerFilter());
-		filters.add(new ImageTransformerFilter());
+//		filters.add(new ImageTransformerFilter());
 		for (Filter f : filters)
 			f.apply(message);
 	}
