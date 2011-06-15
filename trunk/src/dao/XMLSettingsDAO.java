@@ -21,8 +21,22 @@ import dao.settings.XMLUser;
 
 public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
-	public XMLSettingsDAO(String dataFilename, String schemaFilename) {
-		super(dataFilename, schemaFilename);
+	private XMLSettingsDAO() {
+		super("settings.xml", "src/settings.xsd");
+		try {
+			load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private static XMLSettingsDAO instance = null;
+
+	public static XMLSettingsDAO getInstance() {
+		if (instance == null)
+			instance = new XMLSettingsDAO();
+
+		return instance;
 	}
 
 	@Override

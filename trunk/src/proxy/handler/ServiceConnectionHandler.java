@@ -11,7 +11,7 @@ import dao.XMLAdminDAO;
 
 public abstract class ServiceConnectionHandler extends ConnectionHandler {
 
-	private XMLAdminDAO adminDAO = new XMLAdminDAO("admin.xml", "src/admin.xsd");
+	private XMLAdminDAO adminDAO = XMLAdminDAO.getInstance();
 
 	public ServiceConnectionHandler(Socket socket) {
 		super(socket);
@@ -36,7 +36,7 @@ public abstract class ServiceConnectionHandler extends ConnectionHandler {
 		} catch (IOException e) {
 			return false;
 		}
-		
+
 		String[] args = request.split(" ");
 		if (args.length != 3)
 			return false;

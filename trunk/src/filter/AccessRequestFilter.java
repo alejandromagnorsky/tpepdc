@@ -19,7 +19,7 @@ public class AccessRequestFilter extends RequestFilter {
 	private Socket userSocket = null;
 
 	public AccessRequestFilter(Socket userSocket) {
-		this.loader = new XMLSettingsDAO("settings.xml", "src/settings.xsd");
+		this.loader = XMLSettingsDAO.getInstance();
 		// TODO el load deberia estar aca?
 		try {
 			loader.load();
@@ -114,13 +114,14 @@ public class AccessRequestFilter extends RequestFilter {
 			}
 
 			if (AccessControl.hourIsOutOfRange(user)) {
-				writer.println("-ERR. You are not allowed to login now. Try again"
-						+ " between "
-						+ minutesToString(user.getSettings().getSchedule()
-								.getFrom())
-						+ " and "
-						+ minutesToString(user.getSettings().getSchedule()
-								.getTo()) + "hs");
+				writer
+						.println("-ERR. You are not allowed to login now. Try again"
+								+ " between "
+								+ minutesToString(user.getSettings()
+										.getSchedule().getFrom())
+								+ " and "
+								+ minutesToString(user.getSettings()
+										.getSchedule().getTo()) + "hs");
 				return true;
 			}
 		}

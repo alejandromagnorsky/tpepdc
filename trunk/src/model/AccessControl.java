@@ -1,4 +1,5 @@
 package model;
+
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -8,7 +9,7 @@ import proxy.POP3Proxy;
 import dao.XMLLoginLogDAO;
 
 public final class AccessControl {
-	
+
 	public static boolean hourIsOutOfRange(User user) {
 		Range<Integer> range = user.getSettings().getSchedule();
 		int from = range.getFrom();
@@ -19,7 +20,7 @@ public final class AccessControl {
 		// if(to < from || to > 24 || from < 0) {
 		// throw new IllegalArgumentException();
 		// }
-		
+
 		if (from > now || to < now) {
 			return true;
 		}
@@ -31,8 +32,8 @@ public final class AccessControl {
 		int maxLogins = user.getSettings().getMaxLogins();
 		LocalDate today = new LocalDate();
 
-		XMLLoginLogDAO dao = new XMLLoginLogDAO("logins.xml",
-				"src/loginLog.xsd");
+		XMLLoginLogDAO dao = XMLLoginLogDAO.getInstance();
+
 		try {
 			dao.load();
 		} catch (Exception e) {

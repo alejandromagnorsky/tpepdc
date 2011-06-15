@@ -7,8 +7,21 @@ import dao.admin.XMLAdminRoot;
 
 public class XMLAdminDAO extends XMLAbstractDAO<XMLAdminRoot> {
 
-	public XMLAdminDAO(String dataFilename, String schemaFilename) {
-		super(dataFilename, schemaFilename);
+	private static XMLAdminDAO instance = null;
+
+	public static XMLAdminDAO getInstance() {
+		if (instance == null)
+			instance = new XMLAdminDAO();
+		return instance;
+	}
+
+	private XMLAdminDAO() {
+		super("admin.xml", "src/admin.xsd");
+		try {
+			load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -20,7 +33,8 @@ public class XMLAdminDAO extends XMLAbstractDAO<XMLAdminRoot> {
 	public Administrator getAdministrator(String name) {
 		for (XMLAdmin admin : rootElement.getAdmin())
 			if (admin.getName().equals(name)) {
-				Administrator out = new Administrator(admin.getName(), admin.getPassword());
+				Administrator out = new Administrator(admin.getName(), admin
+						.getPassword());
 				return out;
 			}
 		return null;

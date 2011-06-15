@@ -10,8 +10,7 @@ import dao.XMLSettingsDAO;
 
 public class StatisticsConnectionHandler extends ServiceConnectionHandler {
 
-	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml",
-			"src/settings.xsd");
+	private XMLSettingsDAO loader = XMLSettingsDAO.getInstance();
 
 	public StatisticsConnectionHandler(Socket socket) {
 		super(socket);
