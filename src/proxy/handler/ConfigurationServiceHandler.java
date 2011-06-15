@@ -17,9 +17,7 @@ import dao.XMLSettingsDAO;
 
 public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
-	private XMLSettingsDAO loader = new XMLSettingsDAO("settings.xml",
-			"src/settings.xsd");
-
+	private XMLSettingsDAO loader = XMLSettingsDAO.getInstance();
 	boolean changed = false;
 
 	public ConfigurationServiceHandler(Socket socket) {

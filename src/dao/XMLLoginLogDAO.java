@@ -15,8 +15,21 @@ import dao.login.XMLUserLogin;
 
 public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 
-	public XMLLoginLogDAO(String dataFilename, String schemaFilename) {
-		super(dataFilename, schemaFilename);
+	private static XMLLoginLogDAO instance = null;
+
+	public static XMLLoginLogDAO getInstance() {
+		if (instance == null)
+			instance = new XMLLoginLogDAO();
+		return instance;
+	}
+
+	private XMLLoginLogDAO() {
+		super("logins.xml", "src/loginLog.xsd");
+		try {
+			load();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

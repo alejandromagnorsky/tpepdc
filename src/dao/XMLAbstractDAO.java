@@ -27,14 +27,14 @@ public abstract class XMLAbstractDAO<T> {
 	private String dataFilename, schemaFilename;
 	protected T rootElement;
 
-	public XMLAbstractDAO(String dataFilename, String schemaFilename) {
+	protected XMLAbstractDAO(String dataFilename, String schemaFilename) {
 		this.dataFilename = dataFilename;
 		this.schemaFilename = schemaFilename;
 		rootElement = createRoot();
 	}
 
 	// This is the final commit to save the data
-	public void commit() {
+	public synchronized void commit() {
 		try {
 			marshal(dataFilename);
 		} catch (Exception e) {
@@ -42,7 +42,7 @@ public abstract class XMLAbstractDAO<T> {
 		}
 	}
 
-	public void load() throws FileNotFoundException, JAXBException {
+	public synchronized void load() throws FileNotFoundException, JAXBException {
 		InputStream input = null;
 		input = new FileInputStream(dataFilename);
 		rootElement = unmarshal(input, new File(schemaFilename));
@@ -79,7 +79,7 @@ public abstract class XMLAbstractDAO<T> {
 			try {
 				schema = sf.newSchema(schemaFile);
 			} catch (SAXException saxe) {
-				POP3Proxy.logger.fatal("Error loading schema file");
+				POP3Proxy.logger.fatal("Error loading schema file " + schemaFilename);
 			}
 
 			u.setSchema(schema);
@@ -92,15 +92,15 @@ public abstract class XMLAbstractDAO<T> {
 		} finally {
 			if (vec != null && vec.hasEvents()) {
 
-				POP3Proxy.logger.fatal("Error validating XML file");
-				
+				POP3Proxy.logger.fatal("Error validating XML file " + dataFilename);
+
 				for (ValidationEvent ve : vec.getEvents()) {
 					String msg = ve.getMessage();
 					ValidationEventLocator vel = ve.getLocator();
 					int line = vel.getLineNumber();
 					int column = vel.getColumnNumber();
-					POP3Proxy.logger.fatal("Line: " + line + ", Column: " + column
-							+ ": " + msg);
+					POP3Proxy.logger.fatal("Line: " + line + ", Column: "
+							+ column + ": " + msg);
 				}
 			}
 		}
