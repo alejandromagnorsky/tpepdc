@@ -14,11 +14,6 @@ public class StatisticsConnectionHandler extends ServiceConnectionHandler {
 
 	public StatisticsConnectionHandler(Socket socket) {
 		super(socket);
-		try {
-			loader.load();
-		} catch (Exception e) {
-			POP3Proxy.logger.fatal("Error loading Settings");
-		}
 	}
 
 	public void run() {

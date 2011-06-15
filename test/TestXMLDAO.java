@@ -14,11 +14,6 @@ public class TestXMLDAO extends TestCase {
 	@Test
 	public void testSettingsLoad() {
 		XMLSettingsDAO loader = XMLSettingsDAO.getInstance();
-		try {
-			loader.load();
-		} catch (Exception e) {
-			return;
-		}
 
 		List<User> users = loader.getUserList();
 

@@ -3,6 +3,8 @@ package proxy.handler;
 import java.io.IOException;
 import java.net.Socket;
 
+import dao.XMLSettingsDAO;
+
 import model.Message;
 import proxy.POP3Client;
 import filter.AccessRequestFilter;

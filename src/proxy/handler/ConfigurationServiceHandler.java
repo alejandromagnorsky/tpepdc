@@ -22,11 +22,6 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 	public ConfigurationServiceHandler(Socket socket) {
 		super(socket);
-		try {
-			loader.load();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void run() {
@@ -75,10 +70,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 					} else if (user != null) {
 						if (request.toUpperCase().equals("GET USERSETTINGS")) {
 							response = printSettings(user.getSettings());
-						} else if (request.toUpperCase().equals("GET ERASESETTINGS")) {
+						} else if (request.toUpperCase().equals(
+								"GET ERASESETTINGS")) {
 							response = printEraseSettings(user.getSettings()
 									.getEraseSettings());
-						} else if (request.toUpperCase().startsWith("SET ROTATE")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET ROTATE")) {
 
 							String[] args = request.split(" ");
 
@@ -105,7 +102,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid boolean value.";
 
-						} else if (request.toUpperCase().startsWith("SET SERVER")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET SERVER")) {
 
 							String[] args = request.split(" ");
 
@@ -118,7 +116,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid string value.";
 
-						} else if (request.toUpperCase().startsWith("SET MAXLOGINS")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET MAXLOGINS")) {
 
 							String[] args = request.split(" ");
 
@@ -132,19 +131,26 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else
 								response = "Error. Please enter a valid integer value.";
 
-						} else if (request.toUpperCase().startsWith("SET SCHEDULE_MIN")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET SCHEDULE_MIN")) {
 							response = setScheduleMinimum(user, request);
-						} else if (request.toUpperCase().startsWith("SET SCHEDULE_MAX")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET SCHEDULE_MAX")) {
 							response = setScheduleMaximum(user, request);
-						} else if (request.toUpperCase().startsWith("SET DATE_MIN")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET DATE_MIN")) {
 							response = setDateMinimum(user, request);
-						} else if (request.toUpperCase().startsWith("SET DATE_MAX")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET DATE_MAX")) {
 							response = setDateMaximum(user, request);
-						} else if (request.toUpperCase().startsWith("SET SIZE_MIN")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET SIZE_MIN")) {
 							response = setSizeMinimum(user, request);
-						} else if (request.toUpperCase().startsWith("SET SIZE_MAX")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET SIZE_MAX")) {
 							response = setSizeMaximum(user, request);
-						} else if (request.toUpperCase().startsWith("SET STRUCTURE")) {
+						} else if (request.toUpperCase().startsWith(
+								"SET STRUCTURE")) {
 							String[] args = request.split(" ");
 							if (args[2] != null) {
 								EraseSettings erase = user.getSettings()
@@ -157,7 +163,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ". ";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.toUpperCase().startsWith("ADD CONTENT")) {
+						} else if (request.toUpperCase().startsWith(
+								"ADD CONTENT")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null) {
@@ -171,7 +178,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ".";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.toUpperCase().startsWith("ADD HEADER")) {
+						} else if (request.toUpperCase().startsWith(
+								"ADD HEADER")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null) {
@@ -185,7 +193,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										+ user.getName() + ".";
 							} else
 								response = "Error. Please enter a valid string value.";
-						} else if (request.toUpperCase().startsWith("ADD SENDER")) {
+						} else if (request.toUpperCase().startsWith(
+								"ADD SENDER")) {
 							String[] args = request.split(" ");
 
 							if (args[2] != null) {
@@ -375,24 +384,38 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 	private void showHelp() {
 		writer.println("Hello, Dave.");
-		writer.println("Welcome to Configuration Manager 9999! Here you will find very [un]useful commands to restrict your worker ant.");
-		writer.println("-----------------------------------------------------------------------------------------------------------------");
+		writer
+				.println("Welcome to Configuration Manager 9999! Here you will find very [un]useful commands to restrict your worker ant.");
+		writer
+				.println("-----------------------------------------------------------------------------------------------------------------");
 		writer.println("Commands list:");
 		writer.println("(not case sensitive)");
-		writer.println("blacklist <ip> \t\t Add a well formed ip to the blacklist.");
-		writer.println("user <username> \t\t Set <username> as target for configuration");
+		writer
+				.println("blacklist <ip> \t\t Add a well formed ip to the blacklist.");
+		writer
+				.println("user <username> \t\t Set <username> as target for configuration");
 		writer.println("commit \t\t Commit changes, if there are.");
 		writer.println("exit \t\t Return to human life.");
-		writer.println("set rotate|leet <value> \t\t Set transformation values. Expected: boolean");
-		writer.println("set maxlogins <value> \t\t Set maximum logins per day for a user. Expected: integer");
-		writer.println("set server <value> \t\t Set user default server. Expected: string");
-		writer.println("set schedule_min|schedule_max <value> \t\t Set user schedule restriction. Expected: integer in range 0-1440");
-		writer.println("set date_min|date_max <value> \t\t Set delete date restriction. Expected: date with pattern dd/mm/yyyy");
-		writer.println("set size_min|size_max <value> \t\t Set delete size restriction. Expected: integer");
-		writer.println("set structure <value> \t\t Set a delete restriction by message structure. Expected: ATTACH, NOATTACH or SENDERCOUNT_G <min_qty_of_senders>");
-		writer.println("add content <value> \t\t Add a delete restriction by content. Expected: string");
-		writer.println("add header <value> \t\t Add a delete restriction by header pattern. Expected: string");
-		writer.println("add sender <value> \t\t Add a delete restriction by sender. Expected: string");
+		writer
+				.println("set rotate|leet <value> \t\t Set transformation values. Expected: boolean");
+		writer
+				.println("set maxlogins <value> \t\t Set maximum logins per day for a user. Expected: integer");
+		writer
+				.println("set server <value> \t\t Set user default server. Expected: string");
+		writer
+				.println("set schedule_min|schedule_max <value> \t\t Set user schedule restriction. Expected: integer in range 0-1440");
+		writer
+				.println("set date_min|date_max <value> \t\t Set delete date restriction. Expected: date with pattern dd/mm/yyyy");
+		writer
+				.println("set size_min|size_max <value> \t\t Set delete size restriction. Expected: integer");
+		writer
+				.println("set structure <value> \t\t Set a delete restriction by message structure. Expected: ATTACH, NOATTACH or SENDERCOUNT_G <min_qty_of_senders>");
+		writer
+				.println("add content <value> \t\t Add a delete restriction by content. Expected: string");
+		writer
+				.println("add header <value> \t\t Add a delete restriction by header pattern. Expected: string");
+		writer
+				.println("add sender <value> \t\t Add a delete restriction by sender. Expected: string");
 		writer.println("That's it, that's all.");
 
 	}
