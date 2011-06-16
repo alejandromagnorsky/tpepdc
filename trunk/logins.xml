@@ -10,4 +10,9 @@
         <quantity>5</quantity>
         <date>2011-06-15-03:00</date>
     </userLoginList>
+    <userLoginList>
+        <user>tpepdc</user>
+        <quantity>1</quantity>
+        <date>2011-06-15-03:00</date>
+    </userLoginList>
 </XMLLoginLogRoot>

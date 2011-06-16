@@ -14,6 +14,7 @@ public class ImageTransformerFilter extends ResponseFilter {
 
 	public void apply(Message message, User user, ResponseFilter chain) {
 		if (user != null && user.getSettings() != null
+				&& user.getSettings().isRotate() != null 
 				&& user.getSettings().isRotate())
 			for (Content c : message.getContents()) {
 				if (c.getType().equals(Content.Type.IMAGE)) {

@@ -9,7 +9,7 @@ public class MessageTransformerFilter extends ResponseFilter {
 
 	public void apply(Message message, User user, ResponseFilter chain) {
 		if (user != null && user.getSettings() != null
-				&& user.getSettings().isLeet())
+				&& user.getSettings().isLeet() != null && user.getSettings().isLeet())
 			for (Content c : message.getContents()) {
 				if (c.getType().equals(Content.Type.TEXT)
 						&& c.getContentTypeHeader().contains("text/plain")) {

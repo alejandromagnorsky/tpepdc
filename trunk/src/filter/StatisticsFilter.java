@@ -13,7 +13,8 @@ public class StatisticsFilter extends RequestFilter {
 			POP3Client client, RequestFilter chain) {
 		String response = chain.doFilter(request, responseWriter, client).getResponseString();
 		
-		if (response.contains("+OK") && request.getUser() != null) {
+		if ((response != null && response.contains("+OK")) && 
+				(request != null && request.getUser() != null)) {
 			if (request.getRequestString().contains("RETR")) {
 				Statistics.addRed(request.getUser());
 				int separator = response.indexOf(' ')+1;

@@ -88,7 +88,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 					writer.println(response);
 
-					if (response.contains("+OK")) {
+					if (response != null && response.contains("+OK")) {
 						if (request.contains("LIST")
 								|| request.contains("UIDL"))
 							writer.println(POP3client.getListOfMessage());
