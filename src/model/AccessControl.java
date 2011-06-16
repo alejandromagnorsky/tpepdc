@@ -16,11 +16,6 @@ public final class AccessControl {
 		int to = range.getTo();
 		int now = new DateTime().getMinuteOfDay();
 
-		// TODO ver esta validacion
-		// if(to < from || to > 24 || from < 0) {
-		// throw new IllegalArgumentException();
-		// }
-
 		if (from > now || to < now) {
 			return true;
 		}

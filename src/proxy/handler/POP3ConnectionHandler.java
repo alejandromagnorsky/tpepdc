@@ -22,7 +22,7 @@ import filter.StatisticsFilter;
 public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private POP3Client POP3client;
-	public static String DEFAULT_SERVER = "pop3.alu.itba.edu.ar";
+	public static String DEFAULT_SERVER = "10.6.0.175";
 
 	private RequestFilter requestFilterChain;
 

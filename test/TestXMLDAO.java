@@ -10,7 +10,7 @@ import org.junit.Test;
 import dao.XMLSettingsDAO;
 
 public class TestXMLDAO extends TestCase {
-
+	
 	@Test
 	public void testSettingsLoad() {
 		XMLSettingsDAO loader = XMLSettingsDAO.getInstance();

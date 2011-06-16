@@ -75,7 +75,7 @@ public class Message {
 			
 			builder.append(message.charAt(i));
 			
-			if(count == 77){
+			if(count == 76){
 				count = 0;
 				builder.append('\n');			
 			}
