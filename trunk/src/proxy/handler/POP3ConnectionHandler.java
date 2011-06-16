@@ -3,8 +3,6 @@ package proxy.handler;
 import java.io.IOException;
 import java.net.Socket;
 
-import dao.XMLSettingsDAO;
-
 import model.Message;
 import proxy.POP3Client;
 import filter.AccessRequestFilter;
@@ -22,7 +20,7 @@ import filter.StatisticsFilter;
 public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private POP3Client POP3client;
-	public static String DEFAULT_SERVER = "10.6.0.175";
+	public static String DEFAULT_SERVER = "pop3.alu.itba.edu.ar";
 
 	private RequestFilter requestFilterChain;
 

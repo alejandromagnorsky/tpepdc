@@ -2,7 +2,7 @@ package model;
 
 public class User {
 
-	private String name;
+	private String name = new String("");
 	private UserSettings settings;
 
 	public User(String name) {

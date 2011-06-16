@@ -3,10 +3,7 @@ package proxy.handler;
 import java.io.IOException;
 import java.net.Socket;
 
-import proxy.POP3Proxy;
-
 import model.Administrator;
-
 import dao.XMLAdminDAO;
 
 public abstract class ServiceConnectionHandler extends ConnectionHandler {

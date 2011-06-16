@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <XMLProxySettings>
-    <user max-logins="1" name="tpepdc">
+    <user max-logins="0" name="tpepdc">
         <erase-settings>
             <date>
                 <from>2001-01-01-03:00</from>

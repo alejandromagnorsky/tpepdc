@@ -5,37 +5,49 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import proxy.POP3Proxy;
 import dao.XMLLoginLogDAO;
 
 public final class AccessControl {
 
 	public static boolean hourIsOutOfRange(User user) {
-		Range<Integer> range = user.getSettings().getSchedule();
-		int from = range.getFrom();
-		int to = range.getTo();
-		int now = new DateTime().getMinuteOfDay();
+		if (user != null && user.getSettings() != null) {
+			Range<Integer> range = user.getSettings().getSchedule();
 
-		if (from > now || to < now) {
-			return true;
+			if (range == null || range.getFrom() == null || range.getTo() == null)
+				return false;
+
+			int from = range.getFrom();
+			int to = range.getTo();
+			int now = new DateTime().getMinuteOfDay();
+
+			if (from > now || to < now) {
+				return true;
+			}
+
+			return false;
 		}
-
 		return false;
 	}
 
 	public static boolean exceedsMaxLogins(User user) {
-		int maxLogins = user.getSettings().getMaxLogins();
-		LocalDate today = new LocalDate();
+		if (user != null && user.getSettings() != null) {
+			Integer maxLogins = user.getSettings().getMaxLogins();
+			if (maxLogins == null)
+				return false;
+			LocalDate today = new LocalDate();
 
-		XMLLoginLogDAO dao = XMLLoginLogDAO.getInstance();
-		int qty = dao.getUserLogins(user, today);
+			XMLLoginLogDAO dao = XMLLoginLogDAO.getInstance();
+			int qty = dao.getUserLogins(user, today);
 
-		if (qty < maxLogins) {
-			dao.saveLogin(user, today, qty + 1);
-			dao.commit();
-			return false;
+			if (qty < maxLogins) {
+				dao.saveLogin(user, today, qty + 1);
+				dao.commit();
+				return false;
+			}
+
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public static boolean ipIsDenied(List<String> ipBlackList, String ip) {
