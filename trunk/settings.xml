@@ -15,7 +15,7 @@
             </size-bytes>
             <structure>noattach</structure>
         </erase-settings>
-        <transform-settings leet="true" rotate="true"/>
+        <transform-settings leet="false" rotate="true"/>
         <schedule>
             <from>60</from>
             <to>1440</to>

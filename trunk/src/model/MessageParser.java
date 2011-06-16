@@ -49,7 +49,7 @@ public class MessageParser {
 				continue;
 
 			int separator = response.indexOf(":");
-			if (separator == -1)
+			if (separator == -1 || (separator != response.lastIndexOf(":") && !response.contains("Date")))
 				continue;
 
 			headerName = response.substring(0, separator);

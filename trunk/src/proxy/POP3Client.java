@@ -14,15 +14,17 @@ import javax.imageio.ImageIO;
 import model.Content;
 import model.ImageContent;
 import model.Message;
-import model.MessageAssembler;
 import model.MessageParser;
 import model.OtherContent;
 import model.TextContent;
 
 import org.apache.commons.codec.binary.Base64;
 
+import dao.XMLSettingsDAO;
+import dao.settings.XMLSettings;
 import filter.ImageTransformerFilter;
 import filter.MessageTransformerFilter;
+import filter.NullResponseFilter;
 
 public class POP3Client extends Client {
 
@@ -66,8 +68,10 @@ public class POP3Client extends Client {
 		return listBuilder.toString();
 	}
 
+	// main para pruebas
 	public static void main(String args[]) {
 		try {
+			XMLSettingsDAO dao = XMLSettingsDAO.getInstance();
 			POP3Client client = new POP3Client();
 			client.reader = new BufferedReader(new FileReader("email.txt"));
 			Message message = client.getMessage();
@@ -84,9 +88,9 @@ public class POP3Client extends Client {
 					System.out.println("--------------------------");
 					System.out.println("IMAGE");
 					ImageTransformerFilter rotate = new ImageTransformerFilter();
-//					rotate.apply(message);
 					ImageIO.write(((ImageContent) content).getImage(), "png",
 							new File("email.png"));
+					rotate.apply(message, dao.getUser("tpepdc"), new NullResponseFilter());
 
 					Image image = ((ImageContent) content).getImage();
 
@@ -126,6 +130,7 @@ public class POP3Client extends Client {
 			byte[] imageInBytes = Base64.decodeBase64(base64String);
 			return ImageIO.read(new ByteArrayInputStream(imageInBytes));
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
