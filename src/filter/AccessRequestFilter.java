@@ -35,6 +35,7 @@ public class AccessRequestFilter extends RequestFilter {
 			String ip = userSocket.getInetAddress().toString().substring(1);
 			boolean accessDenied = ipIsBlacklisted(responseWriter, ip);
 			POP3Proxy.logger.info(request);
+			
 			if (request.toUpperCase().contains("USER ")
 					&& !client.isConnected()) {
 				String server = POP3ConnectionHandler.DEFAULT_SERVER;
@@ -47,10 +48,8 @@ public class AccessRequestFilter extends RequestFilter {
 					if (userServer != null && !userServer.equals("")) {
 						server = userServer;
 					}
-					accessDenied = accessDenied
-							&& accessIsDenied(responseWriter, ip);
+					accessDenied = accessIsDenied(responseWriter, ip) && accessDenied;
 				}
-
 				if (!accessDenied) {
 					client.connect(server);
 
