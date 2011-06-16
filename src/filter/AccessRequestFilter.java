@@ -48,7 +48,7 @@ public class AccessRequestFilter extends RequestFilter {
 					if (userServer != null && !userServer.equals("")) {
 						server = userServer;
 					}
-					accessDenied = accessIsDenied(responseWriter, ip) && accessDenied;
+					accessDenied = accessIsDenied(responseWriter, ip) || accessDenied;
 				}
 				if (!accessDenied) {
 					client.connect(server);

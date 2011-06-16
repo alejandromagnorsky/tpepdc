@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.joda.time.DateTime;
 
 public class EraseSettings {
@@ -13,8 +12,7 @@ public class EraseSettings {
 	private List<String> senders = new ArrayList<String>();
 	private List<String> contentTypes = new ArrayList<String>();;
 	private List<String> headerPatterns = new ArrayList<String>();;
-	private String structure = null;
-
+	private String structure = new String("");
 
 	public List<String> getSenders() {
 		return senders;
