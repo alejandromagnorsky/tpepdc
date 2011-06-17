@@ -28,8 +28,12 @@ public class EraseRequestFilter extends RequestFilter {
 		String request = r.getRequestString();
 		User user = r.getUser();
 
+		
+		// TODO
+		// Mariano, la longitud de una request puede ser mayor a 5
+		// si pones espacios adelante del comando
 		if (user != null && user.getSettings() != null
-				&& request.contains("DELE ") && request.length() > 5
+				&& request.toUpperCase().contains("DELE ") && request.length() > 5
 				&& client.isConnected()) {
 
 			String msgStr = request.substring(5);
@@ -51,8 +55,8 @@ public class EraseRequestFilter extends RequestFilter {
 		try {
 			String response = client.send(request);
 
-			if (response.contains("OK")) {
-				Message message = client.getMessage();
+			if (response.contains("+OK")) {
+				Message message = client.getMessage(writer);
 
 				Map<String, List<String>> headers = message.getHeaders();
 

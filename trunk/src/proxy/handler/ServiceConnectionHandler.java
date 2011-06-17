@@ -20,15 +20,17 @@ public abstract class ServiceConnectionHandler extends ConnectionHandler {
 		try {
 			do {
 				request = reader.readLine();
-				if (!request.toUpperCase().contains("LOGIN"))
+				if (request != null && !request.toUpperCase().contains("LOGIN"))
 					writer.println("ERROR. Login first");
 				else
 					login = true;
-			} while (!login);
+			} while (request != null && !login);
 		} catch (IOException e) {
 			return false;
 		}
 
+		if(request == null)
+			return false;
 		String[] args = request.split(" ");
 		if (args.length != 3)
 			return false;

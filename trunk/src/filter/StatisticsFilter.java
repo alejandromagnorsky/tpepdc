@@ -15,7 +15,7 @@ public class StatisticsFilter extends RequestFilter {
 		
 		if ((response != null && response.contains("+OK")) && 
 				(request != null && request.getUser() != null)) {
-			if (request.getRequestString().contains("RETR")) {
+			if (request.getRequestString().toUpperCase().contains("RETR")) {
 				Statistics.addRed(request.getUser());
 				int separator = response.indexOf(' ')+1;
 				try{
@@ -27,7 +27,7 @@ public class StatisticsFilter extends RequestFilter {
 			}
 			else if (request.getRequestString().toUpperCase().contains("PASS"))
 				Statistics.addAccess(request.getUser());
-			else if (request.getRequestString().contains("DELE"))
+			else if (request.getRequestString().toUpperCase().contains("DELE"))
 				Statistics.addDeleted(request.getUser());
 		}
 		return new Response(request.getUser(), response);

@@ -20,10 +20,7 @@ import filter.StatisticsFilter;
 public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private POP3Client POP3client;
-	public static String DEFAULT_SERVER = "pop3.alu.itba.edu.ar";
-
 	private RequestFilter requestFilterChain;
-
 	private ResponseFilter responseFilterChain;
 
 	public POP3ConnectionHandler(Socket socket) {
@@ -74,10 +71,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					writer.println(".");
 				}
 
-				if (request != null && !request.toUpperCase().contains("PASS")
-						&& !request.toUpperCase().contains("USER"))
-					request = request.toUpperCase();
-
 				if (request != null && !request.isEmpty()) {
 					Response rsp = requestFilterChain.doFilter(new Request(
 							null, request), writer, POP3client);
@@ -87,19 +80,17 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					writer.println(response);
 
 					if (response != null && response.contains("+OK")) {
-						if (request.contains("LIST")
-								|| request.contains("UIDL"))
+						if (request.toUpperCase().contains("LIST")
+								|| request.toUpperCase().contains("UIDL"))
 							writer.println(POP3client.getListOfMessage());
-						else if (request.contains("RETR")) {
-							Message message = POP3client.getMessage();
-							responseFilterChain
-									.doFilter(message, rsp.getUser());
-							writer.println(message.reconstruct());
+						else if (request.toUpperCase().contains("RETR")) {
+							Message message = POP3client.getMessage(writer);
+							responseFilterChain.doFilter(message, rsp.getUser());
 						}
 					}
 				}
 			} while (isConnected()
-					&& (request != null && !request.contains("QUIT")));
+					&& (request != null && !request.toUpperCase().contains("QUIT")));
 
 			if (POP3client.isConnected())
 				POP3client.disconnect();

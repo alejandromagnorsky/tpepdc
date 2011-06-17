@@ -8,7 +8,6 @@ import model.AccessControl;
 import model.User;
 import proxy.POP3Client;
 import proxy.POP3Proxy;
-import proxy.handler.POP3ConnectionHandler;
 import dao.XMLSettingsDAO;
 
 public class AccessRequestFilter extends RequestFilter {
@@ -38,7 +37,7 @@ public class AccessRequestFilter extends RequestFilter {
 			
 			if (request.toUpperCase().contains("USER ")
 					&& !client.isConnected()) {
-				String server = POP3ConnectionHandler.DEFAULT_SERVER;
+				String server = POP3Proxy.DEFAULT_SERVER;
 
 				user = loader.getUser(request.substring(request
 						.lastIndexOf(' ') + 1));
