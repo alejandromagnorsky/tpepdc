@@ -1,37 +1,15 @@
 package proxy;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 
-import javax.imageio.ImageIO;
-
-import model.Content;
-import model.ImageContent;
 import model.Message;
 import model.MessageParser;
-import model.OtherContent;
-import model.TextContent;
-
-import org.apache.commons.codec.binary.Base64;
-
-import dao.XMLSettingsDAO;
-import dao.settings.XMLSettings;
-import filter.ImageTransformerFilter;
-import filter.MessageTransformerFilter;
-import filter.NullResponseFilter;
 
 public class POP3Client extends Client {
 
-	private static final int PORT = 110;
-
 	public void connect(String host) throws IOException {
-		connect(host, PORT);
+		connect(host, POP3Proxy.DEFAULT_PORT);
 		// To automatically read the welcome message
 		readResponseLine();
 	}
@@ -53,9 +31,9 @@ public class POP3Client extends Client {
 		return Integer.parseInt(response.split(" ")[1]);
 	}
 
-	public Message getMessage() throws IOException {
+	public Message getMessage(PrintWriter writer) throws IOException {
 		MessageParser messageParser = new MessageParser(reader);
-		return messageParser.parseMessage();
+		return messageParser.parseMessage(writer);
 	}
 
 	public String getListOfMessage() throws IOException {
@@ -68,7 +46,7 @@ public class POP3Client extends Client {
 		return listBuilder.toString();
 	}
 
-	// main para pruebas
+	/* main para pruebas
 	public static void main(String args[]) {
 		try {
 			XMLSettingsDAO dao = XMLSettingsDAO.getInstance();
@@ -81,7 +59,7 @@ public class POP3Client extends Client {
 					System.out.println("--------------------------");
 					System.out.println("TEXT");
 					MessageTransformerFilter mstr = new MessageTransformerFilter();
-//					mstr.apply(message);
+					//mstr.apply(message);
 					System.out.println(((TextContent) content).getText());
 					System.out.println("--------------------------");
 				} else if (content.getType().equals(Content.Type.IMAGE)) {
@@ -146,5 +124,5 @@ public class POP3Client extends Client {
 			e.printStackTrace();
 		}
 		return null;
-	}
+	}*/
 }

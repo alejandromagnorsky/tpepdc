@@ -1,8 +1,10 @@
 package proxy;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -10,20 +12,36 @@ import org.apache.log4j.PropertyConfigurator;
 import proxy.handler.POP3ConnectionHandler;
 import statistics.StatisticsServer;
 
-/*
- * user: tpepdc@yahoo.com.ar
- * pass: 123456
- * 
- */
-
 public class POP3Proxy {
 
 	private static int POP3_PORT = 9999;
+	public static String DEFAULT_SERVER;
+	public static int DEFAULT_PORT;
 	public static Logger logger = Logger.getLogger("logger");
 
 	public static void main(String args[]) {
-		PropertyConfigurator.configure("resources/log4j.properties");
+		try {
+			// TODO Modificar cuando este bien el pom.xml
+			//Properties log4jProperties = new Properties();
+			//log4jProperties.load(POP3Proxy.class.getResourceAsStream("log4j.properties"));
+			PropertyConfigurator.configure("resources/log4j.properties");
+		} catch (Exception e) {
+			System.out.println("Error loading logger");
+			return;
+		}
 		logger.info("Logger started");
+
+		try {
+			Properties prop = new Properties();
+			// TODO Modificar cuando este bien el pom.xml
+			//prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
+			prop.load(new FileInputStream("resources/proxy.properties"));
+			DEFAULT_SERVER = prop.getProperty("default_server");
+			DEFAULT_PORT = Integer.valueOf(prop.getProperty("default_port"));
+		} catch (Exception e) {
+			System.out.println("Error loading proxy properties");
+			return;
+		}
 
 		Thread configuration = new Thread(new ConfigurationServer());
 		configuration.setName("ConfigurationServer");

@@ -9,16 +9,10 @@ import java.util.TreeSet;
 
 public class Message {
 
-	private final Map<String, List<String>> headers;
-	private String mainHeader;
+	private final Map<String, List<String>> headers = new HashMap<String, List<String>>();
 	private SortedSet<Content> orderedContent = new TreeSet<Content>();
 	private Map<Content.Type, List<Content>> contentMap = new HashMap<Content.Type, List<Content>>();
 	private String body;
-
-	protected Message(Map<String, List<String>> headers, String mainHeader) {
-		this.headers = headers;
-		this.mainHeader = mainHeader;
-	}
 
 	public Map<String, List<String>> getHeaders() {
 		return headers;
@@ -30,14 +24,6 @@ public class Message {
 
 	public void setBody(String body) {
 		this.body = body;
-	}
-
-	public String getMainHeader() {
-		return mainHeader;
-	}
-
-	public void setMainHeader(String mainHeader) {
-		this.mainHeader = mainHeader;
 	}
 
 	public void addContent(Content content) {
@@ -53,12 +39,14 @@ public class Message {
 	public SortedSet<Content> getContents() {
 		return this.orderedContent;
 	}
-
-	public String reconstruct() {
-		MessageAssembler messageAssembler = new MessageAssembler();
-		String message = messageAssembler.getMessage(this);
-		String finalMessage = putEnters(message);
-		return finalMessage;
+	
+	public void addHeaderValue(String headerName, String headerValue){
+		List<String> headerValues = headers.get(headerName); 
+		if (headerValues == null) {
+			headerValues = new ArrayList<String>();
+			headers.put(headerName, headerValues);
+		}
+		headerValues.add(headerValue.toString());
 	}
 
 	public String putEnters(String message) {
