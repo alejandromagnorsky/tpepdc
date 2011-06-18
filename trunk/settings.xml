@@ -1,2 +1,86 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<XMLProxySettings/>
+<XMLProxySettings>
+    <user max-logins="40" name="tpepdc">
+        <erase-settings>
+            <date>
+                <from>2001-01-01-03:00</from>
+                <to>2030-10-02-03:00</to>
+            </date>
+            <sender>sender</sender>
+            <header-pattern>From a*</header-pattern>
+            <header-pattern>To: Jimena</header-pattern>
+            <header-pattern>From:Mariano</header-pattern>
+            <content-type>content-type</content-type>
+            <size-bytes>
+                <from>300</from>
+                <to>50400</to>
+            </size-bytes>
+            <structure>noattach</structure>
+        </erase-settings>
+        <transform-settings leet="false" rotate="true"/>
+        <schedule>
+            <from>60</from>
+            <to>1440</to>
+        </schedule>
+        <server>pop.mail.yahoo.com.ar</server>
+    </user>
+    <user max-logins="10" name="Goku">
+        <erase-settings>
+            <date/>
+            <size-bytes/>
+        </erase-settings>
+        <transform-settings leet="true"/>
+        <schedule/>
+    </user>
+    <user max-logins="10" name="ndamonte">
+        <erase-settings>
+            <date>
+                <from>2001-01-01-03:00</from>
+                <to>2030-10-02-03:00</to>
+            </date>
+            <sender>sender</sender>
+            <header-pattern>From a*</header-pattern>
+            <content-type>content-type</content-type>
+            <size-bytes>
+                <from>300</from>
+                <to>50400</to>
+            </size-bytes>
+            <structure>noattach</structure>
+        </erase-settings>
+        <transform-settings leet="true" rotate="true"/>
+        <schedule>
+            <from>60</from>
+            <to>1440</to>
+        </schedule>
+        <server>pop3.alu.itba.edu.ar</server>
+    </user>
+    <user max-logins="10" name="Vegeta">
+        <erase-settings>
+            <date/>
+            <size-bytes/>
+        </erase-settings>
+        <transform-settings leet="true"/>
+        <schedule/>
+    </user>
+    <user max-logins="10" name="ndamonte">
+        <erase-settings>
+            <date/>
+            <size-bytes/>
+        </erase-settings>
+        <transform-settings leet="false" rotate="false"/>
+        <schedule/>
+        <server>pop3.alu.itba.edu.ar</server>
+    </user>
+    <user name="pepe">
+        <erase-settings>
+            <date/>
+            <size-bytes/>
+        </erase-settings>
+        <transform-settings/>
+        <schedule/>
+    </user>
+    <blacklist>
+        <ip>186.136.102.62</ip>
+        <ip>200.200.200.23</ip>
+    </blacklist>
+</XMLProxySettings>
