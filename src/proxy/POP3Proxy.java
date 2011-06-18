@@ -14,7 +14,7 @@ import statistics.StatisticsServer;
 
 public class POP3Proxy {
 
-	private static int POP3_PORT = 9999;
+	private static int PROXY_PORT;
 	public static String DEFAULT_SERVER;
 	public static int DEFAULT_PORT;
 	public static Logger logger = Logger.getLogger("logger");
@@ -38,9 +38,12 @@ public class POP3Proxy {
 			prop.load(new FileInputStream("resources/proxy.properties"));
 			DEFAULT_SERVER = prop.getProperty("default_server");
 			DEFAULT_PORT = Integer.valueOf(prop.getProperty("default_port"));
+			PROXY_PORT = Integer.valueOf(prop.getProperty("proxy_port"));
 		} catch (Exception e) {
-			System.out.println("Error loading proxy properties");
-			return;
+			logger.fatal("Could not read properties file. Setting 9999 as proxy port, localhost as POP3 server and 110 as POP3 port...");
+			DEFAULT_SERVER = "localhost";
+			DEFAULT_PORT = 110;
+			PROXY_PORT = 9999;
 		}
 
 		Thread configuration = new Thread(new ConfigurationServer());
@@ -52,8 +55,8 @@ public class POP3Proxy {
 		statistics.start();
 
 		try {
-			ServerSocket server = new ServerSocket(POP3_PORT);
-			logger.info("Proxy POP3 listening in port " + POP3_PORT);
+			ServerSocket server = new ServerSocket(PROXY_PORT);
+			logger.info("Proxy POP3 listening in port " + PROXY_PORT);
 			while (true) {
 				Socket socket = server.accept();
 				logger.info("Connected to host " + socket.getInetAddress()
