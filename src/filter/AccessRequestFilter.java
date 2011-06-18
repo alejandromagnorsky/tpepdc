@@ -33,8 +33,7 @@ public class AccessRequestFilter extends RequestFilter {
 			// it is connected
 			String ip = userSocket.getInetAddress().toString().substring(1);
 			boolean accessDenied = ipIsBlacklisted(responseWriter, ip);
-			POP3Proxy.logger.info(request);
-			
+						
 			if (request.toUpperCase().contains("USER ")
 					&& !client.isConnected()) {
 				String server = POP3Proxy.DEFAULT_SERVER;
