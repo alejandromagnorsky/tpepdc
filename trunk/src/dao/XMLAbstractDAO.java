@@ -35,8 +35,20 @@ public abstract class XMLAbstractDAO<T> {
 	}
 
 	// This is the final commit to save the data
-	public synchronized void commit() {
-		marshal(dataFilename);
+	public synchronized boolean commit() {
+		return marshal(dataFilename);
+	}
+
+	private void persistRoot() {
+		rootElement = createRoot();
+		if (rootElement != null) {
+			if (commit()) {
+				logger.warn("XML empty root persisted.");
+				return;
+			} else
+				logger.warn("XML empty root could not be persisted. Temporary root created.");
+		} else
+			logger.fatal("XML empty root could not be created nor persisted. Prepare for unforeseen consequences.");
 	}
 
 	public synchronized void load() {
@@ -44,14 +56,13 @@ public abstract class XMLAbstractDAO<T> {
 		try {
 			input = new FileInputStream(dataFilename);
 		} catch (FileNotFoundException e) {
-			logger.info("XML file not found. Creating new empty file with base root...");
+			logger.warn("XML file " + dataFilename
+					+ " not found. Creating new empty file with base root...");
 			File f = new File(dataFilename);
 			try {
 				f.createNewFile();
 				input = new FileInputStream(dataFilename);
-				if (rootElement != null) {
-					commit();
-				}
+				persistRoot();
 			} catch (IOException e1) {
 				logger.fatal("Load FAILED: Could not create new empty file. Maybe privileges are needed?");
 				return;
@@ -59,9 +70,14 @@ public abstract class XMLAbstractDAO<T> {
 		}
 		rootElement = unmarshal(input, new File(schemaFilename));
 
-		if (rootElement == null)
-			throw new IllegalAccessError("Error reading XML file "
-					+ dataFilename + " with schema " + schemaFilename + ".");
+		if (rootElement == null) {
+			logger.warn("Creating valid empty XML file with root...");
+			dataFilename = "." + dataFilename + ".valid";
+			persistRoot();
+			logger.info("XML File exists but is invalid and could not be loaded: an empty valid root was created to prevent future errors. Temporary file: "
+					+ dataFilename);
+			return;
+		}
 
 		logger.info("Loaded XML " + dataFilename + " with schema "
 				+ schemaFilename + " ...");
@@ -69,7 +85,7 @@ public abstract class XMLAbstractDAO<T> {
 
 	protected abstract T createRoot();
 
-	private void marshal(String filename) {
+	private boolean marshal(String filename) {
 		try {
 			JAXBContext context = JAXBContext.newInstance(rootElement
 					.getClass().getPackage().getName());
@@ -87,14 +103,15 @@ public abstract class XMLAbstractDAO<T> {
 					output = new FileOutputStream(filename);
 				} catch (IOException e1) {
 					logger.fatal("Commit FAILED: Could not create new empty file. Maybe privileges are needed?");
-					return;
+					return false;
 				}
 			}
 			m.marshal(rootElement, output);
 		} catch (JAXBException e) {
 			logger.fatal("Commit FAILED: JAXBException.");
-			return;
+			return false;
 		}
+		return true;
 	}
 
 	// Unmarshal and validate XML file
@@ -126,8 +143,9 @@ public abstract class XMLAbstractDAO<T> {
 		} finally {
 			if (vec != null && vec.hasEvents()) {
 
-				logger.fatal("Error validating XML file " + dataFilename);
-
+				logger.fatal("Error validating XML file " + dataFilename
+						+ " with schema " + schemaFilename
+						+ ". XML is either invalid or empty.");
 				for (ValidationEvent ve : vec.getEvents()) {
 					String msg = ve.getMessage();
 					ValidationEventLocator vel = ve.getLocator();
