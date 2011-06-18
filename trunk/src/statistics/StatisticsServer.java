@@ -1,7 +1,9 @@
 package statistics;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
@@ -11,8 +13,22 @@ import proxy.handler.StatisticsConnectionHandler;
 
 public class StatisticsServer implements Runnable {
 
-	private static int STATISTICS_PORT = 9008;
+	private static int STATISTICS_PORT;
 	private static Logger logger = Logger.getLogger("logger");
+	
+	public StatisticsServer(){
+		Properties prop = new Properties();
+		// TODO Modificar cuando este bien el pom.xml
+		// prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
+		try {
+			prop.load(new FileInputStream("resources/proxy.properties"));
+			STATISTICS_PORT = Integer.valueOf(prop
+					.getProperty("statistics_port"));
+		} catch (Exception e) {
+			logger.fatal("Could not read properties file. Setting 9008 as statistics port server...");
+			STATISTICS_PORT = 9008;
+		}
+	}
 	
 	public void run() {
 		try {

@@ -32,8 +32,8 @@ public class POP3Client extends Client {
 	}
 
 	public Message getMessage(PrintWriter writer) throws IOException {
-		MessageParser messageParser = new MessageParser(reader);
-		return messageParser.parseMessage(writer);
+		MessageParser messageParser = new MessageParser(reader, writer);
+		return messageParser.parseMessage();
 	}
 
 	public String getListOfMessage() throws IOException {

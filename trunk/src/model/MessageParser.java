@@ -17,10 +17,12 @@ public class MessageParser {
 
 	private int id;
 	private BufferedReader reader;
+	private PrintWriter writer;
 
-	public MessageParser(BufferedReader reader) {
+	public MessageParser(BufferedReader reader, PrintWriter writer) {
 		this.id = 0;
 		this.reader = reader;
+		this.writer = writer;
 	}
 
 	private String readResponseLine() throws IOException {
@@ -29,15 +31,15 @@ public class MessageParser {
 		return response;
 	}
 
-	public Message parseMessage(PrintWriter writer) throws IOException {
+	public Message parseMessage() throws IOException {
 		Message message = new Message();
 		String response = readResponseLine();
-		processHeaders(response, message, writer);
-		processBody(message, writer);
+		parseHeaders(response, message);
+		parseBody(message);
 		return message;
 	}
 
-	private void processHeaders(String response, Message message, PrintWriter writer) throws IOException {
+	private void parseHeaders(String response, Message message) throws IOException {
 		String headerName = null;
 		StringBuilder headerValue = new StringBuilder();
 		do {
@@ -66,10 +68,10 @@ public class MessageParser {
 			return;
 		}
 		else
-			processHeaders(response, message, writer);
+			parseHeaders(response, message);
 	}
 	
-	private void processBody(Message message, PrintWriter writer) throws IOException {
+	private void parseBody(Message message) throws IOException {
 		String response, contentTypeHeader, boundary = "";
 		if(message.getHeaders().get("Content-Type") == null)
 			contentTypeHeader = "Content-Type: text/plain";
@@ -77,21 +79,21 @@ public class MessageParser {
 			contentTypeHeader = "Content-Type: " + message.getHeaders().get("Content-Type").get(0);
 				
 		if (contentTypeHeader.toUpperCase().contains("MULTIPART"))
-			boundary = getBoundary(contentTypeHeader, writer);
+			boundary = getBoundary(contentTypeHeader);
 
 		if (boundary.isEmpty())
 			// Single content
-			putContent(message, contentTypeHeader, boundary, writer);
+			putContent(message, contentTypeHeader, boundary);
 		else {
 			// Multipart content
 			do
-				processContents(message, boundary, writer);
+				parseContents(message, boundary);
 			while (!(response = readResponseLine()).equals("."));
 		}
 		writer.println(".");
 	}
 
-	private String putContent(Message message, String header, String boundary, PrintWriter writer) throws IOException {
+	private String putContent(Message message, String header, String boundary) throws IOException {
 		Content content;
 		String response, contentTypeHeader = header.substring(header.indexOf(':') + 2);
 		String type = contentTypeHeader.substring(0, contentTypeHeader.indexOf('/'));
@@ -150,7 +152,7 @@ public class MessageParser {
 		return response;
 	}
 
-	private void processContents(Message message, String boundary, PrintWriter writer) throws IOException {
+	private void parseContents(Message message, String boundary) throws IOException {
 		String response = readResponseLine();
 
 		if (response.contains("--" + boundary))
@@ -161,23 +163,23 @@ public class MessageParser {
 			if (response.toUpperCase().contains("MULTIPART")) {
 				writer.println("--" + boundary);
 				writer.println(response);
-				String subBoundary = getBoundary(response, writer);
+				String subBoundary = getBoundary(response);
 				writer.println();
 				response = readResponseLine();
-				processContents(message, subBoundary, writer);
+				parseContents(message, subBoundary);
 			} else {
-				response = putContent(message, response, boundary, writer);
+				response = putContent(message, response, boundary);
 				if (response.equals("--" + boundary + "--")) {
 					writer.println(response);
 					return;
 				}
-				processContents(message, boundary, writer);
+				parseContents(message, boundary);
 			}
 		}
 	}
 	
 
-	private String getBoundary(String line, PrintWriter writer) throws IOException {
+	private String getBoundary(String line) throws IOException {
 		if(line.indexOf("=") == -1){
 			line = readResponseLine();
 			writer.println(line);

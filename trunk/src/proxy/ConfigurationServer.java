@@ -12,7 +12,7 @@ import proxy.handler.ConfigurationServiceHandler;
 
 public class ConfigurationServer implements Runnable {
 
-	private static int CONFIGURATION_PORT = 9007;
+	private static int CONFIGURATION_PORT;
 	private static Logger logger = Logger.getLogger("logger");
 
 	public ConfigurationServer() {
@@ -25,7 +25,7 @@ public class ConfigurationServer implements Runnable {
 			CONFIGURATION_PORT = Integer.valueOf(prop
 					.getProperty("config_port"));
 		} catch (Exception e) {
-			logger.fatal("Could not read properties file. Setting 9007 as default configuration port server...");
+			logger.fatal("Could not read properties file. Setting 9007 as configuration port server...");
 			CONFIGURATION_PORT = 9007;
 		}
 	}
