@@ -16,7 +16,9 @@ public class XMLAdminDAO extends XMLAbstractDAO<XMLAdminRoot> {
 	}
 
 	private XMLAdminDAO() {
-		super("admin.xml", "src/admin.xsd");
+		// Memory filenames in case everything fails
+		super("resources/admin.xml", "resources/admin.xsd", "admin.xml", "admin.schema");
+
 		load();
 	}
 

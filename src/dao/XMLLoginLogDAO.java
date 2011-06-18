@@ -24,7 +24,7 @@ public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 	}
 
 	private XMLLoginLogDAO() {
-		super("logins.xml", "src/loginLog.xsd");
+		super("resources/logins.xml", "resources/logins.xsd", "login.xml", "login.schema");
 		load();
 	}
 
