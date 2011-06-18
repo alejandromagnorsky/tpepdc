@@ -47,7 +47,6 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 						} else if (request.toUpperCase()
 								.startsWith("BLACKLIST")) {
 							String[] args = request.split(" ");
-
 							if (args[1] != null
 									&& args[1]
 											.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\\\/[0-9]{2})?")) {
@@ -187,20 +186,22 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									response = "Error. Please enter a valid string value.";
 							} else if (request.toUpperCase().startsWith(
 									"ADD HEADER")) {
-								String[] args = request.split(" ");
-
-								if (args[2] != null) {
+								int argc = request.split(" ").length;
+								if (argc > 2) {
+									String tmp = "ADD HEADER";
+									String value = request.substring(tmp
+											.length() + 1);
 									EraseSettings erase = user.getSettings()
 											.getEraseSettings();
-									erase.addHeaderPattern(args[2]
-											.toLowerCase());
+									erase.addHeaderPattern(value);
+
 									changed = true;
 									response = "OK. Delete restriction by header pattern ["
-											+ args[2]
+											+ value
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "Error. Please enter a valid string value.";
+									response = "Error. Please enter a valid <header-field:regex> pattern.";
 							} else if (request.toUpperCase().startsWith(
 									"ADD SENDER")) {
 								String[] args = request.split(" ");
@@ -397,38 +398,24 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 	private void showHelp() {
 		writer.println("Hello, Dave.");
-		writer
-				.println("Welcome to Configuration Manager 9999! Here you will find very [un]useful commands to restrict your worker ant.");
-		writer
-				.println("-----------------------------------------------------------------------------------------------------------------");
+		writer.println("Welcome to Configuration Manager 9999! Here you will find very [un]useful commands to restrict your worker ant.");
+		writer.println("-----------------------------------------------------------------------------------------------------------------");
 		writer.println("Commands list:");
 		writer.println("(not case sensitive)");
-		writer
-				.println("blacklist <ip> \t\t Add a well formed ip to the blacklist.");
-		writer
-				.println("user <username> \t\t Set <username> as target for configuration");
+		writer.println("blacklist <ip> \t\t Add a well formed ip to the blacklist.");
+		writer.println("user <username> \t\t Set <username> as target for configuration");
 		writer.println("commit \t\t Commit changes, if there are.");
 		writer.println("exit \t\t Return to human life.");
-		writer
-				.println("set rotate|leet <value> \t\t Set transformation values. Expected: boolean");
-		writer
-				.println("set maxlogins <value> \t\t Set maximum logins per day for a user. Expected: integer");
-		writer
-				.println("set server <value> \t\t Set user default server. Expected: string");
-		writer
-				.println("set schedule_min|schedule_max <value> \t\t Set user schedule restriction. Expected: integer in range 0-1440");
-		writer
-				.println("set date_min|date_max <value> \t\t Set delete date restriction. Expected: date with pattern dd/mm/yyyy");
-		writer
-				.println("set size_min|size_max <value> \t\t Set delete size restriction. Expected: integer");
-		writer
-				.println("set structure <value> \t\t Set a delete restriction by message structure. Expected: ATTACH, NOATTACH or SENDERCOUNT_G <min_qty_of_senders>");
-		writer
-				.println("add content <value> \t\t Add a delete restriction by content. Expected: string");
-		writer
-				.println("add header <value> \t\t Add a delete restriction by header pattern. Expected: string");
-		writer
-				.println("add sender <value> \t\t Add a delete restriction by sender. Expected: string");
+		writer.println("set rotate|leet <value> \t\t Set transformation values. Expected: boolean");
+		writer.println("set maxlogins <value> \t\t Set maximum logins per day for a user. Expected: integer");
+		writer.println("set server <value> \t\t Set user default server. Expected: string");
+		writer.println("set schedule_min|schedule_max <value> \t\t Set user schedule restriction. Expected: integer in range 0-1440");
+		writer.println("set date_min|date_max <value> \t\t Set delete date restriction. Expected: date with pattern dd/mm/yyyy");
+		writer.println("set size_min|size_max <value> \t\t Set delete size restriction. Expected: integer");
+		writer.println("set structure <value> \t\t Set a delete restriction by message structure. Expected: ATTACH, NOATTACH or SENDERCOUNT_G <min_qty_of_senders>");
+		writer.println("add content <value> \t\t Add a delete restriction by content. Expected: string");
+		writer.println("add header <value> \t\t Add a delete restriction by header pattern. Expected: string");
+		writer.println("add sender <value> \t\t Add a delete restriction by sender. Expected: string");
 		writer.println("That's it, that's all.");
 
 	}

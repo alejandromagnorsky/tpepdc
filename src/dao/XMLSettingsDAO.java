@@ -23,11 +23,7 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
 	private XMLSettingsDAO() {
 		super("settings.xml", "src/settings.xsd");
-		try {
-			load();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		load();
 	}
 
 	private static XMLSettingsDAO instance = null;
@@ -35,7 +31,6 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 	public static XMLSettingsDAO getInstance() {
 		if (instance == null)
 			instance = new XMLSettingsDAO();
-
 		return instance;
 	}
 
@@ -104,7 +99,9 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 	}
 
 	public List<String> getBlacklistIP() {
-		return rootElement.getBlacklist().getIp();
+		if (rootElement != null && rootElement.getBlacklist() != null)
+			return rootElement.getBlacklist().getIp();
+		return new ArrayList<String>();
 	}
 
 	private XMLUser getXMLUser(User user) {
