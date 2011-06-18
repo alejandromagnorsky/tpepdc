@@ -28,23 +28,25 @@ public class EraseRequestFilter extends RequestFilter {
 		String request = r.getRequestString();
 		User user = r.getUser();
 
-		// TODO
-		// Mariano, la longitud de una request puede ser mayor a 5
-		// si pones espacios adelante del comando
-		// TODO HACER ESTO.
+		String trimmed = request.trim();
+
 		if (user != null && user.getSettings() != null
-				&& request.toUpperCase().contains("DELE ")
-				&& request.length() > 5 && client.isConnected()) {
+				&& user.getSettings().getEraseSettings() != null
+				&& trimmed.toUpperCase().contains("DELE")
+				&& trimmed.length() > 5 && client.isConnected()) {
 
-			String msgStr = request.substring(5);
-			Integer msgNumber = Integer.valueOf(msgStr);
-			if (msgNumber != null) {
-				int number = msgNumber;
-
-				if (!canDeleteMail(user, number, client, responseWriter))
-					;
-				return new Response(user, "");
+			String msgStr = trimmed.substring(5);
+			msgStr = msgStr.trim(); // Trim number
+			int number = 0;
+			try {
+				number = Integer.valueOf(msgStr);
+			} catch (NumberFormatException e) {
+				// TODO Logear esto.
+				return new Response(user, "-ERR invalid argument");
 			}
+
+			if (!canDeleteMail(user, number, client, responseWriter))
+				return new Response(user, "");
 		}
 		return chain.doFilter(r, responseWriter, client);
 	}

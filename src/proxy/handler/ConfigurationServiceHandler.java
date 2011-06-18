@@ -3,12 +3,14 @@ package proxy.handler;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Locale;
+import java.util.regex.PatternSyntaxException;
 
 import model.EraseSettings;
 import model.Range;
 import model.User;
 import model.UserSettings;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -18,6 +20,7 @@ import dao.XMLSettingsDAO;
 public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 	private XMLSettingsDAO loader = XMLSettingsDAO.getInstance();
+	private static Logger logger = Logger.getLogger("logger");
 	boolean changed = false;
 
 	public ConfigurationServiceHandler(Socket socket) {
@@ -30,207 +33,233 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 			User user = null;
 
 			if (validateLogin()) {
-				writer.println("OK. Welcome to the configuration service.");
+				writer.println("+OK. Welcome to the configuration service.");
+
+				// While user is logged
 				do {
 					response = "";
 					request = reader.readLine();
+					String args[] = request.split(" ");
+					int argc = args.length;
+
 					if (request != null) {
+
 						if (request.toUpperCase().equals("HELP")) {
 							showHelp();
+
 						} else if (request.toUpperCase().equals("COMMIT")) {
 							if (changed) {
 								loader.commit();
-								response = "OK. Commit successful.";
+								response = "+OK. Commit successful.";
 								changed = false;
 							} else
-								response = "OK. No new changes.";
+								response = "+OK. No new changes.";
+
+							// BLACKLIST
 						} else if (request.toUpperCase()
 								.startsWith("BLACKLIST")) {
-							String[] args = request.split(" ");
-							if (args[1] != null
-									&& args[1]
-											.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\\\/[0-9]{2})?")) {
-								loader.saveBlacklistedIP(args[1]);
-								changed = true;
-								response = "OK. Added " + args[1]
-										+ " to IP blacklist.";
-							} else
-								response = "Error. Please enter a valid IP value.";
-						} else if (request.toUpperCase().startsWith("USER ")) {
-							String username = request.substring(request
-									.lastIndexOf(' ') + 1);
-							user = loader.getUser(username);
-							if (user == null)
-								response = "ERROR. User " + username
-										+ " does not exist.";
-							else {
-								response = "OK. Setting " + user.getName()
-										+ " as configuration target.";
+							try {
+								if (argc > 1
+										&& args[1] != null
+										&& args[1]
+												.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\\\/[0-9]{2})?")) {
+									loader.saveBlacklistedIP(args[1]);
+									changed = true;
+									response = "+OK. Added " + args[1]
+											+ " to IP blacklist.";
+								} else
+									response = "-ERR. Please enter a valid IP value.";
+							} catch (PatternSyntaxException e) {
+								logger.fatal("Unexpected parsing error: IP regular expresion is invalid.");
 							}
+
+							// USER SET
+						} else if (request.toUpperCase().startsWith("USER ")) {
+
+							if (argc > 1) {
+								String username = args[1];
+
+								user = loader.getUser(username);
+								if (user == null)
+									response = "-ERR. User " + username
+											+ " does not exist.";
+								else {
+									response = "+OK. Setting " + user.getName()
+											+ " as configuration target.";
+								}
+							} else
+								response = "-ERR. Enter a username.";
+
 							// Commands need a user
 						} else if (user != null) {
+
 							if (request.toUpperCase()
 									.equals("GET USERSETTINGS")) {
 								response = printSettings(user.getSettings());
+
 							} else if (request.toUpperCase().equals(
 									"GET ERASESETTINGS")) {
 								response = printEraseSettings(user
 										.getSettings().getEraseSettings());
+
 							} else if (request.toUpperCase().startsWith(
 									"SET ROTATE")) {
 
-								String[] args = request.split(" ");
-
-								if (args[2] != null
+								if (argc > 2 && args[2] != null
 										&& Boolean.valueOf(args[2]) != null) {
 									Boolean rotate = Boolean.valueOf(args[2]);
 									user.getSettings().setRotate(rotate);
 									changed = true;
-									response = "OK. Rotate set to " + rotate
+									response = "+OK. Rotate set to " + rotate
 											+ " for user " + user.getName();
 								} else
-									response = "Error. Please enter a valid boolean value.";
+									response = "-ERR. Please enter a valid boolean value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET LEET")) {
-								String[] args = request.split(" ");
 
-								if (args[2] != null
+								if (argc > 2 && args[2] != null
 										&& Boolean.valueOf(args[2]) != null) {
 									Boolean leet = Boolean.valueOf(args[2]);
 									changed = true;
 									user.getSettings().setLeet(leet);
-									response = "OK. Leet set to " + leet
+									response = "+OK. Leet set to " + leet
 											+ " for user " + user.getName();
 								} else
-									response = "Error. Please enter a valid boolean value.";
+									response = "-ERR. Please enter a valid boolean value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET SERVER")) {
 
-								String[] args = request.split(" ");
-
-								if (args[2] != null) {
-									String server = args[2].toLowerCase();
+								if (argc > 2 && args[2] != null) {
+									String server = args[2];
 									user.getSettings().setServer(server);
 									changed = true;
-									response = "OK. Server set to " + server
+									response = "+OK. Server set to " + server
 											+ " for user " + user.getName();
 								} else
-									response = "Error. Please enter a valid string value.";
+									response = "-ERR. Please enter a valid string value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET MAXLOGINS")) {
 
-								String[] args = request.split(" ");
-
-								if (args[2] != null
-										&& Integer.valueOf(args[2]) != null) {
-									Integer maxLogins = Integer
-											.valueOf(args[2]);
-									changed = true;
-									user.getSettings().setMaxLogins(maxLogins);
-									response = "OK. Max logins set to "
-											+ maxLogins + " for user "
-											+ user.getName();
-								} else
-									response = "Error. Please enter a valid integer value.";
+								try {
+									if (argc > 2 && args[2] != null
+											&& Integer.valueOf(args[2]) != null) {
+										Integer maxLogins = Integer
+												.valueOf(args[2]);
+										changed = true;
+										user.getSettings().setMaxLogins(
+												maxLogins);
+										response = "+OK. Max logins set to "
+												+ maxLogins + " for user "
+												+ user.getName();
+									} else
+										response = "-ERR. Please enter a valid integer value.";
+								} catch (NumberFormatException e) {
+									response = "-ERR. Please enter a valid integer value.";
+								}
 
 							} else if (request.toUpperCase().startsWith(
 									"SET SCHEDULE_MIN")) {
 								response = setScheduleMinimum(user, request);
+
 							} else if (request.toUpperCase().startsWith(
 									"SET SCHEDULE_MAX")) {
 								response = setScheduleMaximum(user, request);
+
 							} else if (request.toUpperCase().startsWith(
 									"SET DATE_MIN")) {
 								response = setDateMinimum(user, request);
+
 							} else if (request.toUpperCase().startsWith(
 									"SET DATE_MAX")) {
 								response = setDateMaximum(user, request);
+
 							} else if (request.toUpperCase().startsWith(
 									"SET SIZE_MIN")) {
 								response = setSizeMinimum(user, request);
+
 							} else if (request.toUpperCase().startsWith(
 									"SET SIZE_MAX")) {
 								response = setSizeMaximum(user, request);
+
 							} else if (request.toUpperCase().startsWith(
 									"SET STRUCTURE")) {
-								String[] args = request.split(" ");
-								if (args[2] != null) {
+
+								if (argc > 2 && args[2] != null) {
 									EraseSettings erase = user.getSettings()
 											.getEraseSettings();
 									erase.setStructure(args[2].toUpperCase());
 									changed = true;
-									response = "OK. Delete restriction by structure ["
+									response = "+OK. Delete restriction by structure ["
 											+ args[2]
 											+ "] set for user "
 											+ user.getName() + ". ";
 								} else
-									response = "Error. Please enter a valid string value.";
+									response = "-ERR. Please enter a valid string value.";
+
 							} else if (request.toUpperCase().startsWith(
 									"ADD CONTENT")) {
-								String[] args = request.split(" ");
 
-								if (args[2] != null) {
+								if (argc > 2 && args[2] != null) {
 									EraseSettings erase = user.getSettings()
 											.getEraseSettings();
-									erase.addContentHeader(args[2]
-											.toLowerCase());
+									erase.addContentHeader(args[2]);
 									changed = true;
-									response = "OK. Delete restriction by content ["
+									response = "+OK. Delete restriction by content ["
 											+ args[2]
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "Error. Please enter a valid string value.";
+									response = "-ERR. Please enter a valid string value.";
 							} else if (request.toUpperCase().startsWith(
 									"ADD HEADER")) {
-								int argc = request.split(" ").length;
-								if (argc > 2) {
+								if (argc > 2 && args[2] != null) {
 									String tmp = "ADD HEADER";
-									String value = request.substring(tmp
-											.length() + 1);
+									String value = request.substring(
+											tmp.length() + 1).trim();
 									EraseSettings erase = user.getSettings()
 											.getEraseSettings();
 									erase.addHeaderPattern(value);
 
 									changed = true;
-									response = "OK. Delete restriction by header pattern ["
+									response = "+OK. Delete restriction by header pattern ["
 											+ value
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "Error. Please enter a valid <header-field:regex> pattern.";
+									response = "-ERR. Please enter a valid <header-field:regex> pattern.";
+
 							} else if (request.toUpperCase().startsWith(
 									"ADD SENDER")) {
-								String[] args = request.split(" ");
 
-								if (args[2] != null) {
+								if (argc > 2 && args[2] != null) {
 									EraseSettings erase = user.getSettings()
 											.getEraseSettings();
-									erase.addSender(args[2].toLowerCase());
+									erase.addSender(args[2]);
 									changed = true;
-									response = "OK. Delete restriction by sender ["
+									response = "+OK. Delete restriction by sender ["
 											+ args[2]
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "Error. Please enter a valid string value.";
+									response = "-ERR. Please enter a valid string value.";
 							} else if (request.toUpperCase().equals("EXIT"))
-								response = "OK.";
+								response = "+OK. Goodbye.";
 							else
 								response = "Error. Invalid command, or user not set.";
-						} else
+						} else if (!request.toUpperCase().equals("EXIT")
+								&& !request.toUpperCase().equals("QUIT"))
 							response = "Error. Invalid command, or user not set.";
 
-						if (user != null) {
+						if (user != null)
 							loader.saveUser(user);
-						}
 
 						writer.println(response);
 					}
 				} while (isConnected() && request != null
+						&& !request.toUpperCase().equals("QUIT")
 						&& !request.toUpperCase().equals("EXIT"));
 			} else {
 				writer.println("ERROR. User or password incorrect");
