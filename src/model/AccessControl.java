@@ -13,18 +13,15 @@ public final class AccessControl {
 		if (user != null && user.getSettings() != null) {
 			Range<Integer> range = user.getSettings().getSchedule();
 
-			if (range == null || range.getFrom() == null || range.getTo() == null)
+			if (range == null || range.getFrom() == null
+					|| range.getTo() == null)
 				return false;
 
 			int from = range.getFrom();
 			int to = range.getTo();
 			int now = new DateTime().getMinuteOfDay();
 
-			if (from > now || to < now) {
-				return true;
-			}
-
-			return false;
+			return from > now || to < now;
 		}
 		return false;
 	}
@@ -35,17 +32,13 @@ public final class AccessControl {
 			if (maxLogins == null)
 				return false;
 			LocalDate today = new LocalDate();
-
 			XMLLoginLogDAO dao = XMLLoginLogDAO.getInstance();
 			int qty = dao.getUserLogins(user, today);
 
-			if (qty < maxLogins) {
-				dao.saveLogin(user, today, qty + 1);
-				dao.commit();
+			if (qty < maxLogins)
 				return false;
-			}
-
-			return true;
+			else
+				return true;
 		}
 		return false;
 	}

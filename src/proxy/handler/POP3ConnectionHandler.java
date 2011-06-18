@@ -3,6 +3,8 @@ package proxy.handler;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
+
 import model.Message;
 import proxy.POP3Client;
 import filter.AccessRequestFilter;
@@ -22,6 +24,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 	private POP3Client POP3client;
 	private RequestFilter requestFilterChain;
 	private ResponseFilter responseFilterChain;
+	private static Logger logger = Logger.getLogger("logger");
 
 	public POP3ConnectionHandler(Socket socket) {
 		super(socket);
@@ -72,8 +75,15 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 				}
 
 				if (request != null && !request.isEmpty()) {
-					Response rsp = requestFilterChain.doFilter(new Request(
-							null, request), writer, POP3client);
+					Response rsp = null;
+					try {
+						rsp = requestFilterChain.doFilter(new Request(null,
+								request), writer, POP3client);
+					} catch (IllegalArgumentException e) {
+						logger.info("POP3 Server disconnected. Disconnecting client...");
+						disconnect();
+						return;
+					}
 
 					response = rsp.getResponseString();
 
@@ -85,18 +95,25 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 							writer.println(POP3client.getListOfMessage());
 						else if (request.toUpperCase().contains("RETR")) {
 							Message message = POP3client.getMessage(writer);
-							responseFilterChain.doFilter(message, rsp.getUser());
+							responseFilterChain
+									.doFilter(message, rsp.getUser());
 						}
 					}
 				}
 			} while (isConnected()
-					&& (request != null && !request.toUpperCase().contains("QUIT")));
+					&& (request != null && !request.toUpperCase().contains(
+							"QUIT")));
 
 			if (POP3client.isConnected())
 				POP3client.disconnect();
 			disconnect();
 		} catch (IOException e) {
-			e.printStackTrace();
+			try {
+				logger.info("POP3 Server disconnected. Disconnecting client...");
+				disconnect();
+			} catch (IOException e1) {
+				logger.fatal("Error disconnecting client.");
+			}
 		}
 	}
 

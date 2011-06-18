@@ -14,13 +14,19 @@ public class SendRequestFilter extends RequestFilter {
 			POP3Client client, RequestFilter chain) {
 		if (client.isConnected())
 			try {
-				return new Response(request.getUser(), client.send(request
-						.getRequestString()));
+
+				String resp = client.send(request.getRequestString());
+				if (resp == null)
+					throw new IllegalArgumentException(
+							"Error sending message to POP3 server");
+
+				return new Response(request.getUser(), resp);
 			} catch (IOException e) {
 				POP3Proxy.logger.fatal("Error sending message to POP3 server");
+				throw new IllegalArgumentException(
+						"Error sending message to POP3 server");
 			}
-
-		return new Response(request.getUser(), "");
+		else
+			throw new IllegalArgumentException("Not connected to POP3 server");
 	}
-
 }
