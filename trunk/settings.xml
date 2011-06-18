@@ -82,5 +82,6 @@
     <blacklist>
         <ip>186.136.102.62</ip>
         <ip>200.200.200.23</ip>
+        <ip>20.2.2.3</ip>
     </blacklist>
 </XMLProxySettings>
