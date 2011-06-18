@@ -30,44 +30,10 @@ public class MessageParser {
 	}
 
 	public Message parseMessage(PrintWriter writer) throws IOException {
-		/*StringBuilder mainHeader = new StringBuilder();
-
-		// Process headers
-		while ((response = readResponseLine()).length() != 0) {
-			mainHeader.append(response + "\n");
-			if(!response.contains("Content-Type") && response.contains("boundary=")){
-				List<String> contentTypeValue = headers.get("Content-Type");
-				contentTypeValue.set(0, contentTypeValue.get(0).concat(response));
-				continue;
-			}
-			if (response.startsWith("\t"))
-				continue;
-
-			int separator = response.indexOf(":");
-			if (separator == -1 || (separator != response.lastIndexOf(":") && !response.contains("Date")))
-				continue;
-
-			headerName = response.substring(0, separator);
-			if (response.length() > separator)
-				headerValue = response.substring(separator + 2);
-			else
-				headerValue = "";
-
-			List<String> headerValues = headers.get(headerName);
-			if (headerValues == null) {
-				headerValues = new ArrayList<String>();
-				headers.put(headerName, headerValues);
-			}
-			headerValues.add(headerValue);				
-		}
-
-		// Between the header and the body there is a \n
-		Message message = new Message(headers, mainHeader.toString());
-		*/
 		Message message = new Message();
 		String response = readResponseLine();
 		processHeaders(response, message, writer);
-		processBody(message);
+		processBody(message, writer);
 		return message;
 	}
 
@@ -89,47 +55,50 @@ public class MessageParser {
 					headerValue.append(response.substring(separator + 2));				
 			} else
 				headerValue.append(response);				
-		} while ((response = readResponseLine()).length() != 0 && response.startsWith(" "));
+		} while ((response = readResponseLine()).length() != 0 
+					&& (response.startsWith(" ") || response.startsWith("\t")));
 		
 		message.addHeaderValue(headerName, headerValue.toString());
 	
 		// Body's start
-		if(response.length() == 0)			
+		if(response.length() == 0) {
+			writer.println();
 			return;
+		}
 		else
 			processHeaders(response, message, writer);
 	}
 	
-	private void processBody(Message message) throws IOException {
+	private void processBody(Message message, PrintWriter writer) throws IOException {
 		String response, contentTypeHeader, boundary = "";
-		StringBuilder bodyBuilder = new StringBuilder();
-		contentTypeHeader = "Content-Type: " + message.getHeaders().get("Content-Type").get(0);
-		if (contentTypeHeader.toUpperCase().contains("multipart"))
-			boundary = getBoundary(contentTypeHeader, bodyBuilder);
+		if(message.getHeaders().get("Content-Type") == null)
+			contentTypeHeader = "Content-Type: text/plain";
+		else
+			contentTypeHeader = "Content-Type: " + message.getHeaders().get("Content-Type").get(0);
+				
+		if (contentTypeHeader.toUpperCase().contains("MULTIPART"))
+			boundary = getBoundary(contentTypeHeader, writer);
 
 		if (boundary.isEmpty())
 			// Single content
-			putContent(message, contentTypeHeader, boundary, bodyBuilder);
+			putContent(message, contentTypeHeader, boundary, writer);
 		else {
 			// Multipart content
 			do
-				processContent(message, boundary, bodyBuilder);
+				processContents(message, boundary, writer);
 			while (!(response = readResponseLine()).equals("."));
 		}
-		message.setBody(bodyBuilder.toString());
+		writer.println(".");
 	}
 
-	private String putContent(Message message, String header, String boundary,
-			StringBuilder bodyBuilder) throws IOException {
+	private String putContent(Message message, String header, String boundary, PrintWriter writer) throws IOException {
 		Content content;
-		String response, contentTypeHeader = header.substring(header
-				.indexOf(':') + 2);
-		String type = contentTypeHeader.substring(0,
-				contentTypeHeader.indexOf('/'));
+		String response, contentTypeHeader = header.substring(header.indexOf(':') + 2);
+		String type = contentTypeHeader.substring(0, contentTypeHeader.indexOf('/'));
 		String encoding = null;
-		if (type.toUpperCase().equals("text"))
+		if (type.toUpperCase().equals("TEXT"))
 			content = new TextContent(contentTypeHeader);
-		else if (type.toUpperCase().equals("image"))
+		else if (type.toUpperCase().equals("IMAGE"))
 			content = new ImageContent(contentTypeHeader);
 		else
 			content = new OtherContent(contentTypeHeader);
@@ -138,83 +107,80 @@ public class MessageParser {
 		content.setId(id);
 		
 		if (!boundary.isEmpty()) {
-			bodyBuilder.append("--" + boundary + "\n");
+			writer.println("--" + boundary);
 			// Read content's headers if the message use multipart
 			// because if the message is a simple content, it has the
 			// content's headers in the message's headers
 			response = header;
 			do {
-				bodyBuilder.append(response + "\n");
+				writer.println(response);
 				if (response.contains("Content-Transfer-Encoding:"))
 					encoding = response.substring(response.indexOf(":") + 2);
 			} while ((response = readResponseLine()).length() != 0);
-			bodyBuilder.append(response + "\n");
+			writer.println(response);
 		} else {
 			if (message.getHeaders().get("Content-Transfer-Encoding") != null)
-				encoding = message.getHeaders()
-						.get("Content-Transfer-Encoding").get(0);
+				encoding = message.getHeaders().get("Content-Transfer-Encoding").get(0);
 		}
 
-		bodyBuilder.append(">>" + id + "<<" + "\n\n");
-		
 		// Put content's data in contentText
 		StringBuilder contentText = new StringBuilder();
 		if (!boundary.isEmpty())
 			while (!(response = readResponseLine()).contains("--" + boundary)) {
+				writer.println(response);
 				contentText.append(response + "\n");
 			}
 		else
 			while (!(response = readResponseLine()).equals(".")) {
+				writer.println(response);
 				contentText.append(response + "\n");
 			}
 
-		if (type.toUpperCase().equals("text")) {
+		if (type.toUpperCase().equals("TEXT")) {
 			if (encoding != null && encoding.equals("quoted-printable"))
-				((TextContent) content)
-						.setText(decodeQuotedPrintable(contentText.toString()));
+				((TextContent) content).setText(decodeQuotedPrintable(contentText.toString()));
 			else
 				((TextContent) content).setText(contentText.toString());
-		} else if (type.toUpperCase().equals("image"))
+		} else if (type.toUpperCase().equals("IMAGE"))
 			if (encoding != null && encoding.equals("base64"))
-				((ImageContent) content).setImage(base64ToImage(contentText
-						.toString()));
+				((ImageContent) content).setImage(base64ToImage(contentText.toString()));
 
 		// Add content to message
 		message.addContent(content);
 		return response;
 	}
 
-	private void processContent(Message message, String boundary,
-			StringBuilder bodyBuilder) throws IOException {
+	private void processContents(Message message, String boundary, PrintWriter writer) throws IOException {
 		String response = readResponseLine();
 
-		if (response.contains("--" + boundary)) {
+		if (response.contains("--" + boundary))
 			response = readResponseLine();
-		}
+		
 
 		if (response.contains("Content-Type:")) {
-			if (response.toUpperCase().contains("multipart")) {
-				bodyBuilder.append("--" + boundary + "\n");
-				bodyBuilder.append(response + "\n");
-				String subBoundary = getBoundary(response, bodyBuilder);
-				bodyBuilder.append("\n");
+			if (response.toUpperCase().contains("MULTIPART")) {
+				writer.println("--" + boundary);
+				writer.println(response);
+				String subBoundary = getBoundary(response, writer);
+				writer.println();
 				response = readResponseLine();
-				processContent(message, subBoundary, bodyBuilder);
+				processContents(message, subBoundary, writer);
 			} else {
-				response = putContent(message, response, boundary, bodyBuilder);
+				response = putContent(message, response, boundary, writer);
 				if (response.equals("--" + boundary + "--")) {
-					bodyBuilder.append(response + "\n");
+					writer.println(response);
 					return;
 				}
-				processContent(message, boundary, bodyBuilder);
+				processContents(message, boundary, writer);
 			}
 		}
 	}
+	
 
-	private String getBoundary(String line, StringBuilder bodyBuilder) throws IOException {
+	private String getBoundary(String line, PrintWriter writer) throws IOException {
 		if(line.indexOf("=") == -1){
 			line = readResponseLine();
-			bodyBuilder.append(line + "\n");
+			writer.println(line);
 		}
 		String boundary = line.substring(line.indexOf("=") + 1);			
 		String[] tmp = boundary.split("\"");
