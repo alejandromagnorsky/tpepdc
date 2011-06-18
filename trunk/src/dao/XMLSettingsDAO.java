@@ -22,21 +22,8 @@ import dao.settings.XMLUser;
 public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
 	private XMLSettingsDAO() {
-		super("settings.xml", "src/settings.xsd");
-
-//		Properties prop = new Properties();
-//		// TODO Modificar cuando este bien el pom.xml
-////		// prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
-//		try {
-//			prop.load(new FileInputStream("resources/proxy.properties"));
-//			dataFilename = Integer.valueOf(prop
-//					.getProperty("config_port"));
-//			
-//		} catch (Exception e) {
-//			logger.fatal("Could not read properties file. Setting 9007 as default configuration port server...");
-//			CONFIGURATION_PORT = 9007;
-//		}
-
+		super("resources/settings.xml", "resources/settings.xsd", "settings.xml",
+				"settings.schema");
 		load();
 	}
 

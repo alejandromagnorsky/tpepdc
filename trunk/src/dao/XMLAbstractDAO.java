@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -24,13 +25,44 @@ import org.xml.sax.SAXException;
 
 public abstract class XMLAbstractDAO<T> {
 
-	private static Logger logger = Logger.getLogger("logger");
+	protected static Logger logger = Logger.getLogger("logger");
 	private String dataFilename, schemaFilename;
 	protected T rootElement;
 
-	protected XMLAbstractDAO(String dataFilename, String schemaFilename) {
-		this.dataFilename = dataFilename;
-		this.schemaFilename = schemaFilename;
+	protected XMLAbstractDAO(String data, String schema, String xmlProperty,
+			String schemaProperty) {
+
+		try {
+			Properties prop = new Properties();
+			// TODO Modificar cuando este bien el pom.xml
+			// prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
+			prop.load(new FileInputStream("resources/proxy.properties"));
+
+			dataFilename = prop.getProperty(xmlProperty);
+			if (dataFilename == null) {
+				logger.warn("Could not read property " + xmlProperty
+						+ ". Setting default values for XML (" + data
+						+ ") files...");
+				dataFilename = data;
+			}
+
+			schemaFilename = prop.getProperty(schemaProperty);
+			if (schemaFilename == null) {
+				logger.warn("Could not read property " + schemaProperty
+						+ ". Setting default values for schema (" + schema
+						+ ") files...");
+				schemaFilename = schema;
+			}
+
+		} catch (Exception e) {
+			logger.fatal("Could not read properties file. Setting default values for XML("
+					+ dataFilename
+					+ ") and schema("
+					+ schemaFilename
+					+ ") files...");
+			this.dataFilename = data;
+			this.schemaFilename = schema;
+		}
 		rootElement = createRoot();
 	}
 
