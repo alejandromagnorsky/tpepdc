@@ -25,11 +25,7 @@ public class XMLLoginLogDAO extends XMLAbstractDAO<XMLLoginLog> {
 
 	private XMLLoginLogDAO() {
 		super("logins.xml", "src/loginLog.xsd");
-		try {
-			load();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		load();
 	}
 
 	@Override

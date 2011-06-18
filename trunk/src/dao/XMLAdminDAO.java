@@ -17,11 +17,7 @@ public class XMLAdminDAO extends XMLAbstractDAO<XMLAdminRoot> {
 
 	private XMLAdminDAO() {
 		super("admin.xml", "src/admin.xsd");
-		try {
-			load();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		load();
 	}
 
 	@Override
@@ -33,8 +29,8 @@ public class XMLAdminDAO extends XMLAbstractDAO<XMLAdminRoot> {
 	public Administrator getAdministrator(String name) {
 		for (XMLAdmin admin : rootElement.getAdmin())
 			if (admin.getName().equals(name)) {
-				Administrator out = new Administrator(admin.getName(), admin
-						.getPassword());
+				Administrator out = new Administrator(admin.getName(),
+						admin.getPassword());
 				return out;
 			}
 		return null;

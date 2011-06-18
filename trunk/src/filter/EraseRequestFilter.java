@@ -28,13 +28,13 @@ public class EraseRequestFilter extends RequestFilter {
 		String request = r.getRequestString();
 		User user = r.getUser();
 
-		
 		// TODO
 		// Mariano, la longitud de una request puede ser mayor a 5
 		// si pones espacios adelante del comando
+		// TODO HACER ESTO.
 		if (user != null && user.getSettings() != null
-				&& request.toUpperCase().contains("DELE ") && request.length() > 5
-				&& client.isConnected()) {
+				&& request.toUpperCase().contains("DELE ")
+				&& request.length() > 5 && client.isConnected()) {
 
 			String msgStr = request.substring(5);
 			Integer msgNumber = Integer.valueOf(msgStr);
@@ -42,7 +42,8 @@ public class EraseRequestFilter extends RequestFilter {
 				int number = msgNumber;
 
 				if (!canDeleteMail(user, number, client, responseWriter))
-					return new Response(user, "");
+					;
+				return new Response(user, "");
 			}
 		}
 		return chain.doFilter(r, responseWriter, client);
@@ -117,15 +118,20 @@ public class EraseRequestFilter extends RequestFilter {
 	private boolean headerMatches(User user, Map<String, List<String>> headers) {
 		List<String> patternList = user.getSettings().getEraseSettings()
 				.getHeaderPattern();
+
 		for (String pattern : patternList) {
+			int low = pattern.indexOf(":");
+			if (low > 0) {
+				String header = pattern.substring(0, low);
+				String regex = pattern.substring(low + 1);
 
-			int low = pattern.indexOf(" ");
-			String header = pattern.substring(0, low);
-			String regex = pattern.substring(low + 1);
+				String headerBody = "";
+				for (String str : headers.get(header))
+					headerBody += str;
 
-			for (String h : headers.get(header))
-				if (h.matches(regex))
+				if (headerBody.matches(regex) || headerBody.contains(regex))
 					return true;
+			}
 		}
 		return false;
 	}
@@ -172,18 +178,19 @@ public class EraseRequestFilter extends RequestFilter {
 			Integer size = Integer.valueOf(raw.substring(low, high));
 			if (size != null) {
 				Range<Integer> range = user.getSettings().getEraseSettings()
-				.getSize();
+						.getSize();
 				if (range != null
-						&& (range.getFrom() != null && range.getFrom().compareTo(
-								size) > 0)
-								|| (range.getTo() != null && range.getTo().compareTo(size) < 0)) {
+						&& (range.getFrom() != null && range.getFrom()
+								.compareTo(size) > 0)
+						|| (range.getTo() != null && range.getTo().compareTo(
+								size) < 0)) {
 					return true;
 				}
 			}
 		} catch (NumberFormatException e) {
-			
+
 		}
-		
+
 		return false;
 	}
 

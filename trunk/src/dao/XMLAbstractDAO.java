@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import javax.xml.XMLConstants;
@@ -18,12 +19,12 @@ import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-
-import proxy.POP3Proxy;
 
 public abstract class XMLAbstractDAO<T> {
 
+	private static Logger logger = Logger.getLogger("logger");
 	private String dataFilename, schemaFilename;
 	protected T rootElement;
 
@@ -35,33 +36,65 @@ public abstract class XMLAbstractDAO<T> {
 
 	// This is the final commit to save the data
 	public synchronized void commit() {
-		try {
-			marshal(dataFilename);
-		} catch (Exception e) {
-			POP3Proxy.logger.fatal("Error saving configuration file");
-		}
+		marshal(dataFilename);
 	}
 
-	public synchronized void load() throws FileNotFoundException, JAXBException {
+	public synchronized void load() {
 		InputStream input = null;
-		input = new FileInputStream(dataFilename);
+		try {
+			input = new FileInputStream(dataFilename);
+		} catch (FileNotFoundException e) {
+			logger.info("XML file not found. Creating new empty file with base root...");
+			File f = new File(dataFilename);
+			try {
+				f.createNewFile();
+				input = new FileInputStream(dataFilename);
+				if (rootElement != null) {
+					commit();
+				}
+			} catch (IOException e1) {
+				logger.fatal("Load FAILED: Could not create new empty file. Maybe privileges are needed?");
+				return;
+			}
+		}
 		rootElement = unmarshal(input, new File(schemaFilename));
 
 		if (rootElement == null)
 			throw new IllegalAccessError("Error reading XML file "
-					+ dataFilename + "with schema " + schemaFilename + ".");
+					+ dataFilename + " with schema " + schemaFilename + ".");
+
+		logger.info("Loaded XML " + dataFilename + " with schema "
+				+ schemaFilename + " ...");
 	}
 
 	protected abstract T createRoot();
 
-	private void marshal(String filename) throws JAXBException,
-			FileNotFoundException {
-		JAXBContext context = JAXBContext.newInstance(rootElement.getClass()
-				.getPackage().getName());
+	private void marshal(String filename) {
+		try {
+			JAXBContext context = JAXBContext.newInstance(rootElement
+					.getClass().getPackage().getName());
 
-		Marshaller m = context.createMarshaller();
-		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		m.marshal(rootElement, new FileOutputStream(filename));
+			Marshaller m = context.createMarshaller();
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			FileOutputStream output = null;
+			try {
+				output = new FileOutputStream(filename);
+			} catch (FileNotFoundException e) {
+				logger.info("XML file not found. Creating new empty file...");
+				File f = new File(dataFilename);
+				try {
+					f.createNewFile();
+					output = new FileOutputStream(filename);
+				} catch (IOException e1) {
+					logger.fatal("Commit FAILED: Could not create new empty file. Maybe privileges are needed?");
+					return;
+				}
+			}
+			m.marshal(rootElement, output);
+		} catch (JAXBException e) {
+			logger.fatal("Commit FAILED: JAXBException.");
+			return;
+		}
 	}
 
 	// Unmarshal and validate XML file
@@ -79,7 +112,8 @@ public abstract class XMLAbstractDAO<T> {
 			try {
 				schema = sf.newSchema(schemaFile);
 			} catch (SAXException saxe) {
-				POP3Proxy.logger.fatal("Error loading schema file " + schemaFilename);
+				logger.fatal("Error loading schema file " + schemaFilename);
+				return null;
 			}
 
 			u.setSchema(schema);
@@ -92,15 +126,15 @@ public abstract class XMLAbstractDAO<T> {
 		} finally {
 			if (vec != null && vec.hasEvents()) {
 
-				POP3Proxy.logger.fatal("Error validating XML file " + dataFilename);
+				logger.fatal("Error validating XML file " + dataFilename);
 
 				for (ValidationEvent ve : vec.getEvents()) {
 					String msg = ve.getMessage();
 					ValidationEventLocator vel = ve.getLocator();
 					int line = vel.getLineNumber();
 					int column = vel.getColumnNumber();
-					POP3Proxy.logger.fatal("Line: " + line + ", Column: "
-							+ column + ": " + msg);
+					logger.fatal("Line: " + line + ", Column: " + column + ": "
+							+ msg);
 				}
 			}
 		}
