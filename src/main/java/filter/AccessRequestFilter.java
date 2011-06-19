@@ -10,6 +10,7 @@ import model.Range;
 import model.User;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import proxy.POP3Client;
@@ -134,16 +135,23 @@ public class AccessRequestFilter extends RequestFilter {
 			}
 
 			if (AccessControl.hourIsOutOfRange(user)) {
-				writer.println("-ERR. You are not allowed to login now. Try again between the following ranges:");
+				writer.println("-ERR. You are not allowed to login now. ("
+						+ minutesToString(new DateTime().getMinuteOfDay())
+						+ ") Try again between the following ranges:");
 
 				if (user.getSettings() != null)
 					for (Range<Integer> range : user.getSettings()
 							.getScheduleList()) {
 						String rsp = "";
 						if (range.getFrom() != null)
-							rsp += "from: " + range.getFrom();
+							rsp += "from: " + minutesToString(range.getFrom())
+									+ " ";
+						else
+							rsp += "from: unbounded ";
 						if (range.getTo() != null)
-							rsp += " to: " + range.getTo();
+							rsp += "to: " + minutesToString(range.getTo());
+						else
+							rsp += "to: unbounded";
 
 						writer.println(rsp);
 					}
@@ -154,7 +162,9 @@ public class AccessRequestFilter extends RequestFilter {
 		return false;
 	}
 
-	public String minutesToString(int mins) {
+	public String minutesToString(Integer mins) {
+		if (mins == null)
+			return "";
 		String str = "";
 		str += (mins - mins % 60) / 60;
 		str += ":";

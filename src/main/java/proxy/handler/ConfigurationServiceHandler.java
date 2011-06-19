@@ -44,10 +44,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 					if (request != null) {
 
-						if (request.toUpperCase().equals("HELP")) {
-							showHelp();
-
-						} else if (request.toUpperCase().equals("COMMIT")) {
+						if (request.toUpperCase().equals("COMMIT")) {
 							if (changed) {
 								loader.commit();
 								response = "+OK. Commit successful.";
@@ -161,15 +158,15 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								}
 
 							} else if (request.toUpperCase().startsWith(
-									"SET SCHEDULE_MAX")) {
-								response = setScheduleMaximum(user, request);
+									"ADD SCHEDULE_RANGE")) {
+								response = addScheduleRange(user, request);
 
 							} else if (request.toUpperCase().startsWith(
-									"ADD DATE_RSTR")) {
+									"ADD DATE_RANGE")) {
 								response = addDateRestriction(user, request);
 							} else if (request.toUpperCase().startsWith(
-									"SET SIZE_MAX")) {
-								response = setSizeMaximum(user, request);
+									"ADD SIZE_RANGE")) {
+								response = addSizeRestriction(user, request);
 
 							} else if (request.toUpperCase().startsWith(
 									"SET STRUCTURE")) {
@@ -257,7 +254,9 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		}
 	}
 
-	private String minutesToString(int mins) {
+	private String minutesToString(Integer mins) {
+		if (mins == null)
+			return "unbounded";
 		String str = "";
 		str += (mins - mins % 60) / 60;
 		str += ":";
@@ -269,48 +268,101 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		return from >= 0 && from <= 1440 && to >= 0 && to <= 1440 && from <= to;
 	}
 
-	private String setScheduleMaximum(User user, String request) {
+	private Integer getMinutsFromString(String str)
+			throws NumberFormatException {
+		int low = str.indexOf(":");
+
+		if (low != -1) {
+			Integer hour = Integer.valueOf(str.substring(0, low));
+			Integer minutes = Integer.valueOf(str.substring(low + 1));
+			Integer out = hour * 60 + minutes;
+			return out;
+		}
+
+		return null;
+	}
+
+	private String addScheduleRange(User user, String request) {
 		String response = "";
 		String[] args = request.split(" ");
 
-		if (args[2] != null && Integer.valueOf(args[2]) != null) {
+		if (args.length > 3 && args[3] != null && args[2] != null) {
 			UserSettings settings = user.getSettings();
-			//
-			// Integer from = settings.getSchedule().getFrom();
-			// Integer to = Integer.valueOf(args[2]);
-			//
-			// if (from == null || validMinuteRange(from, to)) {
-			// settings.getSchedule().setTo(to);
-			// changed = true;
-			// response = "OK. Maximum schedule restriction for user "
-			// + user.getName() + " is " + minutesToString(to);
-			// } else if (from != null)
-			// response = "Error. Range is invalid: " + minutesToString(from)
-			// + "-" + minutesToString(to);
+			Integer fromSchedule = null, toSchedule = null;
+
+			try {
+				if (!args[2].equals("N"))
+					fromSchedule = getMinutsFromString(args[2]);
+				if (!args[3].equals("N"))
+					toSchedule = getMinutsFromString(args[3]);
+			} catch (Exception e) {
+				return "Please enter a valid schedule range 0-1440.";
+			}
+
+			// If range is valid or one value is unbounded, continue
+			if ((fromSchedule != null && toSchedule != null && validMinuteRange(
+					fromSchedule, toSchedule))
+					|| (fromSchedule == null && toSchedule != null && validMinuteRange(
+							0, toSchedule))
+					|| (toSchedule == null && fromSchedule != null && validMinuteRange(
+							fromSchedule, 1440))) {
+
+				Range<Integer> range = new Range<Integer>();
+				range.setFrom(fromSchedule);
+				range.setTo(toSchedule);
+				settings.addScheduleRestriction(range);
+
+				changed = true;
+				response = "OK. Schedule range added for user "
+						+ user.getName() + " ";
+			} else
+				response = "Error. Range is invalid: "
+						+ minutesToString(fromSchedule) + "-"
+						+ minutesToString(toSchedule);
 		} else
 			response = "Error. Please enter a valid value. (expected integer)";
 		return response;
 	}
 
-	private String setSizeMaximum(User user, String request) {
+	private String addSizeRestriction(User user, String request) {
 		String response = "";
 		String[] args = request.split(" ");
 
-		if (args[2] != null && Integer.valueOf(args[2]) != null) {
-			// EraseSettings erase = user.getSettings().getEraseSettings();
-			//
-			// Integer from = erase.getSize().getFrom();
-			// Integer to = Integer.valueOf(args[2]);
-			//
-			// if (from == null || from < to) {
-			// erase.getSize().setTo(to);
-			// changed = true;
-			// response = "OK. Maximum size restriction for user "
-			// + user.getName() + " is " + to;
-			// } else if (from != null)
-			// response = "Error. Range is invalid: " + from + "-" + to;
-		} else
-			response = "Error. Please enter a valid size.";
+		try {
+			if (args.length > 3 && args[3] != null && args[2] != null) {
+				EraseSettings erase = user.getSettings().getEraseSettings();
+				Integer fromSize = null, toSize = null;
+
+				try {
+					if (!args[2].equals("N"))
+						fromSize = Integer.valueOf(args[2]);
+					if (!args[3].equals("N"))
+						toSize = Integer.valueOf(args[3]);
+				} catch (NumberFormatException e) {
+					return "Please enter a valid size range.";
+				}
+
+				// If range is valid or one value is unbounded, continue
+				if ((fromSize != null && toSize != null && fromSize < toSize)
+						|| (fromSize == null && toSize != null)
+						|| (toSize == null && fromSize != null)) {
+
+					Range<Integer> range = new Range<Integer>();
+					range.setFrom(fromSize);
+					range.setTo(toSize);
+
+					erase.addSizeRestriction(range);
+					changed = true;
+					response = "OK. Size restriction range added for user "
+							+ user.getName() + " ";
+				} else
+					response = "Error. Range is invalid: " + fromSize + "-"
+							+ toSize;
+			} else
+				response = "Error. Please enter a valid size range.";
+		} catch (NumberFormatException e) {
+			response = "-ERR. Please enter a valid size range.";
+		}
 		return response;
 	}
 
@@ -347,47 +399,25 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 				changed = true;
 
 				response = "OK. Date restriction added for user "
-						+ user.getName();
+						+ user.getName() + " ";
 
 				if (fromDate != null)
 					response += "min: " + f.print(fromDate);
 				else
-					response += "min: unbounded";
+					response += "min: unbounded ";
 				if (toDate != null)
 					response += "max: " + f.print(toDate);
 				else
-					response += "max: unbounded";
+					response += "max: unbounded ";
 
-			} else if (fromDate != null)
-				response = "Error. Range is invalid: " + f.print(fromDate)
-						+ "-" + f.print(toDate);
+			} else
+				response = "Error. Range is invalid: "
+						+ (fromDate != null ? f.print(fromDate) : "unbounded")
+						+ "-"
+						+ (toDate != null ? f.print(toDate) : "unbounded");
 		} else
 			response = "Error. Please enter a valid date.";
 		return response;
-	}
-
-	private void showHelp() {
-		writer.println("Hello, Dave.");
-		writer.println("Welcome to Configuration Manager 9999! Here you will find very [un]useful commands to restrict your worker ant.");
-		writer.println("-----------------------------------------------------------------------------------------------------------------");
-		writer.println("Commands list:");
-		writer.println("(not case sensitive)");
-		writer.println("blacklist <ip> \t\t Add a well formed ip to the blacklist.");
-		writer.println("user <username> \t\t Set <username> as target for configuration");
-		writer.println("commit \t\t Commit changes, if there are.");
-		writer.println("exit \t\t Return to human life.");
-		writer.println("set rotate|leet <value> \t\t Set transformation values. Expected: boolean");
-		writer.println("set maxlogins <value> \t\t Set maximum logins per day for a user. Expected: integer");
-		writer.println("set server <value> \t\t Set user default server. Expected: string");
-		writer.println("set schedule_min|schedule_max <value> \t\t Set user schedule restriction. Expected: integer in range 0-1440");
-		writer.println("set date_min|date_max <value> \t\t Set delete date restriction. Expected: date with pattern dd/mm/yyyy");
-		writer.println("set size_min|size_max <value> \t\t Set delete size restriction. Expected: integer");
-		writer.println("set structure <value> \t\t Set a delete restriction by message structure. Expected: ATTACH, NOATTACH or SENDERCOUNT_G <min_qty_of_senders>");
-		writer.println("add content <value> \t\t Add a delete restriction by content. Expected: string");
-		writer.println("add header <value> \t\t Add a delete restriction by header pattern. Expected: string");
-		writer.println("add sender <value> \t\t Add a delete restriction by sender. Expected: string");
-		writer.println("That's it, that's all.");
-
 	}
 
 	private String printEraseSettings(EraseSettings e) {
@@ -396,29 +426,42 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy")
 				.withLocale(new Locale("es"));
 
+		if (!e.getDateRestrictions().isEmpty())
+			out += "Date restrictions: \n";
+
 		for (Range<DateTime> date : e.getDateRestrictions()) {
-			if (date.hasValues())
-				out += "Date: ";
+			out += " ";
 			if (date.getFrom() != null)
 				out += "min " + f.print(date.getFrom()) + ", ";
+			else
+				out += "unbounded, ";
 			if (date.getTo() != null)
-				out += "max " + f.print(date.getTo()) + ", ";
+				out += "max " + f.print(date.getTo()) + " ";
+			else
+				out += "unbounded ";
+			out += "\n";
 		}
+
+		if (!e.getSizeRestrictions().isEmpty())
+			out += "Size restrictions: \n";
 
 		for (Range<Integer> size : e.getSizeRestrictions()) {
-			if (size.hasValues())
-				out += "Size: ";
+			out += " ";
 			if (size.getFrom() != null)
 				out += "min " + size.getFrom() + "bytes, ";
+			else
+				out += "unbounded, ";
 			if (size.getTo() != null)
-				out += "max " + size.getTo() + "bytes, ";
+				out += "max " + size.getTo() + "bytes ";
+			else
+				out += "unbounded ";
+			out += "\n";
 		}
 
-		out += "Structure: " + e.getStructure() + ", ";
-
-		out += "Senders: " + e.getSenders().toString() + ", ";
-		out += "Content: " + e.getContentTypes().toString() + ", ";
-		out += "Header pattern: " + e.getHeaderPattern().toString() + "";
+		out += "Structure: " + e.getStructure() + "\n";
+		out += "Senders: " + e.getSenders().toString() + "\n";
+		out += "Content: " + e.getContentTypes().toString() + "\n";
+		out += "Header pattern: " + e.getHeaderPattern().toString() + "\n";
 		return out;
 	}
 
