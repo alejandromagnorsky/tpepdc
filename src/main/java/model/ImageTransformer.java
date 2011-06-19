@@ -11,8 +11,6 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
 
-import proxy.POP3Proxy;
-
 public class ImageTransformer{
 	
 	public String transform(String imageString) {

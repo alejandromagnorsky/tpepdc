@@ -8,22 +8,26 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import model.EraseSettings;
+import model.Range;
 import model.User;
 import model.UserSettings;
 
 import org.joda.time.DateTime;
 
 import dao.settings.ObjectFactory;
+import dao.settings.XMLDateRestriction;
 import dao.settings.XMLEraseSettings;
 import dao.settings.XMLIPBlacklist;
+import dao.settings.XMLScheduleRestriction;
 import dao.settings.XMLSettings;
+import dao.settings.XMLSizeRestriction;
 import dao.settings.XMLUser;
 
 public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
 	private XMLSettingsDAO() {
-		super("resources/settings.xml", "resources/settings.xsd", "settings.xml",
-				"settings.schema");
+		super("resources/settings.xml", "resources/settings.xsd",
+				"settings.xml", "settings.schema");
 		load();
 	}
 
@@ -38,7 +42,9 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 	@Override
 	protected XMLSettings createRoot() {
 		ObjectFactory objFact = new ObjectFactory();
-		return objFact.createXMLSettings();
+		XMLSettings out = objFact.createXMLSettings();
+		out.setBlacklist(objFact.createXMLIPBlacklist());
+		return out;
 	}
 
 	private DateTime convertToDateTime(XMLGregorianCalendar calendar) {
@@ -46,17 +52,27 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 			return null;
 		return new DateTime(calendar.toGregorianCalendar().getTimeInMillis());
 	}
-
+	
 	private EraseSettings constructEraseSettings(int index) {
 		EraseSettings out = new EraseSettings();
 
 		XMLEraseSettings xmlErase = rootElement.getUser().get(index)
 				.getEraseSettings();
 
-		out.getSize().setFrom(xmlErase.getSizeBytes().getFrom());
-		out.getSize().setTo(xmlErase.getSizeBytes().getTo());
-		out.getDate().setFrom(convertToDateTime(xmlErase.getDate().getFrom()));
-		out.getDate().setTo(convertToDateTime(xmlErase.getDate().getTo()));
+		for (XMLSizeRestriction r : xmlErase.getSizeBytes()) {
+			Range<Integer> range = new Range<Integer>();
+			range.setFrom(r.getFrom());
+			range.setTo(r.getTo());
+			out.addSizeRestriction(range);
+		}
+
+		for (XMLDateRestriction r : xmlErase.getDate()) {
+			Range<DateTime> range = new Range<DateTime>();
+			range.setFrom(convertToDateTime(r.getFrom()));
+			range.setTo(convertToDateTime(r.getTo()));
+			out.addDateRestriction(range);
+		}
+
 		out.setStructure(xmlErase.getStructure());
 
 		for (String pattern : xmlErase.getHeaderPattern())
@@ -77,8 +93,14 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
 		out.setServer(xmlUser.getServer());
 		out.setMaxLogins(xmlUser.getMaxLogins());
-		out.getSchedule().setFrom(xmlUser.getSchedule().getFrom());
-		out.getSchedule().setTo(xmlUser.getSchedule().getTo());
+
+		for (XMLScheduleRestriction r : xmlUser.getSchedule()) {
+			Range<Integer> range = new Range<Integer>();
+			range.setFrom(r.getFrom());
+			range.setTo(r.getTo());
+			out.addScheduleRestriction(range);
+		}
+
 		out.setRotate(xmlUser.getTransformSettings().isRotate());
 		out.setLeet(xmlUser.getTransformSettings().isLeet());
 
@@ -136,14 +158,24 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 		xmlErase.getHeaderPattern().addAll(erase.getHeaderPattern());
 		xmlErase.getSender().clear();
 		xmlErase.getSender().addAll(erase.getSenders());
-		xmlErase.getSizeBytes().setFrom(erase.getSize().getFrom());
-		xmlErase.getSizeBytes().setTo(erase.getSize().getTo());
 
-		// Java, making your life easier.
-		xmlErase.getDate().setFrom(
-				convertToXMLGregorianCalendar(erase.getDate().getFrom()));
-		xmlErase.getDate().setTo(
-				convertToXMLGregorianCalendar(erase.getDate().getTo()));
+		xmlErase.getSizeBytes().clear();
+		for (Range<Integer> range : erase.getSizeRestrictions()) {
+			ObjectFactory objFact = new ObjectFactory();
+			XMLSizeRestriction r = objFact.createXMLSizeRestriction();
+			r.setFrom(range.getFrom());
+			r.setTo(range.getTo());
+			xmlErase.getSizeBytes().add(r);
+		}
+
+		xmlErase.getDate().clear();
+		for (Range<DateTime> range : erase.getDateRestrictions()) {
+			ObjectFactory objFact = new ObjectFactory();
+			XMLDateRestriction r = objFact.createXMLDateRestriction();
+			r.setFrom(convertToXMLGregorianCalendar(range.getFrom()));
+			r.setTo(convertToXMLGregorianCalendar(range.getTo()));
+			xmlErase.getDate().add(r);
+		}
 	}
 
 	public void saveUser(User user) {
@@ -155,17 +187,13 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 		if (xmlUser != null) {
 			xmlErase = xmlUser.getEraseSettings();
 		} else {
-
-			// If creating, construct proper structure, prevent null pointers...
+			// If creating a user, construct proper structure, prevent null
+			// pointers...
 			ObjectFactory objFact = new ObjectFactory();
 			xmlErase = objFact.createXMLEraseSettings();
-			xmlErase.setDate(objFact.createXMLDateRestriction());
-			xmlErase.setSizeBytes(objFact.createXMLSizeRestriction());
-
 			xmlUser = objFact.createXMLUser();
 			xmlUser.setName(user.getName());
 			xmlUser.setEraseSettings(xmlErase);
-			xmlUser.setSchedule(objFact.createXMLScheduleRestriction());
 			xmlUser.setTransformSettings(objFact.createXMLTransformation());
 
 			// And add the newly constructed user to root
@@ -177,8 +205,16 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 			xmlUser.setServer(userSettings.getServer());
 			xmlUser.getTransformSettings().setLeet(userSettings.isLeet());
 			xmlUser.getTransformSettings().setRotate(userSettings.isRotate());
-			xmlUser.getSchedule().setFrom(userSettings.getSchedule().getFrom());
-			xmlUser.getSchedule().setTo(userSettings.getSchedule().getTo());
+
+			xmlUser.getSchedule().clear();
+			for (Range<Integer> range : userSettings.getScheduleList()) {
+				ObjectFactory objFact = new ObjectFactory();
+				XMLScheduleRestriction r = objFact
+						.createXMLScheduleRestriction();
+				r.setFrom(range.getFrom());
+				r.setTo(range.getTo());
+				xmlUser.getSchedule().add(r);
+			}
 
 			saveEraseSettings(xmlErase, userSettings.getEraseSettings());
 		}

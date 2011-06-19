@@ -3,13 +3,13 @@
 	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xsd:complexType name="XMLTransformation">
-		<xsd:attribute name="rotate" type="xsd:boolean"></xsd:attribute>
-		<xsd:attribute name="leet" type="xsd:boolean"></xsd:attribute>
+		<xsd:attribute name="rotate" type="xsd:boolean" default="false"></xsd:attribute>
+		<xsd:attribute name="leet" type="xsd:boolean" default="false"></xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="XMLEraseSettings">
 		<xsd:sequence>
-			<xsd:element name="date" type="XMLDateRestriction" maxOccurs="1"
+			<xsd:element name="date" type="XMLDateRestriction" maxOccurs="unbounded"
 				minOccurs="0">
 			</xsd:element>
 			<xsd:element name="sender" type="xsd:string" maxOccurs="unbounded"
@@ -21,7 +21,7 @@
             <xsd:element name="content-type" type="xsd:string" maxOccurs="unbounded" minOccurs="0">
 			</xsd:element>
             <xsd:element name="size-bytes" type="XMLSizeRestriction"
-				maxOccurs="1" minOccurs="0">
+				maxOccurs="unbounded" minOccurs="0">
 			</xsd:element>
 			<xsd:element name="structure" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
 		</xsd:sequence>
@@ -33,7 +33,7 @@
 			<xsd:element name="user" type="XMLUser" maxOccurs="unbounded"
 				minOccurs="0">
 			</xsd:element>
-			<xsd:element name="blacklist" type="XMLIPBlacklist" maxOccurs="1" minOccurs="0"></xsd:element>
+			<xsd:element name="blacklist" type="XMLIPBlacklist" maxOccurs="1" minOccurs="1"></xsd:element>
 
 		</xsd:sequence>
 	</xsd:complexType>
@@ -50,7 +50,7 @@
 			</xsd:element>
 
 			<xsd:element name="schedule" type="XMLScheduleRestriction"
-				maxOccurs="1" minOccurs="0">
+				maxOccurs="unbounded" minOccurs="0">
 			</xsd:element>
 			<xsd:element name="server" type="xsd:string" maxOccurs="1"
 				minOccurs="0">
@@ -58,8 +58,8 @@
 
 		</xsd:sequence>
 
-		<xsd:attribute name="name" type="xsd:string"></xsd:attribute>
-		<xsd:attribute name="max-logins" type="xsd:int"></xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+		<xsd:attribute name="max-logins" type="xsd:int" default="-1"></xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="XMLSizeRestriction">
