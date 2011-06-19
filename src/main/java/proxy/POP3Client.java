@@ -36,19 +36,21 @@ public class POP3Client extends Client {
 
 	public Message getMessage(PrintWriter writer, User user) throws IOException {
 		MessageParser messageParser;
-		Message message;
+		BufferedReader input = reader;
 		// TODO
 		// Modificar para que utilize el externalProgram del user settings
 		if(user != null && user.getSettings() != null && user.getSettings().getServer() != null){
 			ExternalProgram externalProgram = new ExternalProgram("./externalProgram", reader);
-			BufferedReader input = externalProgram.execute();
-			messageParser = new MessageParser(input, writer, user);
-			message = messageParser.parseMessage();
-			input.close();
-		} else {
-			messageParser = new MessageParser(reader, writer, user);
-			message = messageParser.parseMessage();
+			input = externalProgram.execute();
 		}
+		
+		messageParser = new MessageParser(input, writer, user);
+		Message message = messageParser.parseMessage();
+		
+		// if the input is the reader from the tmp file
+		if(!input.equals(reader))
+			input.close();
+		
 		return message;
 	}
 	
