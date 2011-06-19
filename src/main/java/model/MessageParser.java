@@ -25,6 +25,15 @@ public class MessageParser {
 		this.textTransformer = new TextTransformer();
 		this.imageTransformer = new ImageTransformer();
 	}
+	
+	public MessageParser(BufferedReader reader, PrintWriter writer) {
+		this.id = 0;
+		this.reader = reader;
+		this.writer = writer;
+		this.user = null;
+		this.textTransformer = new TextTransformer();
+		this.imageTransformer = new ImageTransformer();
+	}
 
 	private String readResponseLine() throws IOException {
 		String response = reader.readLine();
@@ -162,12 +171,12 @@ public class MessageParser {
 				}
 			}
 		} else {
+			// there is no multipart
 			while (!(response = readResponseLine()).equals(".")) {
 				if (needToTransformImage) {
 					contentText.append(response + "\n");
 				} else if (needToTransformText
-						&& contentTypeHeader.toUpperCase().contains(
-								"TEXT/PLAIN")) {
+						&& contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
 					if (encoding != null) {
 						// need to get the whole text
 						contentText.append(response + "\n");
@@ -257,13 +266,25 @@ public class MessageParser {
 			return null;
 		}
 	}
+	
+	private String decode8bit(String quotedPrintable) {
+		try {
+			quotedPrintable = quotedPrintable.replaceAll("=\n", "-\n");
+			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+			return codec.decode(quotedPrintable);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	private void printLines(String message) {
 		StringBuilder builder = new StringBuilder();
 		int i = 0, count = 0;
 		// builder.append(message.charAt(0));
 		while (i < message.length()) {
-			builder.append(message.charAt(i));
+			if(message.charAt(i) != '\n') {
+				builder.append(message.charAt(i));
+			}
 
 			if (count == 76 || message.charAt(i) == '\n') {
 				count = 0;
