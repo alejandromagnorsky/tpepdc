@@ -3,7 +3,7 @@ package model;
 public class User {
 
 	private String name = new String("");
-	private UserSettings settings;
+	private UserSettings settings = new UserSettings();
 
 	public User(String name) {
 		this.name = name;

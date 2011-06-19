@@ -250,7 +250,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 			}
 			disconnect();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.fatal("Error with connection. Disconnecting client...");
+			try {
+				disconnect();
+			} catch (Exception e1) {
+				logger.fatal("Error disconnecting");
+			}
 		}
 	}
 

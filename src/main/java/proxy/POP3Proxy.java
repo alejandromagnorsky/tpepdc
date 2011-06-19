@@ -61,7 +61,7 @@ public class POP3Proxy {
 						+ socket.getPort());
 				thread.start();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.fatal("Error connecting POP3 proxy");
 		}
 	}
