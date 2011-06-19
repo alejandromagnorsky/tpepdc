@@ -139,75 +139,32 @@ public class MessageParser {
 				encoding = message.getHeaders()
 						.get("Content-Transfer-Encoding").get(0);
 		}
+		
 		boolean needToTransformImage = needToTransformImage(type);
 		boolean needToTransformText = needToTransformText(type);
 		// Put content's data in contentText
 		StringBuilder contentText = new StringBuilder();
-		if (!boundary.isEmpty()) {
-			if (needToTransformImage) {
-				while (!(response = readResponseLine()).contains("--"
-						+ boundary)) {
-					// need to get the entire image to rotate it
-					contentText.append(response + "\n");
-				}
-			} else if (needToTransformText
-					&& contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
-				while (!(response = readResponseLine()).contains("--"
-						+ boundary)) {
-					if (encoding != null) {
-						// need to get the whole text
-						contentText.append(response + "\n");
-					} else {
-						// lines can be transformed one by one
-						String transformedLine = textTransformer.transform(
-								response, message);
-						writer.println(transformedLine);
-					}
-				}
-			} else {
-				while (!(response = readResponseLine()).contains("--"
-						+ boundary)) {
-					writer.println(response);
-				}
-			}
-		} else {
-			// there is no multipart
-			while (!(response = readResponseLine()).equals(".")) {
-				if (needToTransformImage) {
-					contentText.append(response + "\n");
-				} else if (needToTransformText
-						&& contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
-					if (encoding != null) {
-						// need to get the whole text
-						contentText.append(response + "\n");
-					} else {
-						// lines can be transformed one by one
-						String transformedLine = textTransformer.transform(
-								response, message);
-						writer.println(transformedLine);
-					}
-				} else {
-					writer.println(response);
-				}
-			}
-		}
+		if (!boundary.isEmpty()) 
+			response = putContentText(contentText, boundary, type, contentTypeHeader, encoding);
+		else
+			response = putContentText(contentText, "", type, contentTypeHeader, encoding);
+		
 
 		if (needToTransformImage && type.toUpperCase().equals("IMAGE")) {
 			// transform and print image
 			if (encoding != null && encoding.equals("base64")) {
-				// String transformedImage =
-				// imageTransformer.transform(contentText.toString());
+				// String transformedImage = imageTransformer.transform(contentText.toString());
 				printLines(contentText.toString());
 				// TODO cambiar la linea anterior por esta y descomentar lo de
 				// arriba cuando anden las imagenes
 				// printLines(transformedImage);
-
 			}
-		} else if (needToTransformText && encoding != null) {
+		} else if (needToTransformText && encoding != null && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
 			if(encoding.equals("quoted-printable")) {
 				// transform and print text according to its encoding
-				// TODO transformar
-				printLines(decodeQuotedPrintable(contentText.toString()));
+				String text = decodeQuotedPrintable(contentText.toString());
+				text = textTransformer.l33t(text, null);
+				printLines(encodeQuotedPrintable(text));
 			} else if(encoding.equals("8bit")) {
 				printLines(textTransformer.transform(contentText.toString(), message));
 			}
@@ -217,6 +174,34 @@ public class MessageParser {
 		// Add content to message
 		message.addContent(content);
 		return response;
+	}
+	
+	
+	private String putContentText(StringBuilder contentText, String boundary, String type, String contentTypeHeader, String encoding) throws IOException{
+		boolean needToTransformImage = needToTransformImage(type);
+		boolean needToTransformText = needToTransformText(type);
+		String response;
+		if (needToTransformImage || (needToTransformText && encoding != null)) {
+			while (!checkLine(response = readResponseLine(), boundary)) {
+				// need to get the entire image to rotate it
+				contentText.append(response + "\n");
+			}
+		} else if (needToTransformText && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
+			while (!checkLine(response = readResponseLine(), boundary)) {
+				// lines can be transformed one by one
+				String transformedLine = textTransformer.transform(response, null);
+				writer.println(transformedLine);
+			}
+		} else {
+			while (!checkLine(response = readResponseLine(), boundary)) {
+				writer.println(response);
+			}
+		}
+		return response;
+	}
+	
+	private boolean checkLine(String line, String boundary){
+		return (boundary == "")? line.equals(".") : line.contains("--" + boundary);
 	}
 
 	private void parseContents(Message message, String boundary)
@@ -267,15 +252,18 @@ public class MessageParser {
 		}
 	}
 	
-	private String decode8bit(String quotedPrintable) {
-		try {
-			quotedPrintable = quotedPrintable.replaceAll("=\n", "-\n");
-			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
-			return codec.decode(quotedPrintable);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+	 private String encodeQuotedPrintable(String text){
+         try {
+                 QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+                 String ans = codec.encode(text);
+                 ans = ans.replaceAll("-=0A", "=\n");
+                 ans = ans.replaceAll("=0A", "\n");
+                 return ans;
+         } catch (Exception e) {
+                 return null;
+         }
+	 }	
+	
 
 	private void printLines(String message) {
 		StringBuilder builder = new StringBuilder();
