@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import model.Message;
 import model.MessageParser;
+import model.User;
 
 public class POP3Client extends Client {
 
@@ -31,8 +32,8 @@ public class POP3Client extends Client {
 		return Integer.parseInt(response.split(" ")[1]);
 	}
 
-	public Message getMessage(PrintWriter writer) throws IOException {
-		MessageParser messageParser = new MessageParser(reader, writer);
+	public Message getMessage(PrintWriter writer, User user) throws IOException {
+		MessageParser messageParser = new MessageParser(reader, writer, user);
 		return messageParser.parseMessage();
 	}
 
