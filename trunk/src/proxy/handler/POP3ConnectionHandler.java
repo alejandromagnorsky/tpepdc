@@ -5,12 +5,12 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import model.ImageTransformer;
 import model.Message;
+import model.TextTransformer;
 import proxy.POP3Client;
 import filter.AccessRequestFilter;
 import filter.EraseRequestFilter;
-import filter.ImageTransformerFilter;
-import filter.MessageTransformerFilter;
 import filter.NullResponseFilter;
 import filter.Request;
 import filter.RequestFilter;
@@ -58,8 +58,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		addRequestFilter(new AccessRequestFilter(this.socket));
 
 		addResponseFilter(new NullResponseFilter());
-		addResponseFilter(new ImageTransformerFilter());
-		addResponseFilter(new MessageTransformerFilter());
+//		addResponseFilter(new ImageTransformerFilter());
+//		addResponseFilter(new TextTransformer());
 
 		try {
 			String request, response;
@@ -94,7 +94,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 								|| request.toUpperCase().contains("UIDL"))
 							writer.println(POP3client.getListOfMessage());
 						else if (request.toUpperCase().contains("RETR")) {
-							Message message = POP3client.getMessage(writer);
+							Message message = POP3client.getMessage(writer, rsp.getUser());
 							responseFilterChain
 									.doFilter(message, rsp.getUser());
 						}

@@ -24,7 +24,7 @@
         </schedule>
         <server>pop.mail.yahoo.com.ar</server>
     </user>
-    <user max-logins="10" name="ndamonte">
+    <user max-logins="999" name="ndamonte">
         <erase-settings>
             <date>
                 <from>2001-01-01-03:00</from>
@@ -41,7 +41,7 @@
         </erase-settings>
         <transform-settings leet="true" rotate="true"/>
         <schedule>
-            <from>60</from>
+            <from>0</from>
             <to>1440</to>
         </schedule>
         <server>pop3.alu.itba.edu.ar</server>

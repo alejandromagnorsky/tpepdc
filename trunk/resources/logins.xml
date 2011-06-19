@@ -2,7 +2,12 @@
 <XMLLoginLogRoot xmlns="http://www.example.org/loginLog">
     <userLoginList>
         <user>tpepdc</user>
-        <quantity>8</quantity>
+        <quantity>9</quantity>
         <date>2011-06-18-03:00</date>
+    </userLoginList>
+    <userLoginList>
+        <user>ndamonte</user>
+        <quantity>41</quantity>
+        <date>2011-06-19-03:00</date>
     </userLoginList>
 </XMLLoginLogRoot>
