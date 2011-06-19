@@ -22,8 +22,8 @@ import dao.settings.XMLUser;
 public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
 	private XMLSettingsDAO() {
-		super("resources/settings.xml", "resources/settings.xsd",
-				"settings.xml", "settings.schema");
+		super("resources/settings.xml", "resources/settings.xsd", "settings.xml",
+				"settings.schema");
 		load();
 	}
 
@@ -206,19 +206,6 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 	public void saveUserList(List<User> modifiedUsers) {
 		for (User user : modifiedUsers)
 			saveUser(user);
-	}
-	
-	// TODO necesito resolver defaults
-	private User constructDefaultUser(String username) {
-		User out = new User(username);
-		UserSettings settings = new UserSettings();
-		out.setSettings(settings);
-		settings.setLeet(false);
-		settings.setRotate(false);
-		settings.setMaxLogins(-1);
-		settings.setEraseSettings(new EraseSettings());
-
-		return out;
 	}
 
 	public User getUser(String username) {
