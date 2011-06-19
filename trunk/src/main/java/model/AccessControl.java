@@ -9,20 +9,41 @@ import dao.XMLLoginLogDAO;
 
 public final class AccessControl {
 
+	private static boolean rangeContainsSchedule(Range<Integer> range,
+			Integer schedule) {
+
+		// If unbounded range, return true (infinite range)
+		if (range.getFrom() == null && range.getTo() == null)
+			return true;
+
+		// If valid, non null range, return true
+		if (range.getFrom() != null && range.getTo() != null
+				&& range.getFrom() <= schedule && range.getTo() >= schedule)
+			return true;
+
+		// If unbounded from left and valid, return true
+		if (range.getFrom() == null && range.getTo() >= schedule)
+			return true;
+
+		// If unbounded from right and valid, return true
+		if (range.getTo() == null && range.getFrom() <= schedule)
+			return true;
+
+		return false;
+	}
+
 	public static boolean hourIsOutOfRange(User user) {
 		if (user != null && user.getSettings() != null) {
-			for (Range<Integer> range : user.getSettings().getScheduleList()) {
-				if (range == null || range.getFrom() == null
-						|| range.getTo() == null)
-					return false;
 
-				int from = range.getFrom();
-				int to = range.getTo();
-				int now = new DateTime().getMinuteOfDay();
+			// If list is empty, user can delete
+			boolean inRange = user.getSettings().getScheduleList().isEmpty();
 
-				if (from > now || to < now)
-					return true;
-			}
+			for (Range<Integer> range : user.getSettings().getScheduleList())
+				inRange = inRange
+						|| rangeContainsSchedule(range,
+								new DateTime().getMinuteOfDay());
+
+			return !inRange;
 		}
 		return false;
 	}

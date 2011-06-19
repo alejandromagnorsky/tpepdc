@@ -34,6 +34,15 @@ public class EraseRequestFilter extends RequestFilter {
 				&& user.getSettings().getEraseSettings() != null
 				&& trimmed.toUpperCase().contains("DELE")
 				&& trimmed.length() > 5 && client.isConnected()) {
+			EraseSettings erase = user.getSettings().getEraseSettings();
+
+			// If there are no erase settings, simply do not get message
+			if (erase.getContentTypes().isEmpty()
+					&& erase.getDateRestrictions().isEmpty()
+					&& erase.getHeaderPattern().isEmpty()
+					&& erase.getSenders().isEmpty()
+					&& erase.getStructure().equals(""))
+				return chain.doFilter(r, responseWriter, client);
 
 			String msgStr = trimmed.substring(5);
 			msgStr = msgStr.trim(); // Trim number
@@ -189,19 +198,35 @@ public class EraseRequestFilter extends RequestFilter {
 		boolean inRange = user.getSettings().getEraseSettings()
 				.getDateRestrictions().isEmpty();
 
-		System.out.println("FECHA: " + date);
-
 		// Do the union of all ranges, only return false if date is out of
 		// EVERY range
 		for (Range<DateTime> range : user.getSettings().getEraseSettings()
-				.getDateRestrictions()) {
-
-			System.out.println(range.getFrom() + " , " + range.getTo());
+				.getDateRestrictions())
 			inRange = inRange || rangeContainsDate(range, date);
-			System.out.println("IN RANGE: " + inRange);
-		}
 
 		return !inRange;
+	}
+
+	private boolean rangeContainsSize(Range<Integer> range, Integer size) {
+
+		// If unbounded range, return true (infinite range)
+		if (range.getFrom() == null && range.getTo() == null)
+			return true;
+
+		// If valid, non null range, return true
+		if (range.getFrom() != null && range.getTo() != null
+				&& range.getFrom() <= size && range.getTo() >= size)
+			return true;
+
+		// If unbounded from left and valid, return true
+		if (range.getFrom() == null && range.getTo() >= size)
+			return true;
+
+		// If unbounded from right and valid, return true
+		if (range.getTo() == null && range.getFrom() <= size)
+			return true;
+
+		return false;
 	}
 
 	private boolean sizeOutOfRange(User user, String raw) {
@@ -210,19 +235,18 @@ public class EraseRequestFilter extends RequestFilter {
 
 		try {
 			Integer size = Integer.valueOf(raw.substring(low, high));
-			if (size != null) {
 
-				for (Range<Integer> range : user.getSettings()
-						.getEraseSettings().getSizeRestrictions()) {
-					if (range != null
-							&& (range.getFrom() != null && range.getFrom()
-									.compareTo(size) > 0)
-							|| (range.getTo() != null && range.getTo()
-									.compareTo(size) < 0)) {
-						return true;
-					}
-				}
-			}
+			// If list is empty, user can delete
+			boolean inRange = user.getSettings().getEraseSettings()
+					.getSizeRestrictions().isEmpty();
+
+			// Do the union of all ranges, only return false if date is out of
+			// EVERY range
+			for (Range<Integer> range : user.getSettings().getEraseSettings()
+					.getSizeRestrictions())
+				inRange = inRange || rangeContainsSize(range, size);
+
+			return !inRange;
 		} catch (NumberFormatException e) {
 		}
 
