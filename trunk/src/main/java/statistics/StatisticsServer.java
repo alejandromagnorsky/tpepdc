@@ -18,8 +18,6 @@ public class StatisticsServer implements Runnable {
 	
 	public StatisticsServer(){
 		Properties prop = new Properties();
-		// TODO Modificar cuando este bien el pom.xml
-		// prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
 		try {
 			prop.load(new FileInputStream("resources/proxy.properties"));
 			STATISTICS_PORT = Integer.valueOf(prop

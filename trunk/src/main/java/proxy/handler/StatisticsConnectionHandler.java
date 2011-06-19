@@ -61,6 +61,11 @@ public class StatisticsConnectionHandler extends ServiceConnectionHandler {
 										+ ((user == null) ? Statistics
 												.getDeletedQuant() : Statistics
 												.getDeletedQuant(user));
+							else if (request.equals("LQ"))
+								response = "OK. Listed quant: "
+										+ ((user == null) ? Statistics
+												.getListedQuant() : Statistics
+												.getListedQuant(user));
 							else if (request.equals("AH")) {
 								StringBuilder ans = new StringBuilder();
 								ans.append("OK. Access histogram:\n");

@@ -1,8 +1,10 @@
 package proxy;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import model.ExternalProgram;
 import model.Message;
 import model.MessageParser;
 import model.User;
@@ -33,8 +35,21 @@ public class POP3Client extends Client {
 	}
 
 	public Message getMessage(PrintWriter writer, User user) throws IOException {
-		MessageParser messageParser = new MessageParser(reader, writer, user);
-		return messageParser.parseMessage();
+		MessageParser messageParser;
+		Message message;
+		// TODO
+		// Modificar para que utilize el externalProgram del user settings
+		if(user != null && user.getSettings() != null && user.getSettings().getServer() != null){
+			ExternalProgram externalProgram = new ExternalProgram("./externalProgram", reader);
+			BufferedReader input = externalProgram.execute();
+			messageParser = new MessageParser(input, writer, user);
+			message = messageParser.parseMessage();
+			input.close();
+		} else {
+			messageParser = new MessageParser(reader, writer, user);
+			message = messageParser.parseMessage();
+		}
+		return message;
 	}
 	
 	public Message getMessage(PrintWriter writer) throws IOException {

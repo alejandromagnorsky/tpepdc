@@ -101,7 +101,7 @@ public class AccessRequestFilter extends RequestFilter {
 			String response = resp.getResponseString();
 			if ((response != null && response.contains("+OK"))
 					&& (request != null
-							&& request.toUpperCase().startsWith("PASS") && user != null)) {
+							&& request.toUpperCase().contains("PASS") && user != null)) {
 
 				XMLLoginLogDAO loginDAO = XMLLoginLogDAO.getInstance();
 				int qty = loginDAO.getUserLogins(user, new LocalDate());
