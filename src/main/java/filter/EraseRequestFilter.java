@@ -59,7 +59,7 @@ public class EraseRequestFilter extends RequestFilter {
 			String response = client.send(request);
 
 			if (response.contains("+OK")) {
-				Message message = client.getMessage(writer);
+				Message message = client.getMessage(writer, user);
 
 				Map<String, List<String>> headers = message.getHeaders();
 
