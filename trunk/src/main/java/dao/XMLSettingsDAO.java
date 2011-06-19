@@ -52,7 +52,7 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 			return null;
 		return new DateTime(calendar.toGregorianCalendar().getTimeInMillis());
 	}
-	
+
 	private EraseSettings constructEraseSettings(int index) {
 		EraseSettings out = new EraseSettings();
 
@@ -252,6 +252,11 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 		User empty = new User(username);
 		empty.setSettings(new UserSettings());
 		empty.getSettings().setEraseSettings(new EraseSettings());
+
+		// Persist new users
+		saveUser(empty);
+		commit();
+
 		return empty; // default, on memory, empty user
 	}
 
