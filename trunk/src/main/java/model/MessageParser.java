@@ -1,17 +1,9 @@
 package model;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import javax.imageio.ImageIO;
-
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 import proxy.POP3Proxy;
@@ -22,12 +14,16 @@ public class MessageParser {
 	private BufferedReader reader;
 	private PrintWriter writer;
 	private User user;
+	private TextTransformer textTransformer;
+	private ImageTransformer imageTransformer;
 
 	public MessageParser(BufferedReader reader, PrintWriter writer, User user) {
 		this.id = 0;
 		this.reader = reader;
 		this.writer = writer;
 		this.user = user;
+		this.textTransformer = new TextTransformer();
+		this.imageTransformer = new ImageTransformer();
 	}
 
 	private String readResponseLine() throws IOException {
@@ -138,20 +134,22 @@ public class MessageParser {
 		boolean needToTransformText = needToTransformText(type);
 		// Put content's data in contentText
 		StringBuilder contentText = new StringBuilder();
-		if (!boundary.isEmpty()
-				&& (needToTransformImage || needToTransformText)) {
+		if (!boundary.isEmpty()) {
 			if (needToTransformImage) {
 				while (!(response = readResponseLine()).contains("--"
 						+ boundary)) {
+					// need to get the entire image to rotate it
 					contentText.append(response + "\n");
 				}
-			} else if (needToTransformText && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
+			} else if (needToTransformText
+					&& contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
 				while (!(response = readResponseLine()).contains("--"
 						+ boundary)) {
-					if (encoding != null && encoding.equals("quoted-printable")) {
+					if (encoding != null) {
+						// need to get the whole text
 						contentText.append(response + "\n");
 					} else {
-						TextTransformer textTransformer = new TextTransformer();
+						// lines can be transformed one by one
 						String transformedLine = textTransformer.transform(
 								response, message);
 						writer.println(transformedLine);
@@ -165,23 +163,46 @@ public class MessageParser {
 			}
 		} else {
 			while (!(response = readResponseLine()).equals(".")) {
-				writer.println(response);
+				if (needToTransformImage) {
+					contentText.append(response + "\n");
+				} else if (needToTransformText
+						&& contentTypeHeader.toUpperCase().contains(
+								"TEXT/PLAIN")) {
+					if (encoding != null) {
+						// need to get the whole text
+						contentText.append(response + "\n");
+					} else {
+						// lines can be transformed one by one
+						String transformedLine = textTransformer.transform(
+								response, message);
+						writer.println(transformedLine);
+					}
+				} else {
+					writer.println(response);
+				}
 			}
 		}
-		
+
 		if (needToTransformImage && type.toUpperCase().equals("IMAGE")) {
+			// transform and print image
 			if (encoding != null && encoding.equals("base64")) {
-				// ImageTransformer imageTransformer = new ImageTransformer();
-				// String transformedImage = imageTransformer.transform(contentText.toString());
+				// String transformedImage =
+				// imageTransformer.transform(contentText.toString());
 				printLines(contentText.toString());
-				// TODO cambiar la linea anterior por esta y descomentar lo de arriba cuando anden las imagenes
+				// TODO cambiar la linea anterior por esta y descomentar lo de
+				// arriba cuando anden las imagenes
 				// printLines(transformedImage);
 
 			}
-		} else if(needToTransformText &&
-				encoding != null && encoding.equals("quoted-printable")) {
-			TextTransformer textTransformer = new TextTransformer();
-			printLines(decodeQuotedPrintable(contentText.toString()));
+		} else if (needToTransformText && encoding != null) {
+			if(encoding.equals("quoted-printable")) {
+				// transform and print text according to its encoding
+				// TODO transformar
+				printLines(decodeQuotedPrintable(contentText.toString()));
+			} else if(encoding.equals("8bit")) {
+				printLines(textTransformer.transform(contentText.toString(), message));
+			}
+			
 		}
 
 		// Add content to message
@@ -244,7 +265,7 @@ public class MessageParser {
 		while (i < message.length()) {
 			builder.append(message.charAt(i));
 
-			if (count == 76) {
+			if (count == 76 || message.charAt(i) == '\n') {
 				count = 0;
 				// builder.append('\n');
 				// System.out.println(builder.toString());
