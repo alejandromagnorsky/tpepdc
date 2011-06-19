@@ -21,9 +21,6 @@ public class POP3Proxy {
 
 	public static void main(String args[]) {
 		try {
-			// TODO Modificar cuando este bien el pom.xml
-			//Properties log4jProperties = new Properties();
-			//log4jProperties.load(POP3Proxy.class.getResourceAsStream("log4j.properties"));
 			PropertyConfigurator.configure("resources/log4j.properties");
 		} catch (Exception e) {
 			System.out.println("Error loading logger");
@@ -33,8 +30,6 @@ public class POP3Proxy {
 
 		try {
 			Properties prop = new Properties();
-			// TODO Modificar cuando este bien el pom.xml
-			//prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
 			prop.load(new FileInputStream("resources/proxy.properties"));
 			DEFAULT_SERVER = prop.getProperty("default_server");
 			DEFAULT_PORT = Integer.valueOf(prop.getProperty("default_port"));

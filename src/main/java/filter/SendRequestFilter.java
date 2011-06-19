@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 
 import proxy.POP3Client;
 import proxy.POP3Proxy;
+import statistics.Statistics;
 
 // Final entry in filter chain
 public class SendRequestFilter extends RequestFilter {
@@ -20,6 +21,7 @@ public class SendRequestFilter extends RequestFilter {
 					throw new IllegalArgumentException(
 							"Error sending message to POP3 server");
 
+				Statistics.addBytesTransfered(request.getUser(), (long)request.getRequestString().length());
 				return new Response(request.getUser(), resp);
 			} catch (IOException e) {
 				POP3Proxy.logger.fatal("Error sending message to POP3 server");

@@ -16,6 +16,7 @@ public class Statistics {
 	private static long bytesTransfered;
 	private static long redQuant;
 	private static long deletedQuant;
+	private static long listedQuant;
 	private static SortedSet<Access> accessHistogram = new TreeSet<Access>();
 
 	// User statistics
@@ -23,6 +24,7 @@ public class Statistics {
 	private static Map<User, Long> bytesTransferedPerUser = new HashMap<User, Long>();
 	private static Map<User, Long> redQuantPerUser = new HashMap<User, Long>();
 	private static Map<User, Long> deletedQuantPerUser = new HashMap<User, Long>();
+	private static Map<User, Long> listedQuantPerUser = new HashMap<User, Long>();
 	private static Map<User, SortedSet<Access>> accessHistogramPerUser = new HashMap<User, SortedSet<Access>>();
 
 	public static class Access implements Comparable<Access> {
@@ -115,6 +117,11 @@ public class Statistics {
 		deletedQuant++;
 		add(deletedQuantPerUser, user);
 	}
+	
+	public synchronized static void addListed(User user) {
+		listedQuant++;
+		add(listedQuantPerUser, user);
+	}
 
 	private static void add(Map<User, Long> map, User user) {
 		addQuant(map, user, Long.valueOf(1));
@@ -141,7 +148,11 @@ public class Statistics {
 	public static long getDeletedQuant() {
 		return deletedQuant;
 	}
-
+	
+	public static long getListedQuant() {
+		return listedQuant;
+	}	
+	
 	public static SortedSet<Access> getAccessHistogram() {
 		return accessHistogram;
 	}
@@ -160,6 +171,10 @@ public class Statistics {
 
 	public static long getDeletedQuant(User user) {
 		return (deletedQuantPerUser.get(user) == null)? 0 : deletedQuantPerUser.get(user);
+	}
+	
+	public static long getListedQuant(User user) {
+		return (listedQuantPerUser.get(user) == null)? 0 : listedQuantPerUser.get(user);
 	}
 
 	public static SortedSet<Access> getAccessHistogram(User user) {

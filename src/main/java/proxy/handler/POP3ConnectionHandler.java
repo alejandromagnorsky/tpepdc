@@ -3,12 +3,12 @@ package proxy.handler;
 import java.io.IOException;
 import java.net.Socket;
 
+import model.Message;
+
 import org.apache.log4j.Logger;
 
-import model.ImageTransformer;
-import model.Message;
-import model.TextTransformer;
 import proxy.POP3Client;
+import statistics.Statistics;
 import filter.AccessRequestFilter;
 import filter.EraseRequestFilter;
 import filter.NullResponseFilter;
@@ -72,6 +72,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					writer.println("+OK Capability list follows");
 					writer.println("USER");
 					writer.println(".");
+					continue;
 				}
 
 				if (request != null && !request.isEmpty()) {
@@ -86,17 +87,18 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					}
 
 					response = rsp.getResponseString();
-
 					writer.println(response);
+					Statistics.addBytesTransfered(rsp.getUser(), (long)response.length());
 
 					if (response != null && response.contains("+OK")) {
-						if (request.toUpperCase().contains("LIST")
-								|| request.toUpperCase().contains("UIDL"))
-							writer.println(POP3client.getListOfMessage());
+						if (request.toUpperCase().contains("LIST") || request.toUpperCase().contains("UIDL")) {
+							String list = POP3client.getListOfMessage();
+							writer.println(list);
+							Statistics.addBytesTransfered(rsp.getUser(), (long)list.length());
+						}
 						else if (request.toUpperCase().contains("RETR")) {
 							Message message = POP3client.getMessage(writer, rsp.getUser());
-							responseFilterChain
-									.doFilter(message, rsp.getUser());
+							responseFilterChain.doFilter(message, rsp.getUser());
 						}
 					}
 				}
