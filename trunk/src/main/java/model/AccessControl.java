@@ -11,17 +11,18 @@ public final class AccessControl {
 
 	public static boolean hourIsOutOfRange(User user) {
 		if (user != null && user.getSettings() != null) {
-			Range<Integer> range = user.getSettings().getSchedule();
+			for (Range<Integer> range : user.getSettings().getScheduleList()) {
+				if (range == null || range.getFrom() == null
+						|| range.getTo() == null)
+					return false;
 
-			if (range == null || range.getFrom() == null
-					|| range.getTo() == null)
-				return false;
+				int from = range.getFrom();
+				int to = range.getTo();
+				int now = new DateTime().getMinuteOfDay();
 
-			int from = range.getFrom();
-			int to = range.getTo();
-			int now = new DateTime().getMinuteOfDay();
-
-			return from > now || to < now;
+				if (from > now || to < now)
+					return true;
+			}
 		}
 		return false;
 	}
@@ -35,7 +36,7 @@ public final class AccessControl {
 			XMLLoginLogDAO dao = XMLLoginLogDAO.getInstance();
 			int qty = dao.getUserLogins(user, today);
 
-			if (qty < maxLogins)
+			if (qty < maxLogins || maxLogins == -1)
 				return false;
 			else
 				return true;

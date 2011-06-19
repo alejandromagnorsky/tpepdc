@@ -46,7 +46,8 @@ public class EraseRequestFilter extends RequestFilter {
 			}
 
 			if (!canDeleteMail(user, number, client, responseWriter))
-				return new Response(user, "");
+				;
+			return new Response(user, "");
 		}
 		return chain.doFilter(r, responseWriter, client);
 	}
@@ -151,6 +152,29 @@ public class EraseRequestFilter extends RequestFilter {
 		return false;
 	}
 
+	private boolean rangeContainsDate(Range<DateTime> range, DateTime date) {
+
+		// If unbounded range, return true (infinte range)
+		if (range.getFrom() == null && range.getTo() == null)
+			return true;
+
+		// If valid, non null range, return true
+		if (range.getFrom() != null && range.getTo() != null
+				&& range.getFrom().isBefore(date)
+				&& range.getTo().isAfter(date))
+			return true;
+
+		// If unbounded from left and valid, return true
+		if (range.getFrom() == null && range.getTo().isAfter(date))
+			return true;
+
+		// If unbounded from right and valid, return true
+		if (range.getTo() == null && range.getFrom().isBefore(date))
+			return true;
+
+		return false;
+	}
+
 	// [Mon, 30 May 2011 13:10:48 -0700 (PDT)]
 	private boolean dateOutOfRange(User user, String raw) {
 		raw = raw.toLowerCase();
@@ -161,15 +185,23 @@ public class EraseRequestFilter extends RequestFilter {
 				"EEEE, dd MMMM yyyy HH:mm:ss").withLocale(new Locale("en"));
 		DateTime date = f.parseDateTime(raw);
 
-		Range<DateTime> range = user.getSettings().getEraseSettings().getDate();
+		// If list is empty, user can delete
+		boolean inRange = user.getSettings().getEraseSettings()
+				.getDateRestrictions().isEmpty();
 
-		if (range != null) {
-			if (range.getFrom() != null && range.getFrom().isAfter(date))
-				return true;
-			else if (range.getTo() != null && range.getTo().isBefore(date))
-				return true;
+		System.out.println("FECHA: " + date);
+
+		// Do the union of all ranges, only return false if date is out of
+		// EVERY range
+		for (Range<DateTime> range : user.getSettings().getEraseSettings()
+				.getDateRestrictions()) {
+
+			System.out.println(range.getFrom() + " , " + range.getTo());
+			inRange = inRange || rangeContainsDate(range, date);
+			System.out.println("IN RANGE: " + inRange);
 		}
-		return false;
+
+		return !inRange;
 	}
 
 	private boolean sizeOutOfRange(User user, String raw) {
@@ -179,18 +211,19 @@ public class EraseRequestFilter extends RequestFilter {
 		try {
 			Integer size = Integer.valueOf(raw.substring(low, high));
 			if (size != null) {
-				Range<Integer> range = user.getSettings().getEraseSettings()
-						.getSize();
-				if (range != null
-						&& (range.getFrom() != null && range.getFrom()
-								.compareTo(size) > 0)
-						|| (range.getTo() != null && range.getTo().compareTo(
-								size) < 0)) {
-					return true;
+
+				for (Range<Integer> range : user.getSettings()
+						.getEraseSettings().getSizeRestrictions()) {
+					if (range != null
+							&& (range.getFrom() != null && range.getFrom()
+									.compareTo(size) > 0)
+							|| (range.getTo() != null && range.getTo()
+									.compareTo(size) < 0)) {
+						return true;
+					}
 				}
 			}
 		} catch (NumberFormatException e) {
-
 		}
 
 		return false;

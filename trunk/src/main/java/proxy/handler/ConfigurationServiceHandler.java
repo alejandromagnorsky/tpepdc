@@ -161,25 +161,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								}
 
 							} else if (request.toUpperCase().startsWith(
-									"SET SCHEDULE_MIN")) {
-								response = setScheduleMinimum(user, request);
-
-							} else if (request.toUpperCase().startsWith(
 									"SET SCHEDULE_MAX")) {
 								response = setScheduleMaximum(user, request);
 
 							} else if (request.toUpperCase().startsWith(
-									"SET DATE_MIN")) {
-								response = setDateMinimum(user, request);
-
-							} else if (request.toUpperCase().startsWith(
-									"SET DATE_MAX")) {
-								response = setDateMaximum(user, request);
-
-							} else if (request.toUpperCase().startsWith(
-									"SET SIZE_MIN")) {
-								response = setSizeMinimum(user, request);
-
+									"ADD DATE_RSTR")) {
+								response = addDateRestriction(user, request);
 							} else if (request.toUpperCase().startsWith(
 									"SET SIZE_MAX")) {
 								response = setSizeMaximum(user, request);
@@ -282,71 +269,26 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		return from >= 0 && from <= 1440 && to >= 0 && to <= 1440 && from <= to;
 	}
 
-	private String setScheduleMinimum(User user, String request) {
-		String response = "";
-		String[] args = request.split(" ");
-
-		if (args[2] != null && Integer.valueOf(args[2]) != null) {
-			UserSettings settings = user.getSettings();
-
-			Integer from = Integer.valueOf(args[2]);
-			Integer to = settings.getSchedule().getTo();
-
-			if (to == null || validMinuteRange(from, to)) {
-				settings.getSchedule().setFrom(from);
-				changed = true;
-				response = "OK. Minimum schedule restriction for user "
-						+ user.getName() + " is " + minutesToString(from);
-			} else if (to != null)
-				response = "Error. Range is invalid: " + minutesToString(from)
-						+ "-" + minutesToString(to);
-		} else
-			response = "Error. Please enter a valid value. (expected integer)";
-		return response;
-	}
-
 	private String setScheduleMaximum(User user, String request) {
 		String response = "";
 		String[] args = request.split(" ");
 
 		if (args[2] != null && Integer.valueOf(args[2]) != null) {
 			UserSettings settings = user.getSettings();
-
-			Integer from = settings.getSchedule().getFrom();
-			Integer to = Integer.valueOf(args[2]);
-
-			if (from == null || validMinuteRange(from, to)) {
-				settings.getSchedule().setTo(to);
-				changed = true;
-				response = "OK. Maximum schedule restriction for user "
-						+ user.getName() + " is " + minutesToString(to);
-			} else if (from != null)
-				response = "Error. Range is invalid: " + minutesToString(from)
-						+ "-" + minutesToString(to);
+			//
+			// Integer from = settings.getSchedule().getFrom();
+			// Integer to = Integer.valueOf(args[2]);
+			//
+			// if (from == null || validMinuteRange(from, to)) {
+			// settings.getSchedule().setTo(to);
+			// changed = true;
+			// response = "OK. Maximum schedule restriction for user "
+			// + user.getName() + " is " + minutesToString(to);
+			// } else if (from != null)
+			// response = "Error. Range is invalid: " + minutesToString(from)
+			// + "-" + minutesToString(to);
 		} else
 			response = "Error. Please enter a valid value. (expected integer)";
-		return response;
-	}
-
-	private String setSizeMinimum(User user, String request) {
-		String response = "";
-		String[] args = request.split(" ");
-
-		if (args[2] != null && Integer.valueOf(args[2]) != null) {
-			EraseSettings erase = user.getSettings().getEraseSettings();
-
-			Integer from = Integer.valueOf(args[2]);
-			Integer to = erase.getSize().getTo();
-
-			if (to == null || from < to) {
-				erase.getSize().setFrom(from);
-				changed = true;
-				response = "OK. Minimum size restriction for user "
-						+ user.getName() + " is " + from;
-			} else if (to != null)
-				response = "Error. Range is invalid: " + from + "-" + to;
-		} else
-			response = "Error. Please enter a valid size.";
 		return response;
 	}
 
@@ -355,68 +297,67 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		String[] args = request.split(" ");
 
 		if (args[2] != null && Integer.valueOf(args[2]) != null) {
-			EraseSettings erase = user.getSettings().getEraseSettings();
-
-			Integer from = erase.getSize().getFrom();
-			Integer to = Integer.valueOf(args[2]);
-
-			if (from == null || from < to) {
-				erase.getSize().setTo(to);
-				changed = true;
-				response = "OK. Maximum size restriction for user "
-						+ user.getName() + " is " + to;
-			} else if (from != null)
-				response = "Error. Range is invalid: " + from + "-" + to;
+			// EraseSettings erase = user.getSettings().getEraseSettings();
+			//
+			// Integer from = erase.getSize().getFrom();
+			// Integer to = Integer.valueOf(args[2]);
+			//
+			// if (from == null || from < to) {
+			// erase.getSize().setTo(to);
+			// changed = true;
+			// response = "OK. Maximum size restriction for user "
+			// + user.getName() + " is " + to;
+			// } else if (from != null)
+			// response = "Error. Range is invalid: " + from + "-" + to;
 		} else
 			response = "Error. Please enter a valid size.";
 		return response;
 	}
 
-	private String setDateMinimum(User user, String request) {
+	private String addDateRestriction(User user, String request) {
 		String response = "";
 		String[] args = request.split(" ");
-		if (args[2] != null) {
+		if (args.length > 3 && args[2] != null && args[3] != null) {
 
 			EraseSettings erase = user.getSettings().getEraseSettings();
 
 			DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy")
 					.withLocale(new Locale("es"));
 
-			DateTime fromDate = f.parseDateTime(args[2]);
-			DateTime toDate = erase.getDate().getTo();
+			DateTime fromDate = null, toDate = null;
 
-			if (toDate == null || fromDate.isBefore(toDate)) {
-				erase.getDate().setFrom(fromDate);
+			try {
+				if (!args[2].equals("N"))
+					fromDate = f.parseDateTime(args[2]);
+				if (!args[3].equals("N"))
+					toDate = f.parseDateTime(args[3]);
+			} catch (Exception e) {
+				return "Please enter a valid date";
+			}
 
-				response = "OK. Minimum date restriction for user "
-						+ user.getName() + " is " + f.print(fromDate);
-			} else if (toDate != null)
-				response = "Error. Range is invalid: " + f.print(fromDate)
-						+ "-" + f.print(toDate);
-		} else
-			response = "Error. Please enter a valid date.";
-		return response;
-	}
-
-	private String setDateMaximum(User user, String request) {
-		String response = "";
-		String[] args = request.split(" ");
-		if (args[2] != null) {
-
-			EraseSettings erase = user.getSettings().getEraseSettings();
-
-			DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy")
-					.withLocale(new Locale("es"));
-
-			DateTime fromDate = erase.getDate().getFrom();
-			DateTime toDate = f.parseDateTime(args[2]);
-
-			if (fromDate == null || fromDate.isBefore(toDate)) {
-				erase.getDate().setTo(toDate);
+			// If range is valid or one value is unbounded, continue
+			if ((fromDate != null && toDate != null && fromDate
+					.isBefore(toDate))
+					|| (fromDate == null && toDate != null)
+					|| (toDate == null && fromDate != null)) {
+				Range<DateTime> range = new Range<DateTime>();
+				range.setFrom(fromDate);
+				range.setTo(toDate);
+				erase.addDateRestriction(range);
 				changed = true;
 
-				response = "OK. Maximum date restriction for user "
-						+ user.getName() + " is " + f.print(toDate);
+				response = "OK. Date restriction added for user "
+						+ user.getName();
+
+				if (fromDate != null)
+					response += "min: " + f.print(fromDate);
+				else
+					response += "min: unbounded";
+				if (toDate != null)
+					response += "max: " + f.print(toDate);
+				else
+					response += "max: unbounded";
+
 			} else if (fromDate != null)
 				response = "Error. Range is invalid: " + f.print(fromDate)
 						+ "-" + f.print(toDate);
@@ -455,22 +396,23 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		DateTimeFormatter f = DateTimeFormat.forPattern("dd/MM/yyyy")
 				.withLocale(new Locale("es"));
 
-		Range<DateTime> date = e.getDate();
-		Range<Integer> size = e.getSize();
+		for (Range<DateTime> date : e.getDateRestrictions()) {
+			if (date.hasValues())
+				out += "Date: ";
+			if (date.getFrom() != null)
+				out += "min " + f.print(date.getFrom()) + ", ";
+			if (date.getTo() != null)
+				out += "max " + f.print(date.getTo()) + ", ";
+		}
 
-		if (date.hasValues())
-			out += "Date: ";
-		if (date.getFrom() != null)
-			out += "min " + f.print(date.getFrom()) + ", ";
-		if (e.getDate().getTo() != null)
-			out += "max " + f.print(date.getTo()) + ", ";
-
-		if (size.hasValues())
-			out += "Size: ";
-		if (size.getFrom() != null)
-			out += "min " + size.getFrom() + "bytes, ";
-		if (size.getTo() != null)
-			out += "max " + size.getTo() + "bytes, ";
+		for (Range<Integer> size : e.getSizeRestrictions()) {
+			if (size.hasValues())
+				out += "Size: ";
+			if (size.getFrom() != null)
+				out += "min " + size.getFrom() + "bytes, ";
+			if (size.getTo() != null)
+				out += "max " + size.getTo() + "bytes, ";
+		}
 
 		out += "Structure: " + e.getStructure() + ", ";
 
@@ -483,15 +425,15 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 	private String printSettings(UserSettings s) {
 		String out = "";
 
-		if (s.getSchedule() != null && s.getSchedule().getFrom() != null
-				|| s.getSchedule().getTo() != null)
-			out += "Schedule: ";
-		if (s.getSchedule() != null && s.getSchedule().getFrom() != null)
-			out += "min " + s.getSchedule().getFrom() / 60 + ":"
-					+ s.getSchedule().getFrom() % 60 + "hs ";
-		if (s.getSchedule() != null && s.getSchedule().getTo() != null)
-			out += "max " + s.getSchedule().getTo() / 60 + ":"
-					+ s.getSchedule().getTo() % 60 + "hs, ";
+		// if (s.getSchedule() != null && s.getSchedule().getFrom() != null
+		// || s.getSchedule().getTo() != null)
+		// out += "Schedule: ";
+		// if (s.getSchedule() != null && s.getSchedule().getFrom() != null)
+		// out += "min " + s.getSchedule().getFrom() / 60 + ":"
+		// + s.getSchedule().getFrom() % 60 + "hs ";
+		// if (s.getSchedule() != null && s.getSchedule().getTo() != null)
+		// out += "max " + s.getSchedule().getTo() / 60 + ":"
+		// + s.getSchedule().getTo() % 60 + "hs, ";
 
 		out += "Max logins: " + s.getMaxLogins() + ", ";
 		out += "Leet:" + s.isLeet() + ", Rotate:" + s.isRotate() + ", ";

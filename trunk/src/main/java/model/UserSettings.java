@@ -1,15 +1,19 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import proxy.POP3Proxy;
+
 public class UserSettings {
 
-	private String server;
-	private Integer maxLogins;
+	private String server = POP3Proxy.DEFAULT_SERVER;
+	private Integer maxLogins = -1;
 
 	// In minutes of day, maximum 60*24=1440
-	private Range<Integer> schedule = new Range<Integer>();
-	private Boolean rotate, leet;
-	private EraseSettings eraseSettings;
-
+	private List<Range<Integer>> scheduleList = new ArrayList<Range<Integer>>();
+	private Boolean rotate = false, leet = false;
+	private EraseSettings eraseSettings = new EraseSettings();
 
 	public String getServer() {
 		return server;
@@ -51,7 +55,11 @@ public class UserSettings {
 		return leet;
 	}
 
-	public Range<Integer> getSchedule() {
-		return schedule;
+	public void addScheduleRestriction(Range<Integer> r) {
+		this.scheduleList.add(r);
+	}
+
+	public List<Range<Integer>> getScheduleList() {
+		return scheduleList;
 	}
 }

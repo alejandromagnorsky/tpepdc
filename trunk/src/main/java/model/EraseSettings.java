@@ -7,8 +7,8 @@ import org.joda.time.DateTime;
 
 public class EraseSettings {
 
-	private Range<DateTime> date = new Range<DateTime>();
-	private Range<Integer> size = new Range<Integer>();
+	private List<Range<DateTime>> dates = new ArrayList<Range<DateTime>>();
+	private List<Range<Integer>> sizes = new ArrayList<Range<Integer>>();
 	private List<String> senders = new ArrayList<String>();
 	private List<String> contentTypes = new ArrayList<String>();;
 	private List<String> headerPatterns = new ArrayList<String>();;
@@ -46,11 +46,19 @@ public class EraseSettings {
 		this.structure = structure;
 	}
 
-	public Range<DateTime> getDate() {
-		return date;
+	public void addSizeRestriction(Range<Integer> r) {
+		this.sizes.add(r);
 	}
 
-	public Range<Integer> getSize() {
-		return size;
+	public void addDateRestriction(Range<DateTime> r) {
+		this.dates.add(r);
+	}
+
+	public List<Range<Integer>> getSizeRestrictions() {
+		return sizes;
+	}
+
+	public List<Range<DateTime>> getDateRestrictions() {
+		return dates;
 	}
 }

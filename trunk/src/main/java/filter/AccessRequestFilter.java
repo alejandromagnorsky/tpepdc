@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.List;
 
 import model.AccessControl;
+import model.Range;
 import model.User;
 
 import org.apache.log4j.Logger;
@@ -87,6 +88,10 @@ public class AccessRequestFilter extends RequestFilter {
 				return new Response(user, "");
 			}
 
+			// If user is logged, update settings
+			if (user != null)
+				user = loader.getUser(user.getName());
+
 			// Inject user
 			r.setUser(user);
 
@@ -129,13 +134,19 @@ public class AccessRequestFilter extends RequestFilter {
 			}
 
 			if (AccessControl.hourIsOutOfRange(user)) {
-				writer.println("-ERR. You are not allowed to login now. Try again"
-						+ " between "
-						+ minutesToString(user.getSettings().getSchedule()
-								.getFrom())
-						+ " and "
-						+ minutesToString(user.getSettings().getSchedule()
-								.getTo()) + "hs");
+				writer.println("-ERR. You are not allowed to login now. Try again between the following ranges:");
+
+				if (user.getSettings() != null)
+					for (Range<Integer> range : user.getSettings()
+							.getScheduleList()) {
+						String rsp = "";
+						if (range.getFrom() != null)
+							rsp += "from: " + range.getFrom();
+						if (range.getTo() != null)
+							rsp += " to: " + range.getTo();
+
+						writer.println(rsp);
+					}
 				return true;
 			}
 		}
