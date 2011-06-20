@@ -110,14 +110,51 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							// Commands need a user
 						} else if (user != null) {
 
-							if (request.toUpperCase()
-									.equals("GET USERSETTINGS")) {
-								response = printSettings(user.getSettings());
-
-							} else if (request.toUpperCase().equals(
-									"GET ERASESETTINGS")) {
-								response = printEraseSettings(user
+							if (request.toUpperCase().equals("SETTINGS")) {
+								response = "User Settings ------------------------\n";
+								response += printSettings(user.getSettings())
+										+ "\n";
+								response += "Erase Settings ------------------------\n";
+								response += printEraseSettings(user
 										.getSettings().getEraseSettings());
+							} else if (request.toUpperCase().equals("CLEARALL")) {
+								user = new User(user.getName());
+								changed = true;
+								response = "User settings cleared.";
+							} else if (request.toUpperCase().startsWith(
+									"CLEAR ")
+									&& argc > 1 && args[1] != null) {
+
+								String arg = args[1].toUpperCase();
+
+								if (user != null
+										&& user.getSettings() != null
+										&& user.getSettings()
+												.getEraseSettings() != null) {
+
+									EraseSettings e = user.getSettings()
+											.getEraseSettings();
+
+									if (arg.equals("SCHEDULE"))
+										user.getSettings().getScheduleList()
+												.clear();
+									else if (arg.equals("DATE"))
+										e.getDateRestrictions().clear();
+									else if (arg.equals("SIZE"))
+										e.getSizeRestrictions().clear();
+									else if (arg.equals("CONTENT"))
+										e.getContentTypes().clear();
+									else if (arg.equals("SENDERS"))
+										e.getSenders().clear();
+									else if (arg.equals("HEADERS"))
+										e.getHeaderPattern().clear();
+									else if (arg.equals("STRUCTURE"))
+										e.setStructure("");
+
+									changed = true;
+									response = "Restriction by " + arg
+											+ " cleared";
+								}
 
 							} else if (request.toUpperCase().startsWith(
 									"SET ROTATE")) {
@@ -166,13 +203,18 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										Integer maxLogins = Integer
 												.valueOf(args[2]);
 										changed = true;
-										user.getSettings().setMaxLogins(
-												maxLogins);
-										response = "+OK. Max logins set to "
-												+ maxLogins + " for user "
-												+ user.getName();
+
+										if (maxLogins >= -1) {
+											user.getSettings().setMaxLogins(
+													maxLogins);
+											response = "+OK. Max logins set to "
+													+ maxLogins
+													+ " for user "
+													+ user.getName();
+										} else
+											response = "-ERR Please enter a positive integer, or -1 for unbounded logins";
 									} else
-										response = "-ERR. Please enter a valid integer value.";
+										response = "-ERR Please enter a valid integer value.";
 								} catch (NumberFormatException e) {
 									response = "-ERR. Please enter a valid integer value.";
 								}
@@ -486,22 +528,30 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		out += "Structure: " + e.getStructure() + "\n";
 		out += "Senders: " + e.getSenders().toString() + "\n";
 		out += "Content: " + e.getContentTypes().toString() + "\n";
-		out += "Header pattern: " + e.getHeaderPattern().toString() + "\n";
+		out += "Header pattern: " + e.getHeaderPattern().toString();
 		return out;
 	}
 
 	private String printSettings(UserSettings s) {
+		if (s == null)
+			return "";
 		String out = "";
 
-		// if (s.getSchedule() != null && s.getSchedule().getFrom() != null
-		// || s.getSchedule().getTo() != null)
-		// out += "Schedule: ";
-		// if (s.getSchedule() != null && s.getSchedule().getFrom() != null)
-		// out += "min " + s.getSchedule().getFrom() / 60 + ":"
-		// + s.getSchedule().getFrom() % 60 + "hs ";
-		// if (s.getSchedule() != null && s.getSchedule().getTo() != null)
-		// out += "max " + s.getSchedule().getTo() / 60 + ":"
-		// + s.getSchedule().getTo() % 60 + "hs, ";
+		if (!s.getScheduleList().isEmpty())
+			out += "Schedule restrictions: \n";
+
+		for (Range<Integer> schedule : s.getScheduleList()) {
+			out += " ";
+			if (schedule.getFrom() != null)
+				out += "min " + minutesToString(schedule.getFrom()) + " ";
+			else
+				out += "unbounded, ";
+			if (schedule.getTo() != null)
+				out += "max " + minutesToString(schedule.getTo()) + " ";
+			else
+				out += "unbounded ";
+			out += "\n";
+		}
 
 		out += "Max logins: " + s.getMaxLogins() + ", ";
 		out += "Leet:" + s.isLeet() + ", Rotate:" + s.isRotate() + ", ";
