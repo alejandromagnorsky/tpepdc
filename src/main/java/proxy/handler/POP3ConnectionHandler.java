@@ -74,12 +74,14 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					if(POP3client != null && POP3client.isConnected()) {
 						response = POP3client.send(request);
 						writer.println(response);
-						writer.println(POP3client.getListOfMessage());
+						if(response != null && !response.contains("-ERR")) {
+							writer.println(POP3client.getListOfMessage());
+						}
 //						POP3Proxy.logger.info("[INFO]: " + "CAPA COMMAND USED");
 					} else {
 						//TODO ver que hacer en este caso, por ahora anda pero tira error la primera vez
 //						POP3Proxy.logger.info("[INFO]: " + "CAPA NOT SUPPORTED BEFORE USER");
-						writer.println("-ERR. Must use USER command first.");
+						writer.println("-ERR. CAPA is not supported before USER command.");
 					}
 //					writer.println("+OK Capability list follows");
 //					writer.println("USER");
