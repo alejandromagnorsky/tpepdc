@@ -7,11 +7,11 @@
         <transform-settings leet="true" rotate="false"/>
         <server>localhost</server>
     </user>
-    <user max-logins="-1" name="tpepdc">
+    <user max-logins="534" name="tpepdc">
         <erase-settings>
             <size-bytes>
-                <from>0</from>
-                <to>200</to>
+                <from>255</from>
+                <to>900</to>
             </size-bytes>
             <structure></structure>
         </erase-settings>

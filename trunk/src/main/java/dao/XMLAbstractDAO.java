@@ -100,6 +100,7 @@ public abstract class XMLAbstractDAO<T> {
 				return;
 			}
 		}
+		rootElement = createRoot();
 		rootElement = unmarshal(input, new File(schemaFilename));
 
 		if (rootElement == null) {
