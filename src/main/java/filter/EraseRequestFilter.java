@@ -2,6 +2,7 @@ package filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -21,6 +22,29 @@ import proxy.POP3Client;
 
 public class EraseRequestFilter extends RequestFilter {
 
+	private class DummyWriter extends Writer {
+
+		int size = 0;
+
+		public int getSize() {
+			return size;
+		}
+
+		@Override
+		public void close() throws IOException {
+		}
+
+		@Override
+		public void flush() throws IOException {
+		}
+
+		@Override
+		public void write(char[] cbuf, int off, int len) throws IOException {
+			size += len;
+		}
+
+	};
+
 	@Override
 	protected Response apply(Request r, PrintWriter responseWriter,
 			POP3Client client, RequestFilter chain) {
@@ -39,6 +63,7 @@ public class EraseRequestFilter extends RequestFilter {
 			// If there are no erase settings, simply do not get message
 			if (erase.getContentTypes().isEmpty()
 					&& erase.getDateRestrictions().isEmpty()
+					&& erase.getSizeRestrictions().isEmpty()
 					&& erase.getHeaderPattern().isEmpty()
 					&& erase.getSenders().isEmpty()
 					&& erase.getStructure().equals(""))
@@ -50,13 +75,11 @@ public class EraseRequestFilter extends RequestFilter {
 			try {
 				number = Integer.valueOf(msgStr);
 			} catch (NumberFormatException e) {
-				// TODO Logear esto.
 				return new Response(user, "-ERR invalid argument");
 			}
 
 			if (!canDeleteMail(user, number, client, responseWriter))
-				;
-			return new Response(user, "");
+				return new Response(user, "");
 		}
 		return chain.doFilter(r, responseWriter, client);
 	}
@@ -69,7 +92,11 @@ public class EraseRequestFilter extends RequestFilter {
 			String response = client.send(request);
 
 			if (response.contains("+OK")) {
-				Message message = client.getMessage(writer);
+				DummyWriter dummy = new DummyWriter();
+				PrintWriter dummyWriter = new PrintWriter(dummy);
+
+				Message message = client.getMessage(dummyWriter);
+				int size = dummy.getSize();
 
 				Map<String, List<String>> headers = message.getHeaders();
 
@@ -82,7 +109,7 @@ public class EraseRequestFilter extends RequestFilter {
 				} else if (dateOutOfRange(user, headers.get("Date").get(0))) {
 					writer.println("-ERR. You are not allowed to delete this message due to date restrictions.");
 					return false;
-				} else if (sizeOutOfRange(user, response)) {
+				} else if (sizeOutOfRange(user, size)) {
 					writer.println("-ERR. You are not allowed to delete this message due to size restrictions.");
 					return false;
 				} else if (containsRestrictedContent(user,
@@ -229,13 +256,8 @@ public class EraseRequestFilter extends RequestFilter {
 		return false;
 	}
 
-	private boolean sizeOutOfRange(User user, String raw) {
-		int low = raw.indexOf(" ") + 1;
-		int high = raw.lastIndexOf(" ");
-
+	private boolean sizeOutOfRange(User user, int size) {
 		try {
-			Integer size = Integer.valueOf(raw.substring(low, high));
-
 			// If list is empty, user can delete
 			boolean inRange = user.getSettings().getEraseSettings()
 					.getSizeRestrictions().isEmpty();
@@ -264,4 +286,5 @@ public class EraseRequestFilter extends RequestFilter {
 		}
 		return false;
 	}
+
 }
