@@ -108,6 +108,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								response = "-ERR. Enter a username.";
 
 							// Commands need a user
+						}  else if (request.toUpperCase().equals("CLEARALL")) {
+							loader.clear();
+							changed = true;
+							response = "Warning: Configuration settings resetted.";
 						} else if (user != null) {
 
 							if (request.toUpperCase().equals("SETTINGS")) {
@@ -117,7 +121,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								response += "Erase Settings ------------------------\n";
 								response += printEraseSettings(user
 										.getSettings().getEraseSettings());
-							} else if (request.toUpperCase().equals("CLEARALL")) {
+							} else if (request.toUpperCase().equals("CLEARUSER")) {
 								user = new User(user.getName());
 								changed = true;
 								response = "User settings cleared.";
@@ -168,6 +172,19 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 											+ " for user " + user.getName();
 								} else
 									response = "-ERR. Please enter a valid boolean value.";
+
+							} else if (request.toUpperCase().startsWith(
+									"SET EXTERNAL")) {
+
+								if (argc > 2 && args[2] != null) {
+
+									String external = args[2];
+									user.getSettings().setExternal(external);
+									changed = true;
+									response = "+OK. External program set to " + external
+											+ " for user " + user.getName();
+								} else
+									response = "-ERR. Please enter a valid external program value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET LEET")) {

@@ -13,6 +13,7 @@ public class UserSettings {
 	// In minutes of day, maximum 60*24=1440
 	private List<Range<Integer>> scheduleList = new ArrayList<Range<Integer>>();
 	private Boolean rotate = false, leet = false;
+	private String external = "none";
 	private EraseSettings eraseSettings = new EraseSettings();
 
 	public String getServer() {
@@ -61,5 +62,13 @@ public class UserSettings {
 
 	public List<Range<Integer>> getScheduleList() {
 		return scheduleList;
+	}
+
+	public void setExternal(String external) {
+		this.external = external;
+	}
+
+	public String getExternal() {
+		return external;
 	}
 }

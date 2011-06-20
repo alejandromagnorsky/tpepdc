@@ -103,6 +103,7 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 
 		out.setRotate(xmlUser.getTransformSettings().isRotate());
 		out.setLeet(xmlUser.getTransformSettings().isLeet());
+		out.setExternal(xmlUser.getTransformSettings().getExternal());
 
 		EraseSettings erase = constructEraseSettings(index);
 		out.setEraseSettings(erase);
@@ -205,6 +206,8 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 			xmlUser.setServer(userSettings.getServer());
 			xmlUser.getTransformSettings().setLeet(userSettings.isLeet());
 			xmlUser.getTransformSettings().setRotate(userSettings.isRotate());
+			xmlUser.getTransformSettings().setExternal(
+					userSettings.getExternal());
 
 			xmlUser.getSchedule().clear();
 			for (Range<Integer> range : userSettings.getScheduleList()) {
@@ -232,6 +235,10 @@ public class XMLSettingsDAO extends XMLAbstractDAO<XMLSettings> {
 			blacklist = objFact.createXMLIPBlacklist();
 			blacklist.getIp().add(ip);
 		}
+	}
+
+	public void clear() {
+		rootElement = createRoot();
 	}
 
 	public void saveBlacklistIP(List<String> ipList) {
