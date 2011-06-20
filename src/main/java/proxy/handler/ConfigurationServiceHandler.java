@@ -43,8 +43,26 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 					int argc = args.length;
 
 					if (request != null) {
+						if (request.toUpperCase().equals("RELOAD")) {
+							writer.println("WARNING: Reloading from xml will discard every change not commited. Are you sure? (y/n)");
 
-						if (request.toUpperCase().equals("COMMIT")) {
+							String answer = reader.readLine();
+
+							while (!answer.equals("y") && !answer.equals("n")) {
+								writer.println("Expected: (y/n)");
+								answer = reader.readLine();
+							}
+
+							if (answer.equals("y")) {
+								loader.load();
+
+								if (user != null)
+									user = loader.getUser(user.getName());
+
+								response = "Settings reloaded from XML file.";
+							} else
+								response = "Reload cancelled.";
+						} else if (request.toUpperCase().equals("COMMIT")) {
 							if (changed) {
 								loader.commit();
 								response = "+OK. Commit successful.";
