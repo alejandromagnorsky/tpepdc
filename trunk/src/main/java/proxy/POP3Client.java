@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import model.ExternalProgram;
 import model.Message;
 import model.MessageParser;
 import model.User;
@@ -39,13 +38,18 @@ public class POP3Client extends Client {
 		BufferedReader input = reader;
 		// TODO
 		// Modificar para que utilize el externalProgram del user settings
-		if(user != null && user.getSettings() != null && user.getSettings().getServer() != null){
+		/*if(user != null && user.getSettings() != null && user.getSettings().getServer() != null){
 			ExternalProgram externalProgram = new ExternalProgram("./externalProgram", reader);
 			input = externalProgram.execute();
-		}
+		}*/
 		
 		messageParser = new MessageParser(input, writer, user);
-		Message message = messageParser.parseMessage();
+		Message message = null;
+		try{
+			message = messageParser.parseMessage();
+		} catch(Exception e){
+			writer.println("-ERR. Error retrieving message");
+		}
 		
 		// if the input is the reader from the tmp file
 		if(!input.equals(reader))
