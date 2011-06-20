@@ -104,8 +104,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					Statistics.addBytesTransfered(rsp.getUser(), (long)response.length());
 
 					if (response != null && response.contains("+OK")) {
-						if (request.toUpperCase().contains("LIST") 
-								|| request.toUpperCase().contains("UIDL")
+						if (request.toUpperCase().equals("LIST") 
+								|| request.toUpperCase().equals("UIDL")
 								|| request.toUpperCase().contains("TOP")) {
 							String list = POP3client.getListOfMessage();
 							writer.println(list);
