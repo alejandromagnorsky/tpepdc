@@ -74,7 +74,7 @@ public class EraseRequestFilter extends RequestFilter {
 			}
 
 			if (!canDeleteMail(user, number, client, responseWriter))
-				return new Response(user, "");
+				return new Response(user, "-ERR");
 		}
 		return chain.doFilter(r, responseWriter, client);
 	}
@@ -151,20 +151,15 @@ public class EraseRequestFilter extends RequestFilter {
 			for (Content c : contentSet)
 				if (c.getType() != Content.Type.TEXT)
 					return false;
-
 			writer
-					.println("-ERR Could not delete message due to restricted structure");
-			writer
-					.println("You are not allowed to delete messages with no attachments");
+					.println("-ERR You are not allowed to delete messages with no attachments");
 			return true;
 		} else if (structure.equals("ATTACH")) {
 			SortedSet<Content> contentSet = message.getContents();
 			for (Content c : contentSet)
 				if (c.getType() != Content.Type.TEXT) {
 					writer
-							.println("-ERR Could not delete message due to restricted structure");
-					writer
-							.println("You are not allowed to delete messages with attachments");
+							.println("-ERR You are not allowed to delete messages with attachments");
 					return true;
 				}
 		}
@@ -194,10 +189,8 @@ public class EraseRequestFilter extends RequestFilter {
 						if (headerBody.matches(regex)
 								|| headerBody.contains(regex)) {
 							writer
-									.println("-ERR Could not delete message due to restricted headers");
-							writer.println("Header " + header + ":"
-									+ headerBody);
-							writer.println("matches with pattern " + regex);
+									.println("-ERR Could not delete message due to restricted header: "
+											+ header + ":" + headerBody);
 							return true;
 						}
 					}
@@ -218,9 +211,8 @@ public class EraseRequestFilter extends RequestFilter {
 			for (String restricted : contentList) {
 				if (header.contains(restricted)) {
 					writer
-							.println("-ERR Could not delete message due to restricted content type");
-					writer.println("Content: " + header + " matched with "
-							+ restricted);
+							.println("-ERR Could not delete message due to restricted content type: "
+									+ header);
 					return true;
 				}
 			}
@@ -281,26 +273,10 @@ public class EraseRequestFilter extends RequestFilter {
 				.getDateRestrictions())
 			inRange = inRange || rangeContainsDate(range, date);
 
-		if (!inRange) {
+		if (!inRange)
 			writer
-					.println("-ERR Could not delete message due to restricted date range");
-			writer.println("Message date: " + f.print(date));
-			writer.println("Approved date ranges:");
-
-			for (Range<DateTime> range : user.getSettings().getEraseSettings()
-					.getDateRestrictions()) {
-				String out = " ";
-				if (range.getFrom() != null)
-					out += "min " + f.print(range.getFrom()) + ", ";
-				else
-					out += "unbounded, ";
-				if (range.getTo() != null)
-					out += "max " + f.print(range.getTo()) + " ";
-				else
-					out += "unbounded ";
-				writer.println(out);
-			}
-		}
+					.println("-ERR Could not delete message due to restricted date range. Message date: "
+							+ f.print(date));
 
 		return !inRange;
 	}
@@ -333,37 +309,16 @@ public class EraseRequestFilter extends RequestFilter {
 			boolean inRange = user.getSettings().getEraseSettings()
 					.getSizeRestrictions().isEmpty();
 
-			System.out.println("SIZE: " + size);
-
 			// Do the union of all ranges, only return false if date is out of
 			// EVERY range
 			for (Range<Integer> range : user.getSettings().getEraseSettings()
 					.getSizeRestrictions())
 				inRange = inRange || rangeContainsSize(range, size);
 
-			if (!inRange) {
+			if (!inRange)
 				writer
-						.println("-ERR Could not delete message due to restricted size range");
-				writer.println("Message size: " + size + " bytes");
-				writer.println("Approved size ranges:");
-
-				String out = "";
-				for (Range<Integer> range : user.getSettings()
-						.getEraseSettings().getSizeRestrictions()) {
-					out += " ";
-					if (range.getFrom() != null)
-						out += "min " + range.getFrom() + " bytes, ";
-					else
-						out += "unbounded, ";
-					if (range.getTo() != null)
-						out += "max " + range.getTo() + " bytes ";
-					else
-						out += "unbounded ";
-					out += "\n";
-				}
-
-				writer.println(out);
-			}
+						.println("-ERR Could not delete message due to restricted size range. Message size: "
+								+ size);
 
 			return !inRange;
 		} catch (NumberFormatException e) {
@@ -386,9 +341,8 @@ public class EraseRequestFilter extends RequestFilter {
 
 						if (e.getSenders().contains(sender)) {
 							writer
-									.println("-ERR Could not delete message due to restricted sender");
-							writer.println("Mails from: " + sender
-									+ " cannot be deleted");
+									.println("-ERR Could not delete message due to restricted sender: "
+											+ sender);
 							return true;
 						}
 					}
