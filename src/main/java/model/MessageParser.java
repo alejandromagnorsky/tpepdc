@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 
 import proxy.POP3Proxy;
+import statistics.Statistics;
 
 public class MessageParser {
 
@@ -41,6 +42,11 @@ public class MessageParser {
 		return response;
 	}
 
+	private void send(String line){
+		writer.println(line);
+		Statistics.addBytesTransfered(user, (long)line.length());
+	}
+	
 	public Message parseMessage() throws IOException {
 		Message message = new Message();
 		String response = readResponseLine();
@@ -54,7 +60,7 @@ public class MessageParser {
 		String headerName = null;
 		StringBuilder headerValue = new StringBuilder();
 		do {
-			writer.println(response);
+			send(response);
 			// For each header, first get the name
 			// and then get the content that might be
 			// in different lines and append them in
@@ -75,7 +81,7 @@ public class MessageParser {
 
 		// Body's start
 		if (response.length() == 0) {
-			writer.println();
+			send("");
 			return;
 		} else
 			parseHeaders(response, message);
@@ -101,7 +107,7 @@ public class MessageParser {
 				parseContents(message, boundary);
 			while (!(response = readResponseLine()).equals("."));
 		}
-		writer.println(".");
+		send(".");
 	}
 
 	private String putContent(Message message, String header, String boundary)
@@ -123,21 +129,20 @@ public class MessageParser {
 		content.setId(id);
 
 		if (!boundary.isEmpty()) {
-			writer.println("--" + boundary);
+			send("--" + boundary);
 			// Read content's headers if the message use multipart
 			// because if the message is a simple content, it has the
 			// content's headers in the message's headers
 			response = header;
 			do {
-				writer.println(response);
+				send(response);
 				if (response.contains("Content-Transfer-Encoding:"))
 					encoding = response.substring(response.indexOf(":") + 2);
 			} while ((response = readResponseLine()).length() != 0);
-			writer.println(response);
+			send(response);
 		} else {
 			if (message.getHeaders().get("Content-Transfer-Encoding") != null)
-				encoding = message.getHeaders()
-						.get("Content-Transfer-Encoding").get(0);
+				encoding = message.getHeaders().get("Content-Transfer-Encoding").get(0);
 		}
 		
 		boolean needToTransformImage = needToTransformImage(type);
@@ -163,7 +168,7 @@ public class MessageParser {
 			if(encoding.equals("quoted-printable")) {
 				// transform and print text according to its encoding
 				String text = decodeQuotedPrintable(contentText.toString());
-				text = textTransformer.l33t(text, null);
+				text = textTransformer.transform(text, null);
 				printLines(encodeQuotedPrintable(text));
 			} else if(encoding.equals("8bit")) {
 				printLines(textTransformer.transform(contentText.toString(), message));
@@ -190,11 +195,11 @@ public class MessageParser {
 			while (!checkLine(response = readResponseLine(), boundary)) {
 				// lines can be transformed one by one
 				String transformedLine = textTransformer.transform(response, null);
-				writer.println(transformedLine);
+				send(transformedLine);
 			}
 		} else {
 			while (!checkLine(response = readResponseLine(), boundary)) {
-				writer.println(response);
+				send(response);
 			}
 		}
 		return response;
@@ -213,16 +218,16 @@ public class MessageParser {
 
 		if (response.contains("Content-Type:")) {
 			if (response.toUpperCase().contains("MULTIPART")) {
-				writer.println("--" + boundary);
-				writer.println(response);
+				send("--" + boundary);
+				send(response);
 				String subBoundary = getBoundary(response);
-				writer.println();
+				send("");
 				response = readResponseLine();
 				parseContents(message, subBoundary);
 			} else {
 				response = putContent(message, response, boundary);
 				if (response.equals("--" + boundary + "--")) {
-					writer.println(response);
+					send(response);
 					return;
 				}
 				parseContents(message, boundary);
@@ -233,7 +238,7 @@ public class MessageParser {
 	private String getBoundary(String line) throws IOException {
 		if (line.indexOf("=") == -1) {
 			line = readResponseLine();
-			writer.println(line);
+			send(line);
 		}
 		String boundary = line.substring(line.indexOf("=") + 1);
 		String[] tmp = boundary.split("\"");
@@ -278,7 +283,7 @@ public class MessageParser {
 				count = 0;
 				// builder.append('\n');
 				// System.out.println(builder.toString());
-				writer.println(builder.toString());
+				send(builder.toString());
 				builder = new StringBuilder();
 			} else {
 				count++;
