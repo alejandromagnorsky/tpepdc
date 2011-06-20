@@ -8,7 +8,6 @@ import model.Message;
 import org.apache.log4j.Logger;
 
 import proxy.POP3Client;
-import proxy.POP3Proxy;
 import statistics.Statistics;
 import filter.AccessRequestFilter;
 import filter.EraseRequestFilter;
