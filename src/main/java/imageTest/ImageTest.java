@@ -30,10 +30,10 @@ public class ImageTest {
 			// ImageTransformerFilter rotate = new ImageTransformerFilter();
 			// rotate.apply(message, dao.getUser("tpepdc"),
 			// new NullResponseFilter());
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ImageIO.write(image, "png", baos);
-			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			image = ImageIO.read(bais);
+//			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//			ImageIO.write(image, "png", baos);
+//			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+//			ImageIO.write(image, "png", bais);
 
 			String toPrint = imageToBase64(image, "png");
 			System.out.println(toPrint);
@@ -73,7 +73,7 @@ public class ImageTest {
 		try {
 			ImageIO.write(image, format, baos);
 			byte[] buf = baos.toByteArray();
-			return toString(Base64.encodeBase64Chunked(baos.toByteArray()));
+			return toString(Base64.encodeBase64Chunked(buf));
 			// return new String(buf);
 		} catch (IOException e) {
 			e.printStackTrace();
