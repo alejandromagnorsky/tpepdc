@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.List;
 
 import model.AccessControl;
-import model.Range;
 import model.User;
 
 import org.apache.log4j.Logger;
@@ -46,7 +45,7 @@ public class AccessRequestFilter extends RequestFilter {
 			boolean accessDenied = ipIsBlacklisted(responseWriter, ip);
 
 			if (accessDenied)
-				throw new IllegalArgumentException("IP is banned");
+				throw new IllegalArgumentException("Banned IP");
 
 			if (request.toUpperCase().contains("USER ") && !logged) {
 				String server = POP3Proxy.DEFAULT_SERVER;
@@ -89,13 +88,13 @@ public class AccessRequestFilter extends RequestFilter {
 				if (client.isConnected()) {
 					request = "QUIT";
 					client.send(request);
-					responseWriter.println("-ERR. Access denied.");
+					responseWriter.println("-ERR Access denied.");
 					return new Response(user, "");
 				}
 			}
 
 			if (!client.isConnected() && !accessDenied) {
-				responseWriter.println("-ERR. Must use USER command first.");
+				responseWriter.println("-ERR Must use USER command first.");
 				return new Response(user, "");
 			}
 
@@ -144,7 +143,7 @@ public class AccessRequestFilter extends RequestFilter {
 				return resp;
 			}
 
-			return new Response(user, "");
+			return new Response(user, "-ERR");
 
 		} catch (IOException e) {
 			logger.fatal("Error connecting with the user.");
@@ -154,7 +153,7 @@ public class AccessRequestFilter extends RequestFilter {
 
 	private boolean ipIsBlacklisted(PrintWriter writer, String ip) {
 		if (AccessControl.ipIsDenied(ipBlackList, ip)) {
-			writer.println("-ERR. Your IP has been banned.");
+			writer.println("-ERR Your IP has been banned.");
 			return true;
 		}
 		return false;
@@ -164,32 +163,15 @@ public class AccessRequestFilter extends RequestFilter {
 
 		if (user != null) {
 			if (AccessControl.exceedsMaxLogins(user)) {
-				writer.println("-ERR. You have exceeded the ammount of "
+				writer.println("-ERR You have exceeded the ammount of "
 						+ "logins for today. Please try again tomorrow");
 				return true;
 			}
 
 			if (AccessControl.hourIsOutOfRange(user)) {
-				writer.println("-ERR. You are not allowed to login now. ("
+				writer.println("-ERR You are not allowed to login now. ("
 						+ minutesToString(new DateTime().getMinuteOfDay())
-						+ ") Try again between the following ranges:");
-
-				if (user.getSettings() != null)
-					for (Range<Integer> range : user.getSettings()
-							.getScheduleList()) {
-						String rsp = "";
-						if (range.getFrom() != null)
-							rsp += "from: " + minutesToString(range.getFrom())
-									+ " ";
-						else
-							rsp += "from: unbounded ";
-						if (range.getTo() != null)
-							rsp += "to: " + minutesToString(range.getTo());
-						else
-							rsp += "to: unbounded";
-
-						writer.println(rsp);
-					}
+						+ ") Try again later.");
 				return true;
 			}
 		}
