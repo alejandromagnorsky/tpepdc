@@ -14,6 +14,7 @@ import model.Message;
 import model.Range;
 import model.User;
 
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -22,9 +23,11 @@ import proxy.POP3Client;
 
 public class EraseRequestFilter extends RequestFilter {
 
+	private static Logger logger = Logger.getLogger("logger");
+
 	private class DummyWriter extends Writer {
 
-		int size = 0;
+		private int size = 0;
 
 		public int getSize() {
 			return size;
@@ -96,7 +99,7 @@ public class EraseRequestFilter extends RequestFilter {
 				PrintWriter dummyWriter = new PrintWriter(dummy);
 
 				Message message = client.getMessage(dummyWriter);
-				int size = dummy.getSize();
+				int size = dummy.getSize() - 3; // Note: 3 is because of ".\n\n"
 
 				Map<String, List<String>> headers = message.getHeaders();
 
@@ -110,7 +113,8 @@ public class EraseRequestFilter extends RequestFilter {
 					writer.println("-ERR. You are not allowed to delete this message due to date restrictions.");
 					return false;
 				} else if (sizeOutOfRange(user, size)) {
-					writer.println("-ERR. You are not allowed to delete this message due to size restrictions.");
+					writer.println("-ERR. You are not allowed to delete this message due to size restrictions."
+							+ size);
 					return false;
 				} else if (containsRestrictedContent(user,
 						message.getContents())) {
@@ -122,7 +126,12 @@ public class EraseRequestFilter extends RequestFilter {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.fatal("Error trying to delete message.");
+			try {
+				client.disconnect();
+			} catch (IOException e1) {
+				logger.fatal("Error disconnecting from server");
+			}
 		}
 
 		return true;
