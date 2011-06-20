@@ -25,6 +25,7 @@ public class AccessRequestFilter extends RequestFilter {
 	private User user = null;
 	private static Logger logger = Logger.getLogger("logger");
 	private Socket userSocket = null;
+	private boolean logged = false;
 
 	public AccessRequestFilter(Socket userSocket) {
 		this.loader = XMLSettingsDAO.getInstance();
@@ -47,23 +48,32 @@ public class AccessRequestFilter extends RequestFilter {
 			if (accessDenied)
 				throw new IllegalArgumentException("IP is banned");
 
-			if (request.toUpperCase().contains("USER ")
-					&& !client.isConnected()) {
+			if (request.toUpperCase().contains("USER ") && !logged) {
 				String server = POP3Proxy.DEFAULT_SERVER;
 
 				user = loader.getUser(request.substring(request
 						.lastIndexOf(' ') + 1));
 
+				// If user is valid
 				if (this.user != null && user.getSettings() != null) {
 					String userServer = user.getSettings().getServer();
-					if (userServer != null && !userServer.equals("")) {
+
+					if (userServer != null && !userServer.equals(""))
 						server = userServer;
-					}
+
 					accessDenied = accessIsDenied(responseWriter, ip)
 							|| accessDenied;
 				}
 
+				// First login is a success
 				if (!accessDenied) {
+
+					// If client was previously connected, it may be to other
+					// host
+					if (client.isConnected())
+						client.disconnect();
+
+					// Now connect to correct host
 					client.connect(server);
 
 					// Inject user for first login
@@ -96,20 +106,45 @@ public class AccessRequestFilter extends RequestFilter {
 			// Inject user
 			r.setUser(user);
 
-			// If nothing strange happens, continue
-			Response resp = chain.doFilter(r, responseWriter, client);
+			if (client.isConnected()) {
 
-			String response = resp.getResponseString();
-			if ((response != null && response.contains("+OK"))
-					&& (request != null
-							&& request.toUpperCase().contains("PASS") && user != null)) {
+				// If nothing strange happens, continue
+				Response resp = chain.doFilter(r, responseWriter, client);
 
-				XMLLoginLogDAO loginDAO = XMLLoginLogDAO.getInstance();
-				int qty = loginDAO.getUserLogins(user, new LocalDate());
-				loginDAO.saveLogin(user, new LocalDate(), qty + 1);
-				loginDAO.commit();
+				String response = resp.getResponseString();
+				if ((response != null && response.contains("+OK"))
+						&& (request != null
+								&& request.toUpperCase().contains("PASS") && user != null)) {
+
+					// Save login on log
+					XMLLoginLogDAO loginDAO = XMLLoginLogDAO.getInstance();
+					int qty = loginDAO.getUserLogins(user, new LocalDate());
+					loginDAO.saveLogin(user, new LocalDate(), qty + 1);
+					loginDAO.commit();
+
+					// Log success
+					logger.warn("IP "
+							+ userSocket.getInetAddress().getHostAddress()
+							+ " authenticated successfully at "
+							+ new DateTime());
+
+					// Set flag to true so user can't enter command USER again.
+					logged = true;
+				} else if (response != null && request != null
+						&& request.toUpperCase().contains("PASS")
+						&& response.toUpperCase().contains("-ERR") && !logged) {
+
+					// Log failed attempt
+					logger.warn("IP "
+							+ userSocket.getInetAddress().getHostAddress()
+							+ " failed authentication at " + new DateTime());
+					this.user = null;
+				}
+
+				return resp;
 			}
-			return resp;
+
+			return new Response(user, "");
 
 		} catch (IOException e) {
 			logger.fatal("Error connecting with the user.");
