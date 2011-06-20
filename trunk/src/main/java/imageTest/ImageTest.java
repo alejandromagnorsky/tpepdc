@@ -17,21 +17,40 @@ public class ImageTest {
 	public static void main(String args[]) {
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader("image.txt"));
+			BufferedReader reader = new BufferedReader(new FileReader(
+					"image.txt"));
 			String imageString = "";
 			String temp;
-			while((temp = reader.readLine()) != null) {
+			while ((temp = reader.readLine()) != null) {
 				imageString += temp;
 			}
+			
+			
 			BufferedImage image = base64ToImage(imageString);
 			// ImageTransformerFilter rotate = new ImageTransformerFilter();
 			// rotate.apply(message, dao.getUser("tpepdc"),
 			// new NullResponseFilter());
-			ImageIO.write(image, "png", new File("image.png"));
-			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(image, "png", baos);
+			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			image = ImageIO.read(bais);
+
 			String toPrint = imageToBase64(image, "png");
 			System.out.println(toPrint);
 			
+			
+			// WORKING: imageString -> encoded -> decoded -> imageString
+//			String encoded = encode(imageString);
+//			String decoded = decode(encoded);
+//			
+//			System.out.println(decoded);
+			
+			// NOT WORKING: imageString -> decoded -> encoded -> imageString
+//			String decoded = decode(imageString);
+//			String encoded = encode(decoded);
+//			
+//			System.out.println(encoded);
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -54,11 +73,38 @@ public class ImageTest {
 		try {
 			ImageIO.write(image, format, baos);
 			byte[] buf = baos.toByteArray();
-			return Base64.encodeBase64String(buf);
+			return toString(Base64.encodeBase64Chunked(baos.toByteArray()));
+			// return new String(buf);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	private static String delEnters(String str) {
+		String ret = "";
+		for (char c : str.toCharArray()) {
+			if (c != '\n') {
+				ret += c;
+			}
+		}
+		return ret;
+	}
+
+	public static String encode(String stText) {
+		return toString(Base64.encodeBase64Chunked(stText.getBytes()));
+	}
+
+	public static String decode(String stBase64Encoded) {
+		return toString(Base64.decodeBase64(stBase64Encoded.getBytes()));
+	}
+
+	private static String toString(byte[] bytes) {
+		StringBuilder sb = new StringBuilder(bytes.length);
+		for (byte b : bytes) {
+			sb.append(Character.toString((char) b));
+		}
+		return sb.toString();
 	}
 
 }
