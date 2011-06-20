@@ -7,12 +7,17 @@
     </userLoginList>
     <userLoginList>
         <user>bar</user>
-        <quantity>21</quantity>
+        <quantity>36</quantity>
         <date>2011-06-19-03:00</date>
     </userLoginList>
     <userLoginList>
         <user>tpepdc</user>
         <quantity>12</quantity>
+        <date>2011-06-19-03:00</date>
+    </userLoginList>
+    <userLoginList>
+        <user>borrado</user>
+        <quantity>11</quantity>
         <date>2011-06-19-03:00</date>
     </userLoginList>
 </XMLLoginLogRoot>

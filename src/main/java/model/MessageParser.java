@@ -242,7 +242,7 @@ public class MessageParser {
 		}
 		String boundary = line.substring(line.indexOf("=") + 1);
 		String[] tmp = boundary.split("\"");
-		if (tmp.length == 2)
+		if (tmp.length >= 2)
 			boundary = tmp[1];
 		return boundary;
 	}
