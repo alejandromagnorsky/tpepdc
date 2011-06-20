@@ -11,11 +11,9 @@ import proxy.POP3Client;
 import statistics.Statistics;
 import filter.AccessRequestFilter;
 import filter.EraseRequestFilter;
-import filter.NullResponseFilter;
 import filter.Request;
 import filter.RequestFilter;
 import filter.Response;
-import filter.ResponseFilter;
 import filter.SendRequestFilter;
 import filter.StatisticsFilter;
 
@@ -23,7 +21,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 	private POP3Client POP3client;
 	private RequestFilter requestFilterChain;
-	private ResponseFilter responseFilterChain;
 	private static Logger logger = Logger.getLogger("logger");
 
 	public POP3ConnectionHandler(Socket socket) {
@@ -39,14 +36,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 		requestFilterChain = filter;
 	}
 
-	private void addResponseFilter(ResponseFilter filter) {
-		if (responseFilterChain != null) {
-			ResponseFilter tmp = responseFilterChain;
-			filter.setNext(tmp);
-		}
-		responseFilterChain = filter;
-	}
-
 	public void run() {
 
 		// Prepare filter chain
@@ -56,10 +45,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 
 		// Este filtro va al final, asi se ejecuta primero
 		addRequestFilter(new AccessRequestFilter(this.socket));
-
-		addResponseFilter(new NullResponseFilter());
-//		addResponseFilter(new ImageTransformerFilter());
-//		addResponseFilter(new TextTransformer());
 
 		try {
 			String request, response;
@@ -76,15 +61,10 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 						if(response != null && !response.contains("-ERR")) {
 							writer.println(POP3client.getListOfMessage());
 						}
-//						POP3Proxy.logger.info("[INFO]: " + "CAPA COMMAND USED");
 					} else {
-						//TODO ver que hacer en este caso, por ahora anda pero tira error la primera vez
-//						POP3Proxy.logger.info("[INFO]: " + "CAPA NOT SUPPORTED BEFORE USER");
+						//TODO ver que hacer en este caso, por ahora anda pero el mua tira error la primera vez
 						writer.println("-ERR. CAPA is not supported before USER command.");
 					}
-//					writer.println("+OK Capability list follows");
-//					writer.println("USER");
-//					writer.println(".");
 					continue;
 				}
 					
@@ -113,7 +93,6 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 						}
 						else if (request.toUpperCase().contains("RETR")) {
 							Message message = POP3client.getMessage(writer, rsp.getUser());
-							responseFilterChain.doFilter(message, rsp.getUser());
 						} 
 					}
 				}
