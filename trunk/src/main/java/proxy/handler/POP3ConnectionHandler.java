@@ -8,6 +8,7 @@ import model.Message;
 import org.apache.log4j.Logger;
 
 import proxy.POP3Client;
+import proxy.POP3Proxy;
 import statistics.Statistics;
 import filter.AccessRequestFilter;
 import filter.EraseRequestFilter;
@@ -67,14 +68,25 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			writer.println("+OK Welcome");
 			do {
 				request = reader.readLine();
-
+				
+				
 				if (request != null && request.toUpperCase().contains("CAPA")) {
-					writer.println("+OK Capability list follows");
-					writer.println("USER");
-					writer.println(".");
+					if(POP3client != null && POP3client.isConnected()) {
+						response = POP3client.send(request);
+						writer.println(response);
+						writer.println(POP3client.getListOfMessage());
+//						POP3Proxy.logger.info("[INFO]: " + "CAPA COMMAND USED");
+					} else {
+						//TODO ver que hacer en este caso, por ahora anda pero tira error la primera vez
+//						POP3Proxy.logger.info("[INFO]: " + "CAPA NOT SUPPORTED BEFORE USER");
+						writer.println("-ERR. Must use USER command first.");
+					}
+//					writer.println("+OK Capability list follows");
+//					writer.println("USER");
+//					writer.println(".");
 					continue;
 				}
-
+					
 				if (request != null && !request.isEmpty()) {
 					Response rsp = null;
 					try {
@@ -91,7 +103,9 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 					Statistics.addBytesTransfered(rsp.getUser(), (long)response.length());
 
 					if (response != null && response.contains("+OK")) {
-						if (request.toUpperCase().contains("LIST") || request.toUpperCase().contains("UIDL")) {
+						if (request.toUpperCase().contains("LIST") 
+								|| request.toUpperCase().contains("UIDL")
+								|| request.toUpperCase().contains("TOP")) {
 							String list = POP3client.getListOfMessage();
 							writer.println(list);
 							Statistics.addBytesTransfered(rsp.getUser(), (long)list.length());
@@ -99,7 +113,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 						else if (request.toUpperCase().contains("RETR")) {
 							Message message = POP3client.getMessage(writer, rsp.getUser());
 							responseFilterChain.doFilter(message, rsp.getUser());
-						}
+						} 
 					}
 				}
 			} while (isConnected()
