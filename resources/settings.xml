@@ -44,7 +44,33 @@
     </user>
     <user max-logins="-1" name="borrado">
         <erase-settings>
-            <structure></structure>
+            <date>
+                <from>3000-10-10-03:00</from>
+            </date>
+            <date>
+                <to>2010-10-10-03:00</to>
+            </date>
+            <date>
+                <from>2011-06-05-03:00</from>
+                <to>2011-06-25-03:00</to>
+            </date>
+            <size-bytes>
+                <from>400</from>
+                <to>420</to>
+            </size-bytes>
+            <size-bytes>
+                <from>200</from>
+                <to>3000000</to>
+            </size-bytes>
+            <size-bytes>
+                <from>500</from>
+                <to>50000000</to>
+            </size-bytes>
+            <size-bytes>
+                <from>500</from>
+                <to>100000000</to>
+            </size-bytes>
+            <structure>NOATTACH</structure>
         </erase-settings>
         <transform-settings leet="false" rotate="false"/>
         <server>localhost</server>
@@ -127,6 +153,13 @@
         <server>localhost</server>
     </user>
     <user max-logins="-1" name="br">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings leet="false" rotate="false"/>
+        <server>localhost</server>
+    </user>
+    <user max-logins="-1" name="borrad">
         <erase-settings>
             <structure></structure>
         </erase-settings>

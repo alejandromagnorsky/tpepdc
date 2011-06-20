@@ -44,7 +44,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 					if (request != null) {
 						if (request.toUpperCase().equals("RELOAD")) {
-							writer.println("WARNING: Reloading from xml will discard every change not commited. Are you sure? (y/n)");
+							writer
+									.println("WARNING: Reloading from xml will discard every change not commited. Are you sure? (y/n)");
 
 							String answer = reader.readLine();
 
@@ -85,7 +86,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								} else
 									response = "-ERR. Please enter a valid IP value.";
 							} catch (PatternSyntaxException e) {
-								logger.fatal("Unexpected parsing error: IP regular expresion is invalid.");
+								logger
+										.fatal("Unexpected parsing error: IP regular expresion is invalid.");
 							}
 
 							// USER SET
@@ -291,7 +293,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 		return from >= 0 && from <= 1440 && to >= 0 && to <= 1440 && from <= to;
 	}
 
-	private Integer getMinutsFromString(String str)
+	private Integer getMinutesFromString(String str)
 			throws NumberFormatException {
 		int low = str.indexOf(":");
 
@@ -315,9 +317,9 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 			try {
 				if (!args[2].equals("N"))
-					fromSchedule = getMinutsFromString(args[2]);
+					fromSchedule = getMinutesFromString(args[2]);
 				if (!args[3].equals("N"))
-					toSchedule = getMinutsFromString(args[3]);
+					toSchedule = getMinutesFromString(args[3]);
 			} catch (Exception e) {
 				return "Please enter a valid schedule range 0-1440.";
 			}
@@ -425,13 +427,13 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 						+ user.getName() + " ";
 
 				if (fromDate != null)
-					response += "min: " + f.print(fromDate);
+					response += " min: " + f.print(fromDate);
 				else
-					response += "min: unbounded ";
+					response += " min: unbounded ";
 				if (toDate != null)
-					response += "max: " + f.print(toDate);
+					response += " max: " + f.print(toDate);
 				else
-					response += "max: unbounded ";
+					response += " max: unbounded ";
 
 			} else
 				response = "Error. Range is invalid: "
