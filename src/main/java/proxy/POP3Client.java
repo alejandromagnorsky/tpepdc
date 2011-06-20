@@ -72,7 +72,7 @@ public class POP3Client extends Client {
 		listBuilder.append(".");
 		return listBuilder.toString();
 	}
-
+	
 	/* main para pruebas
 	public static void main(String args[]) {
 		try {
