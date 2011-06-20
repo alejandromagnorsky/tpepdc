@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import model.User;
+import proxy.POP3Proxy;
 import statistics.Statistics;
 import dao.XMLSettingsDAO;
 
@@ -94,7 +95,12 @@ public class StatisticsConnectionHandler extends ServiceConnectionHandler {
 			}
 			disconnect();
 		} catch (IOException e) {
-			e.printStackTrace();
+			POP3Proxy.logger.fatal("Error with connection. Disconnecting client...");
+			try {
+				disconnect();
+			} catch (Exception e1) {
+				POP3Proxy.logger.fatal("Error disconnecting");
+			}
 		}
 	}
 }
