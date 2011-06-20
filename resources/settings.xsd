@@ -5,6 +5,7 @@
 	<xsd:complexType name="XMLTransformation">
 		<xsd:attribute name="rotate" type="xsd:boolean" default="false"></xsd:attribute>
 		<xsd:attribute name="leet" type="xsd:boolean" default="false"></xsd:attribute>
+		<xsd:attribute name="external" type="xsd:string" default="none"></xsd:attribute>
 	</xsd:complexType>
 
 	<xsd:complexType name="XMLEraseSettings">
