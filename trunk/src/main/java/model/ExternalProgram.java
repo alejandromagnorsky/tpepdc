@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -31,7 +30,7 @@ public class ExternalProgram {
 					.getOutputStream()), true);
 			
 			// Send the message to the external program's input
-			while(!(response = readResponseLine()).equals("."))
+			while(!(response = input.readLine()).equals("."))
 				writer.println(response);
 			writer.close();
 			
@@ -55,12 +54,5 @@ public class ExternalProgram {
 			POP3Proxy.logger.fatal("Error executing the external program " + path);
 			return input;
 		}
-	}
-	
-
-	private String readResponseLine() throws IOException {
-		String response = input.readLine();
-		POP3Proxy.logger.info("[in]: " + response);
-		return response;
 	}
 }

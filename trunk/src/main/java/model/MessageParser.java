@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 
 import org.apache.commons.codec.net.QuotedPrintableCodec;
 
-import proxy.POP3Proxy;
 import statistics.Statistics;
 
 public class MessageParser {
@@ -36,12 +35,6 @@ public class MessageParser {
 		this.imageTransformer = new ImageTransformer();
 	}
 
-	private String readResponseLine() throws IOException {
-		String response = reader.readLine();
-		POP3Proxy.logger.info("[in]: " + response);
-		return response;
-	}
-
 	private void send(String line){
 		writer.println(line);
 		Statistics.addBytesTransfered(user, (long)line.length());
@@ -49,7 +42,7 @@ public class MessageParser {
 	
 	public Message parseMessage() throws IOException {
 		Message message = new Message();
-		String response = readResponseLine();
+		String response = reader.readLine();
 		parseHeaders(response, message);
 		parseBody(message);
 		return message;
@@ -74,7 +67,7 @@ public class MessageParser {
 					headerValue.append(response.substring(separator + 2));
 			} else
 				headerValue.append(response);
-		} while ((response = readResponseLine()).length() != 0
+		} while ((response = reader.readLine()).length() != 0
 				&& (response.startsWith(" ") || response.startsWith("\t")));
 
 		message.addHeaderValue(headerName, headerValue.toString());
@@ -105,7 +98,7 @@ public class MessageParser {
 			// Multipart content
 			do
 				parseContents(message, boundary);
-			while (!(response = readResponseLine()).equals("."));
+			while (!(response = reader.readLine()).equals("."));
 		}
 		send(".");
 	}
@@ -138,7 +131,7 @@ public class MessageParser {
 				send(response);
 				if (response.contains("Content-Transfer-Encoding:"))
 					encoding = response.substring(response.indexOf(":") + 2);
-			} while ((response = readResponseLine()).length() != 0);
+			} while ((response = reader.readLine()).length() != 0);
 			send(response);
 		} else {
 			if (message.getHeaders().get("Content-Transfer-Encoding") != null)
@@ -187,18 +180,18 @@ public class MessageParser {
 		boolean needToTransformText = needToTransformText(type);
 		String response;
 		if (needToTransformImage || (needToTransformText && encoding != null)) {
-			while (!checkLine(response = readResponseLine(), boundary)) {
+			while (!checkLine(response = reader.readLine(), boundary)) {
 				// need to get the entire image to rotate it
 				contentText.append(response + "\n");
 			}
 		} else if (needToTransformText && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
-			while (!checkLine(response = readResponseLine(), boundary)) {
+			while (!checkLine(response = reader.readLine(), boundary)) {
 				// lines can be transformed one by one
 				String transformedLine = textTransformer.transform(response, null);
 				send(transformedLine);
 			}
 		} else {
-			while (!checkLine(response = readResponseLine(), boundary)) {
+			while (!checkLine(response = reader.readLine(), boundary)) {
 				send(response);
 			}
 		}
@@ -211,10 +204,10 @@ public class MessageParser {
 
 	private void parseContents(Message message, String boundary)
 			throws IOException {
-		String response = readResponseLine();
+		String response = reader.readLine();
 
 		if (response.contains("--" + boundary))
-			response = readResponseLine();
+			response = reader.readLine();
 
 		if (response.contains("Content-Type:")) {
 			if (response.toUpperCase().contains("MULTIPART")) {
@@ -222,7 +215,7 @@ public class MessageParser {
 				send(response);
 				String subBoundary = getBoundary(response);
 				send("");
-				response = readResponseLine();
+				response = reader.readLine();
 				parseContents(message, subBoundary);
 			} else {
 				response = putContent(message, response, boundary);
@@ -237,7 +230,7 @@ public class MessageParser {
 
 	private String getBoundary(String line) throws IOException {
 		if (line.indexOf("=") == -1) {
-			line = readResponseLine();
+			line = reader.readLine();
 			send(line);
 		}
 		String boundary = line.substring(line.indexOf("=") + 1);
