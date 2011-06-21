@@ -156,7 +156,6 @@ public class MessageParser {
 				String imageFormat = contentTypeHeader.substring(
 						contentTypeHeader.indexOf('/') + 1, contentTypeHeader
 								.indexOf(';'));
-				System.out.println("--" + imageFormat + "--");
 				String transformedImage = imageTransformer.transform(
 						contentText.toString(), imageFormat);
 				printLines(transformedImage);

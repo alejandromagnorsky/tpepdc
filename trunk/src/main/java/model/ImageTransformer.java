@@ -3,18 +3,15 @@ package model;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 
 import javax.imageio.ImageIO;
+import javax.mail.internet.MimeUtility;
 
 import org.apache.log4j.Logger;
-
-import javax.mail.internet.MimeUtility;
 
 public class ImageTransformer {
 
@@ -24,25 +21,8 @@ public class ImageTransformer {
 
 		try {
 
-			BufferedReader reader = new BufferedReader(new StringReader(
-					imageStringInput));
-			String imageString = "";
-			String temp;
-			while ((temp = reader.readLine()) != null) {
-				imageString += temp;
-			}
-
-			InputStream s = new ByteArrayInputStream(imageString.getBytes());
+			InputStream s = new ByteArrayInputStream(imageStringInput.getBytes());
 			InputStream decoder = MimeUtility.decode(s, "base64");
-
-			// String tmp = "";
-			// int c;
-			// while ((c = decoder.read()) != -1)
-			// tmp += (char) c;
-			//
-			// byte[] imageInBytes = tmp.getBytes("iso-8859-1");
-			// BufferedImage image = ImageIO.read(new ByteArrayInputStream(
-			// imageInBytes));
 
 			BufferedImage image = ImageIO.read(decoder);
 
@@ -63,8 +43,7 @@ public class ImageTransformer {
 			byte[] buf = out.toByteArray();
 			return new String(buf);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.fatal("Error transforming image, returning original one.");
+			logger.fatal("Error transforming image in format "+ imageType +", returning original one.");
 		}
 		return imageStringInput;
 	}
