@@ -143,7 +143,7 @@ public class AccessRequestFilter extends RequestFilter {
 				return resp;
 			}
 
-			return new Response(user, "-ERR");
+			return new Response(user, "");
 
 		} catch (IOException e) {
 			logger.fatal("Error connecting with the user.");

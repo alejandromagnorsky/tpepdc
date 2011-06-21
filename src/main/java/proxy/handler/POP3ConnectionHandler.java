@@ -63,7 +63,7 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 						}
 					} else {
 						//TODO ver que hacer en este caso, por ahora anda pero el mua tira error la primera vez
-						writer.println("-ERR. CAPA is not supported before USER command.");
+						writer.println("-ERR CAPA is not supported before USER command.");
 					}
 					continue;
 				}
