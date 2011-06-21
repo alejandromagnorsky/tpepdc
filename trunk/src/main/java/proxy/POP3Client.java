@@ -36,11 +36,14 @@ public class POP3Client extends Client {
 
 	public Message getMessage(PrintWriter writer, User user) throws IOException {
 		MessageParser messageParser;
+		Process process = null;
 		BufferedReader input = reader;
 		if(user != null && user.getSettings() != null 
 			&& user.getSettings().getExternal() != null && !user.getSettings().getExternal().equals("none")){ 
 			ExternalProgram externalProgram = new ExternalProgram(user.getSettings().getExternal(), reader);
-			input = externalProgram.execute(); 
+			process = externalProgram.execute();
+			if(process != null)
+				input = externalProgram.getReader(process);
 		}
 		
 
@@ -49,12 +52,22 @@ public class POP3Client extends Client {
 		try {
 			message = messageParser.parseMessage();
 		} catch (Exception e) {
-			writer.println("-ERR Error retrieving message");
+			POP3Proxy.logger.fatal("Error parsing message");
+			writer.println(".");
 		}
 
-		// if the input is the reader from the tmp file
-		if (!input.equals(reader))
+		// if the input is the reader from the external program
+		if (!input.equals(reader)) {
 			input.close();
+			try {
+				int code = process.waitFor();
+				if (code != 0)
+					POP3Proxy.logger.fatal("Error executing the external program " + user.getSettings().getExternal());					
+				process.destroy();
+			} catch (Exception e) {
+				POP3Proxy.logger.fatal("Error executing the external program " + user.getSettings().getExternal());
+			}
+		}
 
 		return message;
 	}

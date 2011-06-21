@@ -7,8 +7,8 @@
     </userLoginList>
     <userLoginList>
         <user>bar</user>
-        <quantity>10</quantity>
-        <date>2011-06-20-03:00</date>
+        <quantity>1</quantity>
+        <date>2011-06-21-03:00</date>
     </userLoginList>
     <userLoginList>
         <user>tpepdc</user>
@@ -22,13 +22,13 @@
     </userLoginList>
     <userLoginList>
         <user>borrado</user>
-        <quantity>19</quantity>
-        <date>2011-06-20-03:00</date>
+        <quantity>4</quantity>
+        <date>2011-06-21-03:00</date>
     </userLoginList>
     <userLoginList>
         <user>pepe</user>
-        <quantity>2</quantity>
-        <date>2011-06-20-03:00</date>
+        <quantity>3</quantity>
+        <date>2011-06-21-03:00</date>
     </userLoginList>
     <userLoginList>
         <user>zulu</user>
