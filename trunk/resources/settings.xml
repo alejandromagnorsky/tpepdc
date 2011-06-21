@@ -2,14 +2,9 @@
 <XMLProxySettings>
     <user max-logins="-1" name="borrado">
         <erase-settings>
-            <date>
-                <from>2011-05-01-03:00</from>
-            </date>
-            <header-pattern>X-Borrable:yes</header-pattern>
-            <content-type>application/msword</content-type>
-            <structure>ATTACH</structure>
+            <structure></structure>
         </erase-settings>
-        <transform-settings external="tac" leet="false" rotate="false"/>
+        <transform-settings external="none" leet="false" rotate="true"/>
         <server>localhost 110</server>
     </user>
     <user max-logins="-1" name="bar">
@@ -60,8 +55,8 @@
         <erase-settings>
             <structure></structure>
         </erase-settings>
-        <transform-settings external="none" leet="false" rotate="false"/>
-        <server>localhost 110</server>
+        <transform-settings external="none" leet="false" rotate="true"/>
+        <server>pop.mail.yahoo.com.ar 110</server>
     </user>
     <user max-logins="-1" name="pepe">
         <erase-settings>

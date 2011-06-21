@@ -34,8 +34,6 @@ public abstract class XMLAbstractDAO<T> {
 
 		try {
 			Properties prop = new Properties();
-			// TODO Modificar cuando este bien el pom.xml
-			// prop.load(POP3Proxy.class.getResourceAsStream("connection.properties"));
 			prop.load(new FileInputStream("resources/proxy.properties"));
 
 			dataFilename = prop.getProperty(xmlProperty);
