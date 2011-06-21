@@ -14,17 +14,16 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.BASE64DecoderStream;
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.BASE64EncoderStream;
+import javax.mail.internet.MimeUtility;
 
 public class ImageTransformer {
-	
+
 	public static Logger logger = Logger.getLogger("logger");
 
 	public String transform(String imageStringInput, String imageType) {
 
 		try {
-			
+
 			BufferedReader reader = new BufferedReader(new StringReader(
 					imageStringInput));
 			String imageString = "";
@@ -34,16 +33,17 @@ public class ImageTransformer {
 			}
 
 			InputStream s = new ByteArrayInputStream(imageString.getBytes());
-			InputStream decoder = new BASE64DecoderStream(s);
+			InputStream decoder = MimeUtility.decode(s, "base64");
 
-//			String tmp = "";
-//			int c;
-//			while ((c = decoder.read()) != -1)
-//				tmp += (char) c;
-//
-//			byte[] imageInBytes = tmp.getBytes("iso-8859-1");
-//			BufferedImage image = ImageIO.read(new ByteArrayInputStream(
-//					imageInBytes));
+			// String tmp = "";
+			// int c;
+			// while ((c = decoder.read()) != -1)
+			// tmp += (char) c;
+			//
+			// byte[] imageInBytes = tmp.getBytes("iso-8859-1");
+			// BufferedImage image = ImageIO.read(new ByteArrayInputStream(
+			// imageInBytes));
+
 			BufferedImage image = ImageIO.read(decoder);
 
 			BufferedImage transformed = new BufferedImage(image.getWidth(),
@@ -56,7 +56,7 @@ public class ImageTransformer {
 			graphics.drawImage(image, 0, 0, null);
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			OutputStream encoder = new BASE64EncoderStream(out);
+			OutputStream encoder = MimeUtility.encode(out, "base64");
 
 			ImageIO.write(transformed, imageType, encoder);
 
