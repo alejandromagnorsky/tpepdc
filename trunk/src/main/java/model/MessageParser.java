@@ -151,11 +151,8 @@ public class MessageParser {
 		if (needToTransformImage && type.toUpperCase().equals("IMAGE")) {
 			// transform and print image
 			if (encoding != null && encoding.equals("base64")) {
-				// String transformedImage = imageTransformer.transform(contentText.toString());
-				printLines(contentText.toString());
-				// TODO cambiar la linea anterior por esta y descomentar lo de
-				// arriba cuando anden las imagenes
-				// printLines(transformedImage);
+				 String transformedImage = imageTransformer.transform(contentText.toString());
+				 printLines(transformedImage);
 			}
 		} else if (needToTransformText && encoding != null && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
 			if(encoding.equals("quoted-printable")) {
