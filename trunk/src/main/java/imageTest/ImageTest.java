@@ -30,16 +30,34 @@ public class ImageTest {
 			// new NullResponseFilter());
 //			ImageIO.write(image, "png", new File("TallerSistemasRep.png"));
 			
-			BufferedImage im = ImageIO.read(new File("image.png"));
+			System.out.println("el string de image.txt es base 64?: " + Base64.isBase64(imageString));
 			
-
-			String toPrint = imageToBase64(im, "png");
-			BufferedImage asiQueda = base64ToImage(toPrint);
-			ImageIO.write(asiQueda, "png", new File("asiQueda.png"));
+			byte[] image = Base64.decodeBase64(imageString.getBytes());
 			
-			System.out.println("original:     " + imageString);
-			System.out.println("transformada: " + toPrint);
-			System.out.println("son iguales?: " + imageString.equals(toPrint));
+//			System.out.println(new String(Base64.encodeBase64Chunked(image)));
+			
+			
+			BufferedImage buff = ImageIO.read(new ByteArrayInputStream(image));
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(buff, "png", baos);
+			byte[] buf = baos.toByteArray();
+			System.out.println(new String(Base64.encodeBase64Chunked(buf)));
+			
+			
+//			BufferedImage im = ImageIO.read(new File("image.png"));
+//			
+//
+//			String toPrint = imageToBase64(im, "png");
+//			BufferedImage asiQueda = base64ToImage(toPrint);
+//			ImageIO.write(asiQueda, "png", new File("asiQueda.png"));
+//			
+//			String ultima = imageToBase64(asiQueda, "png");
+//			
+//			System.out.println("original:     " + imageString);
+//			System.out.println("transformada: " + toPrint);
+//			System.out.println("ultima:       " + ultima);
+//			System.out.println("son iguales?: " + imageString.equals(toPrint));
 			
 
 		} catch (Exception e) {
