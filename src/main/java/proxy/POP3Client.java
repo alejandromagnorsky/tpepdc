@@ -11,8 +11,8 @@ import model.User;
 
 public class POP3Client extends Client {
 
-	public void connect(String host) throws IOException {
-		connect(host, POP3Proxy.DEFAULT_PORT);
+	public void connectAndReadResponseLine(String host, int port) throws IOException {
+		connect(host, port);
 		// To automatically read the welcome message
 		readResponseLine();
 	}

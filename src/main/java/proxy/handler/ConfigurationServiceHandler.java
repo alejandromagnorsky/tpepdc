@@ -15,6 +15,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import proxy.POP3Proxy;
+
 import dao.XMLSettingsDAO;
 
 public class ConfigurationServiceHandler extends ServiceConnectionHandler {
@@ -108,7 +110,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								response = "ERROR. Enter a username.";
 
 							// Commands need a user
-						}  else if (request.toUpperCase().equals("CLEARALL")) {
+						} else if (request.toUpperCase().equals("CLEARALL")) {
 							loader.clear();
 							changed = true;
 							response = "WARNING: Configuration settings resetted.";
@@ -121,7 +123,8 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 								response += "Erase Settings ------------------------\n";
 								response += printEraseSettings(user
 										.getSettings().getEraseSettings());
-							} else if (request.toUpperCase().equals("CLEARUSER")) {
+							} else if (request.toUpperCase()
+									.equals("CLEARUSER")) {
 								user = new User(user.getName());
 								changed = true;
 								response = "User settings cleared.";
@@ -181,8 +184,9 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									String external = args[2];
 									user.getSettings().setExternal(external);
 									changed = true;
-									response = "OK. External program set to " + external
-											+ " for user " + user.getName();
+									response = "OK. External program set to "
+											+ external + " for user "
+											+ user.getName();
 								} else
 									response = "ERROR. Please enter a valid external program value.";
 
@@ -202,12 +206,35 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 							} else if (request.toUpperCase().startsWith(
 									"SET SERVER")) {
 
-								if (argc > 2 && args[2] != null) {
-									String server = args[2];
-									user.getSettings().setServer(server);
-									changed = true;
-									response = "OK. Server set to " + server
-											+ " for user " + user.getName();
+								if (argc > 3 && args[2] != null
+										&& args[3] != null) {
+									String host = args[2];
+									String port = args[3];
+
+									try {
+
+										if (port.equals("N"))
+											port = String
+													.valueOf(POP3Proxy.DEFAULT_PORT);
+
+										if (host.equals("N"))
+											host = String
+													.valueOf(POP3Proxy.DEFAULT_SERVER);
+
+										Integer.valueOf(port);
+
+										String server = host + " " + port;
+
+										user.getSettings().setServer(server);
+										changed = true;
+										response = "OK. Server set to "
+												+ server + " for user "
+												+ user.getName();
+
+									} catch (NumberFormatException e) {
+										response = "ERROR. Please enter a valid port";
+									}
+
 								} else
 									response = "ERROR. Please enter a valid string value.";
 
@@ -225,8 +252,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 											user.getSettings().setMaxLogins(
 													maxLogins);
 											response = "OK. Max logins set to "
-													+ maxLogins
-													+ " for user "
+													+ maxLogins + " for user "
 													+ user.getName();
 										} else
 											response = "ERROR. Please enter a positive integer, or -1 for unbounded logins";
