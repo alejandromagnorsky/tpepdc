@@ -10,7 +10,7 @@
             <structure>ATTACH</structure>
         </erase-settings>
         <transform-settings external="tac" leet="false" rotate="false"/>
-        <server>localhost</server>
+        <server>localhost -1</server>
     </user>
     <user max-logins="-1" name="bar">
         <erase-settings>
@@ -65,6 +65,13 @@
         </erase-settings>
         <transform-settings external="none" leet="false" rotate="false"/>
         <server>pop3.alu.itba.edu.ar</server>
+    </user>
+    <user max-logins="-1" name="tpepdc">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="none" leet="false" rotate="false"/>
+        <server>localhost 110</server>
     </user>
     <blacklist/>
 </XMLProxySettings>

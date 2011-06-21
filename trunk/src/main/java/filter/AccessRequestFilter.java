@@ -49,6 +49,7 @@ public class AccessRequestFilter extends RequestFilter {
 
 			if (request.toUpperCase().contains("USER ") && !logged) {
 				String server = POP3Proxy.DEFAULT_SERVER;
+				int port = POP3Proxy.DEFAULT_PORT;
 
 				user = loader.getUser(request.substring(request
 						.lastIndexOf(' ') + 1));
@@ -57,8 +58,21 @@ public class AccessRequestFilter extends RequestFilter {
 				if (this.user != null && user.getSettings() != null) {
 					String userServer = user.getSettings().getServer();
 
-					if (userServer != null && !userServer.equals(""))
-						server = userServer;
+					if (userServer != null) {
+						String[] args = userServer.split(" ");
+
+						if (args.length > 1 && args[0] != null
+								&& args[1] != null) {
+							server = args[0];
+
+							try {
+								port = Integer.valueOf(args[1]);
+							} catch (NumberFormatException e) {
+								logger
+										.warn("Error loading user port settings. Using default port...");
+							}
+						}
+					}
 
 					accessDenied = accessIsDenied(responseWriter, ip)
 							|| accessDenied;
@@ -73,7 +87,7 @@ public class AccessRequestFilter extends RequestFilter {
 						client.disconnect();
 
 					// Now connect to correct host
-					client.connect(server);
+					client.connectAndReadResponseLine(server, port);
 
 					// Inject user for first login
 					r.setUser(user);

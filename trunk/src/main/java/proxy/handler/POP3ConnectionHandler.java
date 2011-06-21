@@ -52,48 +52,56 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			writer.println("+OK Welcome");
 			do {
 				request = reader.readLine();
-				
-				
+
 				if (request != null && request.toUpperCase().contains("CAPA")) {
-					if(POP3client != null && POP3client.isConnected()) {
+					if (POP3client != null && POP3client.isConnected()) {
 						response = POP3client.send(request);
 						writer.println(response);
-						if(response != null && !response.contains("-ERR")) {
+						if (response != null && !response.contains("-ERR")) {
 							writer.println(POP3client.getListOfMessage());
 						}
 					} else {
-						//TODO ver que hacer en este caso, por ahora anda pero el mua tira error la primera vez
-						writer.println("-ERR CAPA is not supported before USER command.");
+						// TODO ver que hacer en este caso, por ahora anda pero
+						// el mua tira error la primera vez
+						writer
+								.println("-ERR CAPA is not supported before USER command.");
 					}
 					continue;
 				}
-					
+
 				if (request != null && !request.isEmpty()) {
 					Response rsp = null;
 					try {
 						rsp = requestFilterChain.doFilter(new Request(null,
 								request), writer, POP3client);
 					} catch (IllegalArgumentException e) {
-						logger.info("POP3 Server disconnected. Disconnecting client...");
+						logger
+								.info("POP3 Server disconnected. Disconnecting client...");
 						disconnect();
 						return;
 					}
 
 					response = rsp.getResponseString();
-					writer.println(response);
-					Statistics.addBytesTransfered(rsp.getUser(), (long)response.length());
+
+					// Prevent enters
+					if (!response.equals(""))
+						writer.println(response);
+
+					Statistics.addBytesTransfered(rsp.getUser(),
+							(long) response.length());
 
 					if (response != null && response.contains("+OK")) {
-						if (request.toUpperCase().equals("LIST") 
+						if (request.toUpperCase().equals("LIST")
 								|| request.toUpperCase().equals("UIDL")
 								|| request.toUpperCase().contains("TOP")) {
 							String list = POP3client.getListOfMessage();
 							writer.println(list);
-							Statistics.addBytesTransfered(rsp.getUser(), (long)list.length());
+							Statistics.addBytesTransfered(rsp.getUser(),
+									(long) list.length());
+						} else if (request.toUpperCase().contains("RETR")) {
+							Message message = POP3client.getMessage(writer, rsp
+									.getUser());
 						}
-						else if (request.toUpperCase().contains("RETR")) {
-							Message message = POP3client.getMessage(writer, rsp.getUser());
-						} 
 					}
 				}
 			} while (isConnected()
@@ -105,7 +113,8 @@ public class POP3ConnectionHandler extends ConnectionHandler {
 			disconnect();
 		} catch (IOException e) {
 			try {
-				logger.info("POP3 Server disconnected. Disconnecting client...");
+				logger
+						.info("POP3 Server disconnected. Disconnecting client...");
 				disconnect();
 			} catch (IOException e1) {
 				logger.fatal("Error disconnecting client.");
