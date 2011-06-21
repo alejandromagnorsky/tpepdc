@@ -10,7 +10,7 @@
             <structure>ATTACH</structure>
         </erase-settings>
         <transform-settings external="tac" leet="false" rotate="false"/>
-        <server>localhost -1</server>
+        <server>localhost 110</server>
     </user>
     <user max-logins="-1" name="bar">
         <erase-settings>
@@ -25,7 +25,11 @@
             <from>0</from>
             <to>540</to>
         </schedule>
-        <server>localhost</server>
+        <schedule>
+            <from>540</from>
+            <to>1260</to>
+        </schedule>
+        <server>localhost 110</server>
     </user>
     <user max-logins="-1" name="foo">
         <erase-settings>
@@ -36,35 +40,21 @@
             <from>540</from>
             <to>1080</to>
         </schedule>
-        <server>localhost</server>
+        <server>localhost -1</server>
     </user>
     <user max-logins="4" name="etta">
         <erase-settings>
             <structure></structure>
         </erase-settings>
         <transform-settings external="none" leet="false" rotate="false"/>
-        <server>localhost</server>
+        <server>localhost -1</server>
     </user>
     <user max-logins="-1" name="zulu">
         <erase-settings>
             <structure></structure>
         </erase-settings>
         <transform-settings external="./exit" leet="true" rotate="false"/>
-        <server>localhost</server>
-    </user>
-    <user max-logins="-1" name="ettta">
-        <erase-settings>
-            <structure></structure>
-        </erase-settings>
-        <transform-settings external="none" leet="false" rotate="false"/>
-        <server>localhost</server>
-    </user>
-    <user max-logins="-1" name="pepe">
-        <erase-settings>
-            <structure></structure>
-        </erase-settings>
-        <transform-settings external="none" leet="false" rotate="false"/>
-        <server>pop3.alu.itba.edu.ar</server>
+        <server>localhost -1</server>
     </user>
     <user max-logins="-1" name="tpepdc">
         <erase-settings>
@@ -72,6 +62,13 @@
         </erase-settings>
         <transform-settings external="none" leet="false" rotate="false"/>
         <server>localhost 110</server>
+    </user>
+    <user max-logins="-1" name="pepe">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="none" leet="false" rotate="false"/>
+        <server>localhost</server>
     </user>
     <blacklist/>
 </XMLProxySettings>
