@@ -25,7 +25,7 @@ public class MessageParser {
 		this.textTransformer = new TextTransformer();
 		this.imageTransformer = new ImageTransformer();
 	}
-	
+
 	public MessageParser(BufferedReader reader, PrintWriter writer) {
 		this.id = 0;
 		this.reader = reader;
@@ -35,11 +35,11 @@ public class MessageParser {
 		this.imageTransformer = new ImageTransformer();
 	}
 
-	private void send(String line){
+	private void send(String line) {
 		writer.println(line);
-		Statistics.addBytesTransfered(user, (long)line.length());
+		Statistics.addBytesTransfered(user, (long) line.length());
 	}
-	
+
 	public Message parseMessage() throws IOException {
 		Message message = new Message();
 		String response = reader.readLine();
@@ -135,44 +135,54 @@ public class MessageParser {
 			send(response);
 		} else {
 			if (message.getHeaders().get("Content-Transfer-Encoding") != null)
-				encoding = message.getHeaders().get("Content-Transfer-Encoding").get(0);
+				encoding = message.getHeaders()
+						.get("Content-Transfer-Encoding").get(0);
 		}
-		
+
 		boolean needToTransformImage = needToTransformImage(type);
 		boolean needToTransformText = needToTransformText(type);
 		// Put content's data in contentText
 		StringBuilder contentText = new StringBuilder();
-		if (!boundary.isEmpty()) 
-			response = putContentText(contentText, boundary, type, contentTypeHeader, encoding);
+		if (!boundary.isEmpty())
+			response = putContentText(contentText, boundary, type,
+					contentTypeHeader, encoding);
 		else
-			response = putContentText(contentText, "", type, contentTypeHeader, encoding);
-		
+			response = putContentText(contentText, "", type, contentTypeHeader,
+					encoding);
 
 		if (needToTransformImage && type.toUpperCase().equals("IMAGE")) {
 			// transform and print image
 			if (encoding != null && encoding.equals("base64")) {
-				 String transformedImage = imageTransformer.transform(contentText.toString());
-				 printLines(transformedImage);
+				String imageFormat = contentTypeHeader.substring(
+						contentTypeHeader.indexOf('/') + 1, contentTypeHeader
+								.indexOf(';'));
+				System.out.println("--" + imageFormat + "--");
+				String transformedImage = imageTransformer.transform(
+						contentText.toString(), imageFormat);
+				printLines(transformedImage);
 			}
-		} else if (needToTransformText && encoding != null && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
-			if(encoding.equals("quoted-printable")) {
+		} else if (needToTransformText && encoding != null
+				&& contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
+			if (encoding.equals("quoted-printable")) {
 				// transform and print text according to its encoding
 				String text = decodeQuotedPrintable(contentText.toString());
 				text = textTransformer.transform(text, null);
 				printLines(encodeQuotedPrintable(text));
-			} else if(encoding.equals("8bit")) {
-				printLines(textTransformer.transform(contentText.toString(), message));
+			} else if (encoding.equals("8bit")) {
+				printLines(textTransformer.transform(contentText.toString(),
+						message));
 			}
-			
+
 		}
 
 		// Add content to message
 		message.addContent(content);
 		return response;
 	}
-	
-	
-	private String putContentText(StringBuilder contentText, String boundary, String type, String contentTypeHeader, String encoding) throws IOException{
+
+	private String putContentText(StringBuilder contentText, String boundary,
+			String type, String contentTypeHeader, String encoding)
+			throws IOException {
 		boolean needToTransformImage = needToTransformImage(type);
 		boolean needToTransformText = needToTransformText(type);
 		String response;
@@ -181,10 +191,12 @@ public class MessageParser {
 				// need to get the entire image to rotate it
 				contentText.append(response + "\n");
 			}
-		} else if (needToTransformText && contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
+		} else if (needToTransformText
+				&& contentTypeHeader.toUpperCase().contains("TEXT/PLAIN")) {
 			while (!checkLine(response = reader.readLine(), boundary)) {
 				// lines can be transformed one by one
-				String transformedLine = textTransformer.transform(response, null);
+				String transformedLine = textTransformer.transform(response,
+						null);
 				send(transformedLine);
 			}
 		} else {
@@ -194,9 +206,10 @@ public class MessageParser {
 		}
 		return response;
 	}
-	
-	private boolean checkLine(String line, String boundary){
-		return (boundary == "")? line.equals(".") : line.contains("--" + boundary);
+
+	private boolean checkLine(String line, String boundary) {
+		return (boundary == "") ? line.equals(".") : line.contains("--"
+				+ boundary);
 	}
 
 	private void parseContents(Message message, String boundary)
@@ -246,26 +259,25 @@ public class MessageParser {
 			return null;
 		}
 	}
-	
-	 private String encodeQuotedPrintable(String text){
-         try {
-                 QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
-                 String ans = codec.encode(text);
-                 ans = ans.replaceAll("-=0A", "=\n");
-                 ans = ans.replaceAll("=0A", "\n");
-                 return ans;
-         } catch (Exception e) {
-                 return null;
-         }
-	 }	
-	
+
+	private String encodeQuotedPrintable(String text) {
+		try {
+			QuotedPrintableCodec codec = new QuotedPrintableCodec("ISO-8859-1");
+			String ans = codec.encode(text);
+			ans = ans.replaceAll("-=0A", "=\n");
+			ans = ans.replaceAll("=0A", "\n");
+			return ans;
+		} catch (Exception e) {
+			return null;
+		}
+	}
 
 	private void printLines(String message) {
 		StringBuilder builder = new StringBuilder();
 		int i = 0, count = 0;
 		// builder.append(message.charAt(0));
 		while (i < message.length()) {
-			if(message.charAt(i) != '\n') {
+			if (message.charAt(i) != '\n') {
 				builder.append(message.charAt(i));
 			}
 

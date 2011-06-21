@@ -21,9 +21,10 @@ public class ImageTransformer {
 	
 	public static Logger logger = Logger.getLogger("logger");
 
-	public String transform(String imageStringInput) {
+	public String transform(String imageStringInput, String imageType) {
 
 		try {
+			
 			BufferedReader reader = new BufferedReader(new StringReader(
 					imageStringInput));
 			String imageString = "";
@@ -57,11 +58,12 @@ public class ImageTransformer {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			OutputStream encoder = new BASE64EncoderStream(out);
 
-			ImageIO.write(transformed, "PNG", encoder);
+			ImageIO.write(transformed, imageType, encoder);
 
 			byte[] buf = out.toByteArray();
 			return new String(buf);
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.fatal("Error transforming image, returning original one.");
 		}
 		return imageStringInput;
