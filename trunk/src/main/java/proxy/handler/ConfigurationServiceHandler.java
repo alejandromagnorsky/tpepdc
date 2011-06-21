@@ -33,7 +33,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 			User user = null;
 
 			if (validateLogin()) {
-				writer.println("+OK. Welcome to the configuration service.");
+				writer.println("OK. Welcome to the configuration service.");
 
 				// While user is logged
 				do {
@@ -66,10 +66,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 						} else if (request.toUpperCase().equals("COMMIT")) {
 							if (changed) {
 								loader.commit();
-								response = "+OK. Commit successful.";
+								response = "OK. Commit successful.";
 								changed = false;
 							} else
-								response = "+OK. No new changes.";
+								response = "OK. No new changes.";
 
 							// BLACKLIST
 						} else if (request.toUpperCase()
@@ -81,10 +81,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 												.matches("[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}(\\\\/[0-9]{2})?")) {
 									loader.saveBlacklistedIP(args[1]);
 									changed = true;
-									response = "+OK. Added " + args[1]
+									response = "OK. Added " + args[1]
 											+ " to IP blacklist.";
 								} else
-									response = "-ERR. Please enter a valid IP value.";
+									response = "ERROR. Please enter a valid IP value.";
 							} catch (PatternSyntaxException e) {
 								logger
 										.fatal("Unexpected parsing error: IP regular expresion is invalid.");
@@ -98,20 +98,20 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 
 								user = loader.getUser(username);
 								if (user == null)
-									response = "-ERR. User " + username
+									response = "ERROR. User " + username
 											+ " does not exist.";
 								else {
-									response = "+OK. Setting " + user.getName()
+									response = "OK. Setting " + user.getName()
 											+ " as configuration target.";
 								}
 							} else
-								response = "-ERR. Enter a username.";
+								response = "ERROR. Enter a username.";
 
 							// Commands need a user
 						}  else if (request.toUpperCase().equals("CLEARALL")) {
 							loader.clear();
 							changed = true;
-							response = "Warning: Configuration settings resetted.";
+							response = "WARNING: Configuration settings resetted.";
 						} else if (user != null) {
 
 							if (request.toUpperCase().equals("SETTINGS")) {
@@ -168,10 +168,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									Boolean rotate = Boolean.valueOf(args[2]);
 									user.getSettings().setRotate(rotate);
 									changed = true;
-									response = "+OK. Rotate set to " + rotate
+									response = "OK. Rotate set to " + rotate
 											+ " for user " + user.getName();
 								} else
-									response = "-ERR. Please enter a valid boolean value.";
+									response = "ERROR. Please enter a valid boolean value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET EXTERNAL")) {
@@ -181,10 +181,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									String external = args[2];
 									user.getSettings().setExternal(external);
 									changed = true;
-									response = "+OK. External program set to " + external
+									response = "OK. External program set to " + external
 											+ " for user " + user.getName();
 								} else
-									response = "-ERR. Please enter a valid external program value.";
+									response = "ERROR. Please enter a valid external program value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET LEET")) {
@@ -194,10 +194,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									Boolean leet = Boolean.valueOf(args[2]);
 									changed = true;
 									user.getSettings().setLeet(leet);
-									response = "+OK. Leet set to " + leet
+									response = "OK. Leet set to " + leet
 											+ " for user " + user.getName();
 								} else
-									response = "-ERR. Please enter a valid boolean value.";
+									response = "ERROR. Please enter a valid boolean value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET SERVER")) {
@@ -206,10 +206,10 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									String server = args[2];
 									user.getSettings().setServer(server);
 									changed = true;
-									response = "+OK. Server set to " + server
+									response = "OK. Server set to " + server
 											+ " for user " + user.getName();
 								} else
-									response = "-ERR. Please enter a valid string value.";
+									response = "ERROR. Please enter a valid string value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"SET MAXLOGINS")) {
@@ -224,16 +224,16 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 										if (maxLogins >= -1) {
 											user.getSettings().setMaxLogins(
 													maxLogins);
-											response = "+OK. Max logins set to "
+											response = "OK. Max logins set to "
 													+ maxLogins
 													+ " for user "
 													+ user.getName();
 										} else
-											response = "-ERR Please enter a positive integer, or -1 for unbounded logins";
+											response = "ERROR. Please enter a positive integer, or -1 for unbounded logins";
 									} else
-										response = "-ERR Please enter a valid integer value.";
+										response = "ERROR. Please enter a valid integer value.";
 								} catch (NumberFormatException e) {
-									response = "-ERR. Please enter a valid integer value.";
+									response = "ERROR. Please enter a valid integer value.";
 								}
 
 							} else if (request.toUpperCase().startsWith(
@@ -255,12 +255,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 											.getEraseSettings();
 									erase.setStructure(args[2].toUpperCase());
 									changed = true;
-									response = "+OK. Delete restriction by structure ["
+									response = "OK. Delete restriction by structure ["
 											+ args[2]
 											+ "] set for user "
 											+ user.getName() + ". ";
 								} else
-									response = "-ERR. Please enter a valid string value.";
+									response = "ERROR. Please enter a valid string value.";
 
 							} else if (request.toUpperCase().startsWith(
 									"ADD CONTENT")) {
@@ -270,12 +270,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 											.getEraseSettings();
 									erase.addContentHeader(args[2]);
 									changed = true;
-									response = "+OK. Delete restriction by content ["
+									response = "OK. Delete restriction by content ["
 											+ args[2]
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "-ERR. Please enter a valid string value.";
+									response = "ERROR. Please enter a valid string value.";
 							} else if (request.toUpperCase().startsWith(
 									"ADD HEADER")) {
 								if (argc > 2 && args[2] != null) {
@@ -287,12 +287,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 									erase.addHeaderPattern(value);
 
 									changed = true;
-									response = "+OK. Delete restriction by header pattern ["
+									response = "OK. Delete restriction by header pattern ["
 											+ value
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "-ERR. Please enter a valid <header-field:regex> pattern.";
+									response = "ERROR. Please enter a valid <header-field:regex> pattern.";
 
 							} else if (request.toUpperCase().startsWith(
 									"ADD SENDER")) {
@@ -302,19 +302,19 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 											.getEraseSettings();
 									erase.addSender(args[2]);
 									changed = true;
-									response = "+OK. Delete restriction by sender ["
+									response = "OK. Delete restriction by sender ["
 											+ args[2]
 											+ "] added to user "
 											+ user.getName() + ".";
 								} else
-									response = "-ERR. Please enter a valid string value.";
+									response = "ERROR. Please enter a valid string value.";
 							} else if (request.toUpperCase().equals("EXIT"))
-								response = "+OK. Goodbye.";
+								response = "OK. Goodbye.";
 							else
-								response = "Error. Invalid command, or user not set.";
+								response = "ERROR. Invalid command, or user not set.";
 						} else if (!request.toUpperCase().equals("EXIT")
 								&& !request.toUpperCase().equals("QUIT"))
-							response = "Error. Invalid command, or user not set.";
+							response = "ERROR. Invalid command, or user not set.";
 
 						if (user != null)
 							loader.saveUser(user);
@@ -400,11 +400,11 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 				response = "OK. Schedule range added for user "
 						+ user.getName() + " ";
 			} else
-				response = "Error. Range is invalid: "
+				response = "ERROR. Range is invalid: "
 						+ minutesToString(fromSchedule) + "-"
 						+ minutesToString(toSchedule);
 		} else
-			response = "Error. Please enter a valid value. (expected integer)";
+			response = "ERROR. Please enter a valid value. (expected integer)";
 		return response;
 	}
 
@@ -440,12 +440,12 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 					response = "OK. Size restriction range added for user "
 							+ user.getName() + " ";
 				} else
-					response = "Error. Range is invalid: " + fromSize + "-"
+					response = "ERROR. Range is invalid: " + fromSize + "-"
 							+ toSize;
 			} else
-				response = "Error. Please enter a valid size range.";
+				response = "ERROR. Please enter a valid size range.";
 		} catch (NumberFormatException e) {
-			response = "-ERR. Please enter a valid size range.";
+			response = "ERROR. Please enter a valid size range.";
 		}
 		return response;
 	}
@@ -500,7 +500,7 @@ public class ConfigurationServiceHandler extends ServiceConnectionHandler {
 						+ "-"
 						+ (toDate != null ? f.print(toDate) : "unbounded");
 		} else
-			response = "Error. Please enter a valid date.";
+			response = "ERROR. Please enter a valid date.";
 		return response;
 	}
 

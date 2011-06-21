@@ -7,7 +7,7 @@
     </userLoginList>
     <userLoginList>
         <user>bar</user>
-        <quantity>3</quantity>
+        <quantity>10</quantity>
         <date>2011-06-20-03:00</date>
     </userLoginList>
     <userLoginList>
@@ -17,17 +17,27 @@
     </userLoginList>
     <userLoginList>
         <user>foo</user>
-        <quantity>5</quantity>
+        <quantity>7</quantity>
         <date>2011-06-20-03:00</date>
     </userLoginList>
     <userLoginList>
         <user>borrado</user>
-        <quantity>8</quantity>
+        <quantity>18</quantity>
         <date>2011-06-20-03:00</date>
     </userLoginList>
     <userLoginList>
         <user>pepe</user>
         <quantity>2</quantity>
+        <date>2011-06-20-03:00</date>
+    </userLoginList>
+    <userLoginList>
+        <user>zulu</user>
+        <quantity>5</quantity>
+        <date>2011-06-20-03:00</date>
+    </userLoginList>
+    <userLoginList>
+        <user>etta</user>
+        <quantity>4</quantity>
         <date>2011-06-20-03:00</date>
     </userLoginList>
 </XMLLoginLogRoot>

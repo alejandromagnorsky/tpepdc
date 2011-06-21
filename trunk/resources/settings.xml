@@ -2,10 +2,69 @@
 <XMLProxySettings>
     <user max-logins="-1" name="borrado">
         <erase-settings>
+            <date>
+                <from>2011-05-01-03:00</from>
+            </date>
+            <header-pattern>X-Borrable:yes</header-pattern>
+            <content-type>application/msword</content-type>
+            <structure>ATTACH</structure>
+        </erase-settings>
+        <transform-settings external="tac" leet="false" rotate="false"/>
+        <server>localhost</server>
+    </user>
+    <user max-logins="-1" name="bar">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="./externalProgram" leet="true" rotate="true"/>
+        <schedule>
+            <from>1080</from>
+            <to>1439</to>
+        </schedule>
+        <schedule>
+            <from>0</from>
+            <to>540</to>
+        </schedule>
+        <server>localhost</server>
+    </user>
+    <user max-logins="-1" name="foo">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="none" leet="false" rotate="false"/>
+        <schedule>
+            <from>540</from>
+            <to>1080</to>
+        </schedule>
+        <server>localhost</server>
+    </user>
+    <user max-logins="4" name="etta">
+        <erase-settings>
             <structure></structure>
         </erase-settings>
         <transform-settings external="none" leet="false" rotate="false"/>
         <server>localhost</server>
+    </user>
+    <user max-logins="-1" name="zulu">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="./exit" leet="true" rotate="false"/>
+        <server>localhost</server>
+    </user>
+    <user max-logins="-1" name="ettta">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="none" leet="false" rotate="false"/>
+        <server>localhost</server>
+    </user>
+    <user max-logins="-1" name="pepe">
+        <erase-settings>
+            <structure></structure>
+        </erase-settings>
+        <transform-settings external="none" leet="false" rotate="false"/>
+        <server>pop3.alu.itba.edu.ar</server>
     </user>
     <blacklist/>
 </XMLProxySettings>

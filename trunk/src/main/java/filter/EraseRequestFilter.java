@@ -74,7 +74,7 @@ public class EraseRequestFilter extends RequestFilter {
 			}
 
 			if (!canDeleteMail(user, number, client, responseWriter))
-				return new Response(user, "-ERR");
+				return new Response(user, "");
 		}
 		return chain.doFilter(r, responseWriter, client);
 	}
